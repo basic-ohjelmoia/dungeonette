@@ -1,15 +1,11 @@
-
-
+Tuomas Honkala - tuho@cs.helsinki.fi
 
 MÄÄRITTELYDOKUMENTTI
 ====================
-Tuomas Honkala - tuho@cs.helsinki.fi
-
-
 Tietorakenteiden harjoitustyö loppukesä 2016
 --------------------------------------------
 Dungeonette - A Random(-ish) Dungeon Generator
-
+----------------------------------------------
 
 
 
