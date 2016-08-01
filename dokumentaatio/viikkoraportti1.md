@@ -11,7 +11,7 @@ Pystyn kirjoittamaan vain vasemmalla kädellä... enkä ole vasenkätinen. Saan 
 Turvotus helpottaa sen verran, että pystyn käyttämään oikean käden etusormea ja pikkurilliä kirjoittamisen apuna. Alan hahmottelemaan määrittelydokumenttia. Opin, että kirjoittaminen tekee yhä kipeää...
 
 ### 31.7.2016
-Luon Github-repon harjoitustyölleni. Teen pari nopeaa koodihahmotelmaa luola-algoritmini toiminnasta. Ne vaikuttavat ihan lupaavilta, vaikka eivät kaikkiin ongelmiin vielä vastaakaan. 
+Luon Github-repon harjoitustyölleni. Teen pari nopeaa koodihahmotelmaa luola-algoritmini toiminnasta. Ne vaikuttavat ihan lupaavilta, vaikka eivät kaikkiin ongelmiin vielä vastaakaan. Tajuan kuitenkin samalla, että harjoitustyölle asetut rajoitteet Javan valmiiden tietorakenteiden käytössä tulevat korottamaan ohjelmointihaastetta tuntuvasti. HashSetit ja -Mapit ovat olleet minulle erityisen rakkaita...
 
 Mittasuhteiltaan vaihtelevien huoneiden asettelu yhteiseen koordinaatistoon vaikuttaisi olevan yksi keskeisiä haasteita algoritmini toiminnalle. Algoritmin toteutus yksinkertaistuisi huomattavasti, jos kaikki huoneet olisivat tasasuurusuia (esim. 10x10 ruutua).
 
