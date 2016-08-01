@@ -3,12 +3,12 @@
 
 MÄÄRITTELYDOKUMENTTI
 ====================
-### Tuomas Honkala - tuho@cs.helsinki.fi
+Tuomas Honkala - tuho@cs.helsinki.fi
 
 
 Tietorakenteiden harjoitustyö loppukesä 2016
 --------------------------------------------
-###  Dungeonette - A Random(-ish) Dungeon Generator
+Dungeonette - A Random(-ish) Dungeon Generator
 
 
 
@@ -72,15 +72,15 @@ Luolasto tallennetaan char tai int [][][] -tyyppiseen matriisiin. Generoinnin ai
 
 Algoritmi ottaa vastaan seuraavat syötteet:
 
-1. siemenluku, joka määrittää kohtien 2), 3), 4) ja 5) kanssa raudanlujasti minkälainen luolasto algoritmista tuotetaan ulos. 
-2. luolatasojen lukumäärä (1-10)
-3. huonetiheys (suhdeluku, 1-100; mitä suurempi, sitä enemmän huoneita per kerros)
-4. käytävätiheys (suhdeluku 1-100; mitä suurempi, sitä enemmän käytäviä huoneesta toiseen)
-5. arkkitehtuurin volatiliteetti (suhdeluku 1-100; mitä suurempi, sitä enemmän huone- ja käytävätiheys vaihtelee samassa luolastossa luolatasosta toiseen)
++ siemenluku, joka määrittää kohtien 2), 3), 4) ja 5) kanssa raudanlujasti minkälainen luolasto algoritmista tuotetaan ulos. 
++ luolatasojen lukumäärä (1-10)
++ huonetiheys (suhdeluku, 1-100; mitä suurempi, sitä enemmän huoneita per kerros)
++ käytävätiheys (suhdeluku 1-100; mitä suurempi, sitä enemmän käytäviä huoneesta toiseen)
++ arkkitehtuurin volatiliteetti (suhdeluku 1-100; mitä suurempi, sitä enemmän huone- ja käytävätiheys vaihtelee samassa luolastossa luolatasosta toiseen)
 
 Suorituskykyanalyysin kannalta algoritmille voisi olla mahdollista antaa myös seuraava syöte:
 
-6. luolatason korkeus ja leveys (jos muu kuin 100 x 100 ruutua)
++ luolatason korkeus ja leveys (jos muu kuin 100 x 100 ruutua)
 
 
 
