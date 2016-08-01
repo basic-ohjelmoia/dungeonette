@@ -4,7 +4,7 @@ Viikkoraportti 1
 ### 27.7.2016
 Projekti käynnistyi vakuuttavasti, kun jouduin heti kurssin alkamispäivänä pyöräonnettomuuteen. Aivotärähdys ja kahden luun murtuma oikean käden ranteessa vievät terän työskentelyltä.
 
-### 28.7.2016
+### 29.7.2016
 Pystyn kirjoittamaan vain vasemmalla kädellä... enkä ole vasenkätinen. Saan kuitenkin laadittua selostuksen kaavailemastani aiheesta.
 
 ### 30.7.2016
