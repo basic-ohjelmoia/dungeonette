@@ -6,8 +6,11 @@
 package dungeonette.domain;
 
 /**
- *
- * @author tuoma
+ * Door is an object class which should eventually be used to store door 
+ * (and possibly lock-and-key) information for any doors placed into the dungeon.
+ * 
+ * The class is not yet implemented.
+ * @author tuomas honkala
  */
 public class Door {
     

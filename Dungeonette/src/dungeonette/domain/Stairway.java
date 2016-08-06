@@ -6,8 +6,10 @@
 package dungeonette.domain;
 
 /**
- *
- * @author tuoma
+ * Stairways are the connecting points between two floors.
+ * Not yet implemeneetd.
+ * 
+ * @author tuomas honkala
  */
 public class Stairway {
     

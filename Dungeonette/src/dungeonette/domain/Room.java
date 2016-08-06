@@ -10,8 +10,11 @@ import java.awt.Point;
 import java.util.Random;
 
 /**
- *
- * @author tuoma
+ * Object class for the rooms placed into the dungeon.
+ * 
+ * The class contains a lot of program logic and lacks proper setters and getters.
+ * 
+ * @author tuomas honkala
  */
 public class Room {
     
