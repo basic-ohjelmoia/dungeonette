@@ -65,6 +65,10 @@ public class Floor {
      */
     public boolean insertRoom(int rlx, int rly, Dimension dimension, char fromDirection, Point origin, int currentRoomID) {
 
+        if (rlx<0 || rly<0 || rlx>=xMax/10 || rly>=yMax/10 ) {
+            return false;
+        }
+        
         int size = (dimension.height * dimension.width) / 100;
 
         // as the room might be too large to fit into a single 10 x 10 grid, these two arrays are used
@@ -182,45 +186,10 @@ public class Floor {
 
     }
 
-    /**
-     * Old print method.
-     */
-    public void printOld() {
-        System.out.println("printing...");
-        for (int y = 0; y < 100; y++) {
-            System.out.print("\n");
-            for (int x = 0; x < 100; x++) {
-                if (roomLayout[x / 10][y / 10] == null) {
-                    System.out.print("..");
-                } else if (x % 10 == 0 || y % 10 == 0 || x % 10 == 9 || y % 10 == 9) {
-                    Room room = roomLayout[x / 10][y / 10];
-                    if ((room.outDirection == 'w' || room.fromDirection == 'w') && x % 10 == 0 && y % 10 == 5) {
-                        System.out.print("==");
-                    } else if ((room.fromDirection == 'e' || room.fromDirection == 'e') && x % 10 == 9 && y % 10 == 5) {
-                        System.out.print("==");
-                    } else if ((room.fromDirection == 's' || room.fromDirection == 'n') && x % 10 == 5 && y % 10 == 0) {
-                        System.out.print("||");
-                    } else if ((room.fromDirection == 'n' || room.fromDirection == 's') && x % 10 == 5 && y % 10 == 9) {
-                        System.out.print("||");
-                    } else {
-                        System.out.print("##");
-                    }
-                } else {
-                    Room room = roomLayout[x / 10][y / 10];
-                    String id = "" + room.id;
-                    if (id.length() < 2) {
-                        id = "0" + id;
-                    }
-                    System.out.print(id);
-                }
-            }
-        }
-
-    }
 
     /**
-     * Prints the room placement while storing the tiles into the char array,
-     * then calls for passage generation and then prints out the final map.
+     * Prints the room placement while storing the tiles into the char array.
+     * Passages between the rooms are not yet carved out.
      */
     public void print() {
         System.out.println("printing...");
@@ -239,7 +208,7 @@ public class Floor {
                 }
             }
         }
-        carveRoutes();
+        
 
     }
 
@@ -343,5 +312,13 @@ public class Floor {
             }
         }
 
+    }
+    
+    /**
+     * Returns two dimensional array of char tiles of the floor.
+     * @return two dimensional array of char tiles of the floor.
+     */
+    public char[][] getTiles() {
+        return this.tiles;
     }
 }

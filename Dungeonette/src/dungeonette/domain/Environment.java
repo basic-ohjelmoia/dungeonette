@@ -215,7 +215,17 @@ public class Environment {
         
         // print out the results (the entire dungeon floor)
         floor.print();
+        floor.carveRoutes();
 
+        this.floors[0]=floor;
     }
 
+    /**
+     * Returns the array of floors
+     * @return array of floors
+     */
+    public Floor[] getFloors() {
+        return this.floors;
+    }
+    
 }
