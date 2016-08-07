@@ -49,3 +49,7 @@ Työskentelyä projektiviikon 2 aikana yhteensä: n. 25 h.
 Olen kaiken kaikkiaan varsin tyytyväinen tämän viikon työpanokseeni. Rannemurtumani ei asettanut varsinkaan viikon jälkipuoliskolla enää kohtuutonta haittaa työskentelylle, mikä vahvisti uskoani siihen, että selviän tästä projektista kunnialla. 
 
 Ellei ranteeni kunnossa sitten tule jotain äkillistä takapakkia, en näe tällä hetkellä syytä anoa erityiskohtelua palautus-deadlinejen suhteen.
+
+### Mallituloste satunnaisgeneroidusta luolasta
+
+Löytyy tämän linkin takaa: https://github.com/basic-ohjelmoia/dungeonette/blob/master/dokumentaatio/luola.txt
