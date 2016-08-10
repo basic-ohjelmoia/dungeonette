@@ -7,6 +7,7 @@ package dungeonette.domain;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.util.Random;
 
 /**
  * Floor is an object class which is used to store the information for a single
@@ -30,7 +31,8 @@ public class Floor {
     private Point[] routeFrom;  // array for start points of each passages
     private Point[] routeTo; // array for end points of each passages
     private int routes;   // number of passages generated so far (hardcoded max: 200)
-
+    private int roomCount;
+    
     /**
      * Constructor for the floor.
      *
@@ -175,6 +177,16 @@ public class Floor {
         routeFrom[routes] = origin;
         routeTo[routes] = new Point(room.location);
         routeTo[routes] = room.roomCenter;
+        
+        routeTo[routes] = room.getDoorway();
+        if (roomLayout[origin.x][origin.y]!=null) {
+        routeFrom[routes] = roomLayout[origin.x][origin.y].getDoorway();
+        } else {
+            routeFrom[routes] = routeTo[routes];
+        }
+        
+        System.out.println("routeFrom = "+routeFrom[routes].toString());
+        System.out.println("routeTO = "+routeTo[routes].toString());
         System.out.println("Room loc = " + room.location.toString() + " vs center " + room.roomCenter.toString());
         routes++;
         for (int i = 0; i < size; i++) {
@@ -182,6 +194,7 @@ public class Floor {
 
         }
 
+        roomCount++;
         return true;
 
     }
@@ -222,12 +235,21 @@ public class Floor {
     
         // the for loop processes each pair of passage/route departures and destinations.
         for (int i = 0; i < routes; i++) {
-            int startX = (routeFrom[i].x * 10) + 5;
-            int startY = (routeFrom[i].y * 10) + 5;
+            System.out.println("i = "+i+", routef "+routeFrom[i].toString());
+            int startX = (routeFrom[i].x);// * 10) + 5;
+            int startY = (routeFrom[i].y);// * 10) + 5;
 
-            int endX = (routeTo[i].x * 10) + 5;
-            int endY = (routeTo[i].y * 10) + 5;
+            int endX = (routeTo[i].x);// * 10) + 5;
+            int endY = (routeTo[i].y);// * 10) + 5;
 
+            startX=(Math.max(startX, 1)); startX=(Math.min(startX, 98));
+            startY=(Math.max(startY, 1)); startY=(Math.min(startY, 98));
+            
+            endX=(Math.max(endX, 1)); endX=(Math.min(endX, 98));
+            endY=(Math.max(endY, 1)); endY=(Math.min(endY, 98));
+            
+            
+            
             int cx = startX;
             int cy = startY;
             System.out.println("route " + i + " from " + cx + "," + cy + ", to " + endX + "," + endY);
@@ -235,14 +257,15 @@ public class Floor {
    
             // the while loop keeps on going until the route has been carved all the way to the destination
             // coordinates
-            
+        
+            int chaosStepCounter=0;
             while (true) {
 
                 int oldChaos = chaos;
 
                 // "chaos" tries to add some randomness to the passage drawa. 
                 // without it, all the passages would be boring straight lines
-                if (chaos < 3 && cx > 0 && cx < 99 && cy > 0 && cy < 99) {
+                if (chaos < 3 && cx > 1 && cx < 98 && cy > 1 && cy < 98) {
                     if ((cx + cy) % 29 == 3) {
                         cx++;
                         chaos++;
@@ -268,12 +291,16 @@ public class Floor {
                     } else if (cy > endY) {
                         cy--;
                     }
-                }
+                } 
 
                 // map key:
                 // +    ... floor
                 // #    ... outer wall
                 // .    ... unused space (solid ground or whatnot)
+                System.out.println("cx nw : "+cx+","+cy);
+                
+                
+                
                 if (tiles[cx][cy] != '+') {
                     tiles[cx][cy] = '+';
                     for (int sy = cy - 1; sy <= cy + 1; sy++) {
@@ -287,11 +314,14 @@ public class Floor {
                         }
                     }
                 }
+                
                 if (cx == endX && cy == endY) {
                     System.out.println("terminated at " + cx + "," + cy);
                     break;
 
                 }
+                
+                
 
             }
         }
@@ -306,8 +336,29 @@ public class Floor {
 
                 } else {
 
-                    System.out.print(tiles[x][y] + "" + tiles[x][y]);
+                    
+                    Room room = roomLayout[x / 10][y / 10];
 
+                    if (room!=null && tiles[x][y]=='+' && x%10==4 && y%10==4) {
+                        
+                        if (roomCount==room.id) {
+                            System.out.print("EXIT");x++;
+                        }
+                        else if (room.id==1) {
+                            System.out.print("ENTR");x++;
+                        }
+                        else {
+                                                if (room.id<10) {
+                            System.out.print("0");
+                        }
+                        System.out.print(room.id);
+                        }
+
+                        
+                    } else {
+                    
+                    System.out.print(tiles[x][y] + "" + tiles[x][y]);
+                    }
                 }
             }
         }
@@ -321,4 +372,46 @@ public class Floor {
     public char[][] getTiles() {
         return this.tiles;
     }
+    
+    public void addRandomRoute(boolean connecting) {
+       Random randomi = new Random();
+       Room origin = null;
+       
+       
+       while (origin==null)
+       {
+           Point point = new Point(randomi.nextInt(10), randomi.nextInt(10));
+           origin = roomLayout[point.x][point.y];
+       }
+       routeFrom[routes]=origin.getDoorway();
+       
+       if (connecting) {
+          
+           origin=null;
+           while (origin==null)
+       {
+           Point point = new Point(randomi.nextInt(10), randomi.nextInt(10));
+           origin = roomLayout[point.x][point.y];
+       }
+        routeTo[routes]=origin.getDoorway();
+       } else {
+       
+           while (true) {
+       int toX = randomi.nextInt(50)-25+routeFrom[routes].x;
+       int toY = randomi.nextInt(50)-25+routeFrom[routes].y;
+       
+       toX=Math.max(1, toX); toX=Math.min(toX, 98);
+       toY=Math.max(1, toY); toY=Math.min(toY, 98);
+       
+       if (tiles[toX][toY]=='.') {
+       routeTo[routes]= new Point(toX,toY);
+           break;
+       }
+           }
+       
+       }
+       routes++;
+    }
+       
+    
 }

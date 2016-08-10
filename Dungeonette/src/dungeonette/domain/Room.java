@@ -30,6 +30,7 @@ public class Room {
     private char[][] shape;
     private int area;
     private boolean debugForceCornerRemoval;
+    private Point[] doorways;
 
     /**
      * Constructor for a room in a dungeon floor.
@@ -54,6 +55,7 @@ public class Room {
         
         this.dimension = dimension;
         this.location = location;
+        this.doorways = new Point[10];
         this.id = newID;
         this.fromDirection = from;
         this.shape = new char[dimension.width][dimension.height];
@@ -75,11 +77,12 @@ public class Room {
         Random randomi = new Random();
 
         // h(orizontal)Margins and v(ertical)Margins set the new boundaries for the room's outer walls.
-        int hMargin = randomi.nextInt(3 + dimension.width / 8);
-        int hMargin2 = randomi.nextInt(3 + dimension.width / 8) + 1;
-        int vMargin = randomi.nextInt(3 + dimension.height / 8);
-        int vMargin2 = randomi.nextInt(3 + dimension.height / 8) + 1;
-
+        int hMargin = randomi.nextInt(3 + (dimension.width / 8));
+        int hMargin2 = randomi.nextInt(3 + (dimension.width / 8)) + 1;
+        int vMargin = randomi.nextInt(3 + (dimension.height / 8));
+        int vMargin2 = randomi.nextInt(3 + (dimension.height / 8)) + 1;
+        
+        
         // Some rooms should ignore the prior vertical and horizontal margin deformations and stay as perfect (full size) squares.
         if (randomi.nextInt(15) > 4) {
             hMargin = 0;
@@ -88,6 +91,11 @@ public class Room {
             vMargin2 = 1;
         }
 
+        int hCenter=dimension.width/2 - hMargin2+hMargin;
+        int vCenter=dimension.height/2 - vMargin2+vMargin;
+        System.out.println("v cent "+hCenter+","+vCenter);
+        int doorCount=0;
+        
         // This for-loop generates the actual room shape. 
         // It's important to note that unused space needs to be marked as solid ground ('.' tiles).
         // Map key:
@@ -106,6 +114,10 @@ public class Room {
                 } else {
                     shape[x][y] = '+';
                     area++;
+                    if (Math.abs(x-hCenter)<=1 && Math.abs(y-vCenter)<=1) {
+                        doorways[doorCount]=new Point(x+(location.x*10),y+(location.y*10));
+                        doorCount++;
+                    }
                 }
 
             }
@@ -113,6 +125,12 @@ public class Room {
         // 50 % of the rooms will be further deformed with a deCornerize() call.
         if (randomi.nextBoolean() || debugForceCornerRemoval) {
             deCornerize();
+        } else {
+            if (randomi.nextBoolean()) {
+            doorways[9]=new Point(hMargin+2+(location.x*10), vMargin+2+(location.y*10));
+            } else {
+                doorways[9]=new Point(10-hMargin2-2+(location.x*10), 10-vMargin2-2+(location.y*10));
+            }
         }
     }
 
@@ -166,25 +184,28 @@ public class Room {
                 center = false;
             }
         }
-        if (!center) {
+        int mod=0;
+        
+        if (!center && area >64) {
             cornerDivider = 3;
             System.out.println("cut corners: " + cutCorners + ", dims: " + dimension.width + ", " + dimension.height);
             if (cutCorners == 1 && (dimension.width > 10 || dimension.height > 10)) {// && area>=81) {
                 cornerDivider = 2;
+                mod=1;
                 System.out.println("cordir2");
             }
         }
 
         // These ints mark the coordinate boundaries for the corners/center being removed from the room.
-        int cornerClipX = dimension.width / cornerDivider;
-        int cornerClipX2 = dimension.width - dimension.width / cornerDivider;
-        int cornerClipY = dimension.height / cornerDivider;
-        int cornerClipY2 = dimension.height - dimension.height / cornerDivider;
+        int cornerClipX = (dimension.width / cornerDivider) -mod;
+        int cornerClipX2 = dimension.width - (dimension.width / cornerDivider) + mod;
+        int cornerClipY = (dimension.height / cornerDivider) -mod;
+        int cornerClipY2 = dimension.height - (dimension.height / cornerDivider) + mod;
 
         int centerClipX = dimension.width / centerDivider;
-        int centerClipX2 = dimension.width - dimension.width / centerDivider;
+        int centerClipX2 = dimension.width - (dimension.width / centerDivider);
         int centerClipY = dimension.height / centerDivider;
-        int centerClipY2 = dimension.height - dimension.height / centerDivider;
+        int centerClipY2 = dimension.height - (dimension.height / centerDivider);
 
         // This for-loop handles the actual deformation of the room.
         // Map key:
@@ -259,11 +280,38 @@ public class Room {
                     shape[x][y] = '#';
                 }
 
+                if (shape[x][y]=='+' && doorways[9]==null) {
+                    doorways[9]=new Point(x+(location.x*10),y+(location.y*10));
+                }
+                
             }
         }
     }
 
+    
+    
     /**
+     * Fetches a tile represented as a char from as specific coordinate of the room. This coordinate matches the exact coordinates of a dungeon floor.
+     * While the room is situated on a coarse 10x10 grid (or multiple grids), the actual room tiles have fine 1x1 coordinates.
+     *  
+     * @param x Fine x coordinate on the dungeon floor.
+     * @param y Fine y coordinate on the dungeon floor.
+     * @return Returns the char of the tile
+     */
+    public char getTile(int x, int y) {
+        
+        
+        x -= location.x * 10;
+        y -= location.y * 10;
+
+        if (x<0 || y<0 || x>=dimension.width || y>=dimension.height) {
+            return '?';
+        }
+        
+        return shape[x][y];
+    }
+    
+     /**
      * Prints out a specific tile (coordinate) of a room in relation to the exact coordinates of a dungeon floor.
      * While the room is situated on a coarse 10x10 grid (or multiple grids), the actual room tiles have fine 1x1 coordinates.
      *  
@@ -272,22 +320,33 @@ public class Room {
      * @return Returns the tile, with the char doubled for better console visualization.
      */
     public String print(int x, int y) {
+        char c = getTile(x, y);
         
-        
-        x -= location.x * 10;
-        y -= location.y * 10;
-
-        if (x<0 || y<0 || x>=dimension.width || y>=dimension.height) {
-            return "??";
+        return ""+c+""+c;
+    }
+    
+    public Point getDoorway() {
+        long timer = System.currentTimeMillis();
+        int dice = (int)timer%10;
+        if (doorways[dice]!=null) {
+        return doorways[dice];
         }
-        
-        return "" + shape[x][y] + shape[x][y];
+        else {
+            for (int i =9;i>0;i--) {
+                if (doorways[i]!=null) {
+                    return doorways[i];
+                }
+            }
+            
+        }
+        return new Point((location.x*10)+5,(location.y*10)+5);
     }
     
     /**
      * Return the two dimensional char array containing the room tiles.
      * @return 
      */
+    
     public char[][] getShape() {
         return this.shape;
     }
@@ -300,4 +359,6 @@ public class Room {
     public int getArea() {
         return this.area;
     }
+    
+    
 }

@@ -215,6 +215,10 @@ public class Environment {
         
         // print out the results (the entire dungeon floor)
         floor.print();
+        floor.addRandomRoute(false);
+        floor.addRandomRoute(false);
+        floor.addRandomRoute(false);
+        floor.addRandomRoute(true);
         floor.carveRoutes();
 
         this.floors[0]=floor;
