@@ -26,7 +26,8 @@ public class Floor {
 
     private char[][] tiles; // all coordinates of the floor map
     public Room[][] roomLayout; // seeIfItFits layout is stored into a coarse 10 x 10 grid 
-
+    public boolean[][] noRoom; // rooms can't be placed on these coarse grids
+    
     private int xMax;
     private int yMax;
     private Point entry;
@@ -47,6 +48,7 @@ public class Floor {
     public Floor(int xMax, int yMax, Point pointOfEntry) {
         tiles = new char[xMax][yMax];
         roomLayout = new Room[xMax / 10][yMax / 10];
+        noRoom= new boolean[xMax / 10][yMax / 10];
         this.xMax = xMax;
         this.yMax = yMax;
         this.entry = pointOfEntry;
@@ -74,7 +76,9 @@ public class Floor {
         if (rlx<0 || rly<0 || rlx>=xMax/10 || rly>=yMax/10 ) {
             return false;
         }
-   
+        if (noRoom[rlx][rly]) {
+            return false;
+        }
         return RoomInserter.seeIfItFits(this, rlx, rly, dimension, fromDirection, origin, currentRoomID);
 
     }

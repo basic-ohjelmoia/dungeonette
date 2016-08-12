@@ -4,6 +4,7 @@
 package dungeonette;
 
 import dungeonette.domain.Environment;
+import dungeonette.domain.Specification;
 
 /**
  * Dungeonette is a program which generates random dungeons for an 
@@ -17,8 +18,8 @@ public class Dungeonette {
      */
     public static void main(String[] args) {
         
-        
-        Environment env = new Environment(100,100,1);
+        Specification spec = new Specification(100,100,1);
+        Environment env = new Environment(spec);
         env.generate();
     
     }

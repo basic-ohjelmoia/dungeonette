@@ -5,6 +5,7 @@
  */
 package dungeonette.domain;
 
+import dungeonette.generator.RoomStrangifier;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.util.Random;
@@ -64,7 +65,12 @@ public class Room {
         if (from=='x') {
             debugForceCornerRemoval=true;
         }
+        
+        if (id%2==0 && dimension.height>=20 || dimension.height>=20) {
+         RoomStrangifier.reshape(this);
+        } else {
         generateShape();
+        }
     }
 
     /**
@@ -135,19 +141,23 @@ public class Room {
         }
         this.pivots = Math.max(1, area/75);
         this.pivots = Math.min(this.pivots, 4);
-        if (this.id % 7==0) {
-            this.pivots=1;
-        }
-   
-        if (this.id % 19==0) {
-            this.pivots=2;
-        }
+//        if (this.id % 7==0) {
+//            this.pivots=1;
+//        }
+//   
+//        if (this.id % 19==0) {
+//            this.pivots=2;
+//        }
         if (this.id<15) {
             this.pivots++;
         }
-        if (this.id==4) {
-            this.pivots+=2;
+        if (this.id<5) {
+            this.pivots++;
         }
+        if (this.id%10==0) {
+            this.pivots++;
+        }
+        
         System.out.println("Room "+this.id+" generated with "+this.pivots+" pivots");
     }
 
@@ -342,9 +352,14 @@ public class Room {
         return ""+c+""+c;
     }
     
+    public Point[] getDoorwayArray() {
+        return this.doorways;
+    }
+    
     public Point getDoorway() {
         long timer = System.currentTimeMillis();
-        int dice = (int)timer%10;
+        int dice = (int)(timer%10);
+        System.out.println("dice: "+dice);
         if (doorways[dice]!=null) {
         return doorways[dice];
         }
@@ -375,6 +390,14 @@ public class Room {
      */
     public int getArea() {
         return this.area;
+    }
+    
+    public void resetArea() {
+        this.area=0;
+    }
+    
+    public void addArea() {
+        this.area++;
     }
     
     public boolean hasPivots() {

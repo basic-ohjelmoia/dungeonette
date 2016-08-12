@@ -30,6 +30,7 @@ public class Environment {
     private int yMax;
     private int zMax;
     private Floor[] floors;
+    private Specification spec;
 
     /**
      * Constructor for an environment object. The constructor is basically given
@@ -46,12 +47,17 @@ public class Environment {
      * @param numberOfFloors Number of floors (z) of the entirety of the dungeon
      * 8partially hardcoded to 1)
      */
-    public Environment(int floorWidth, int floorHeigth, int numberOfFloors) {
+    public Environment(Specification spec) {
+        int floorWidth = spec.maxX;
+        int floorHeigth = spec.maxY;
+        int numberOfFloors = spec.maxZ;
+
         this.tiles = new char[floorWidth][floorHeigth][numberOfFloors];
         this.xMax = floorWidth;
         this.yMax = floorHeigth;
         this.zMax = numberOfFloors;
         this.floors = new Floor[zMax];
+        this.spec = spec;
     }
 
     /**
@@ -76,12 +82,12 @@ public class Environment {
 
         int cx = 45 / 10;       // cx and cy refer to the "current x coordinate" and "current y coordinate" of
         int cy = 45 / 10;       // the dungeon generation process.
-                                // as the algorithm actually handles the dungeon in a coarse grid of 10 x 10 tiles
-                                  // the point of origin coordinates need to be divided by 10
+        // as the algorithm actually handles the dungeon in a coarse grid of 10 x 10 tiles
+        // the point of origin coordinates need to be divided by 10
 
         Point temporaryOrigin = new Point(cx, cy);       // this information is needed in order to connect
-                                                         // passages from the point of origin and the next room
-                                                         // being generated
+        // passages from the point of origin and the next room
+        // being generated
 
         char oldFrom = ' ';
 
@@ -89,45 +95,55 @@ public class Environment {
         // reaching "the max" is NOT guaranteed currently
 
         int failuresSinceLastRoomGeneration = 0;          // a safety which ensures that the algorithm eventually
-                                                         // fails in case it reaches a logical dead-end
+        // fails in case it reaches a logical dead-end
 
         Point[] roomLocations = new Point[maxRooms + 1];   // array for room locatios
 
-        
         // here lies the main loop used for the dungeon generation
-        while (rooms < maxRooms && failuresSinceLastRoomGeneration < 100) {
+        while (rooms < maxRooms) {// && failuresSinceLastRoomGeneration < 100) {
             Room temp = null;
-            if (!floor.getRoomQueue().isEmpty()) {temp=floor.getRoomQueue().front();}
-                    
-                    if (temp!=null) {
-                        System.out.println("löytyi q-room");
-                    cx=temp.location.x;
-                    cy=temp.location.y;
-                    } else if (rooms>1) {
-                        failuresSinceLastRoomGeneration=101; cx=-999;
-                        System.out.println("Queue failed on room "+rooms);
+            if (!floor.getRoomQueue().isEmpty()) {
+                if (failuresSinceLastRoomGeneration>20) {
+                    temp = floor.getRoomQueue().dequeue();
+                    if (temp==null) {
+                        break;
                     }
-                    
+                    failuresSinceLastRoomGeneration=0;
+                } else {
+                temp = floor.getRoomQueue().front();
+                }
+            }
+
+            if (temp != null) {
+                System.out.println("löytyi q-room");
+                cx = temp.location.x;
+                cy = temp.location.y;
+            } else if (rooms > 1) {
+                failuresSinceLastRoomGeneration = 101;
+                cx = -999;
+                System.out.println("epic fail! Queue failed on room " + rooms);
+                break;
+            }
+
             int arpa = randomi.nextInt(4);
-            
+
             // oldFrom is used to avoid trying the previously failed direction again
-            if ((oldFrom == 'n' || cy==0) && arpa == 0) {
+            if ((oldFrom == 'n' || cy == 0) && arpa == 0) {
                 arpa = 1;
             }
-            if ((oldFrom == 's' || cy==9) && arpa == 1) {
+            if ((oldFrom == 's' || cy == 9) && arpa == 1) {
                 arpa = 2;
             }
-            if ((oldFrom == 'w' || cx==0) && arpa == 2) {
+            if ((oldFrom == 'w' || cx == 0) && arpa == 2) {
                 arpa = 3;
             }
-            if ((oldFrom == 'e' || cx==9) && arpa == 3) {
+            if ((oldFrom == 'e' || cx == 9) && arpa == 3) {
                 arpa = 0;
             }
 
             char from = ' ';
             char out = ' ';
 
-            
             boolean roomGenerated = false;
             boolean obstacleMet = false;
 
@@ -135,7 +151,7 @@ public class Environment {
             // makes three tries into that direction trying to generate the next room
             // 
             for (int tries = 0; tries < 3 && !roomGenerated; tries++) {
-           
+
                 if (arpa == 0 && tries < 2) {
                     from = 'n';
                     out = 's';
@@ -167,49 +183,50 @@ public class Environment {
                     if (rooms > 2) {
                         roomArpa = Math.max(1, randomi.nextInt(rooms));
                     }
-                    
+
                     cx = roomLocations[roomArpa].x;
                     cy = roomLocations[roomArpa].y;
-                    
-                       temp = null;
-                      System.out.println("floor-q empty: "+floor.getRoomQueue().isEmpty());
-                    if (!floor.getRoomQueue().isEmpty()) {temp=floor.getRoomQueue().dequeue();}
-                    
-                    if (temp!=null) {
-                        System.out.println("löytyi q-room #"+temp.id);
-                    cx=temp.location.x;
-                    cy=temp.location.y;
+
+                    temp = null;
+                    System.out.println("floor-q empty: " + floor.getRoomQueue().isEmpty());
+                    if (!floor.getRoomQueue().isEmpty()) {
+                        temp = floor.getRoomQueue().front();
+                    }//dequeue();}
+
+                    if (temp != null) {
+                        System.out.println("löytyi q-room #" + temp.id);
+                        cx = temp.location.x;
+                        cy = temp.location.y;
                     } else {
                         //failuresSinceLastRoomGeneration=101; 
-                        cx=-999;
-                        System.out.println("Queue failed on room "+rooms);
+                        // cx=-999;
+                        System.out.println("Queue failed on room " + rooms);
                     }
-                    
+
                     temporaryOrigin = new Point(cx, cy);
                     out = ' ';
                     from = ' ';
-                  //  tries=100;
-                }
-
-                else if (cx >= 0 && cx < 10 && cy >= 0 && cy < 10) {
+                    //  tries=100;
+                } else if (cx >= 0 && cx < 10 && cy >= 0 && cy < 10) {
                     Dimension dimension = new Dimension(10, 10);
-                    if (rooms % 11 == 7 && tries <= 1) {
+                    if ((rooms) % 11 == 7 && tries <= 1) {
                         dimension = new Dimension(20, 10);
                     }
-                    if (rooms % 11 == 5 && tries <= 1) {
+                    if ((rooms) % 11 == 5 && tries <= 1) {
                         dimension = new Dimension(10, 20);
                     }
-                    if (rooms % 11 == 3 && tries <= 1) {
+                    if ((rooms % 11) == 3 && tries <= 1) {
                         dimension = new Dimension(20, 20);
                     }
-                    if (rooms % 11 == 4 && tries <= 1) {
+                    if (( rooms) % 11 == 4 && tries <= 1) {
                         dimension = new Dimension(30, 30);
                     }
-                    
+
                     // if the insert room method call returns TRUE then the new room was successfully placed into the map!
                     if (floor.insertRoom(cx, cy, dimension, from, temporaryOrigin, rooms)) {
                         roomGenerated = true;
                         oldFrom = out;
+                        oldFrom = ' ';
                         System.out.println("Room #" + rooms + " of dim " + dimension.width + "," + dimension.height + " generated at " + cx + ", " + cy);
                         roomLocations[rooms] = new Point(cx, cy);
                         temporaryOrigin = new Point(cx, cy);
@@ -217,11 +234,25 @@ public class Environment {
                         rooms++;
 
                         floor.roomLayout[cx][cy].outDirection = out;
-                    } 
-                    
-                    // if the room was too large to generate in THIS location, the algorithm generates a passage instead
-                    else if (floor.roomLayout[cx][cy] == null && tries == 0
+                        temp = null;
+                        System.out.println("floor-q empty: " + floor.getRoomQueue().isEmpty());
+                        if (!floor.getRoomQueue().isEmpty()) {
+                            temp = floor.getRoomQueue().dequeue();
+                        }
+
+                        if (temp != null) {
+                            System.out.println("löytyi q-room #" + temp.id);
+                            cx = temp.location.x;
+                            cy = temp.location.y;
+                        } else {
+                            //failuresSinceLastRoomGeneration=101; 
+                            //cx=-999;
+                            System.out.println("Queue failed on room " + rooms);
+                        }
+                    } // if the room was too large to generate in THIS location, the algorithm generates a passage instead
+                    else if (floor.roomLayout[cx][cy] == null && tries <= 1
                             && !(from == 'n' && cy == 0) && !(from == 's' && cy == 9) && !(from == 'w' && cx == 0) && !(from == 'e' && cx == 9)) {
+                        floor.noRoom[cx][cy]=true;
                         
                         // THIS CODE NO LONGER SERVES PURPOSE??!
 //                        System.out.println("generated a passage on try " + tries);
@@ -233,34 +264,34 @@ public class Environment {
 //                        } else {
 //                            dw = 10;
 //                        }
-                        
                     } else if (floor.roomLayout[cx][cy] != null) {
                         obstacleMet = true;
                     }
                 }
             }
-            System.out.println("failures now "+failuresSinceLastRoomGeneration);
+            System.out.println("failures now " + failuresSinceLastRoomGeneration);
         }
-        
+
         // print out the results (the entire dungeon floor)
         floor.print();
         floor.addRandomRoute(false);
         floor.addRandomRoute(false);
         floor.addRandomRoute(false);
         floor.addRandomRoute(true);
-        
+
         Carver.processAllRoutes(floor);
         //floor.carveRoutes();
 
-        this.floors[0]=floor;
+        this.floors[0] = floor;
     }
 
     /**
      * Returns the array of floors
+     *
      * @return array of floors
      */
     public Floor[] getFloors() {
         return this.floors;
     }
-    
+
 }
