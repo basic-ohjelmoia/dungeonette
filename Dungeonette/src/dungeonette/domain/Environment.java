@@ -5,6 +5,7 @@
  */
 package dungeonette.domain;
 
+import dungeonette.generator.Carver;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.util.Random;
@@ -247,7 +248,9 @@ public class Environment {
         floor.addRandomRoute(false);
         floor.addRandomRoute(false);
         floor.addRandomRoute(true);
-        floor.carveRoutes();
+        
+        Carver.processAllRoutes(floor);
+        //floor.carveRoutes();
 
         this.floors[0]=floor;
     }
