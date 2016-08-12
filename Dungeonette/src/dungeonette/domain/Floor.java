@@ -5,6 +5,7 @@
  */
 package dungeonette.domain;
 
+import dungeonette.data.RoomQueue;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.util.Random;
@@ -32,6 +33,7 @@ public class Floor {
     private Point[] routeTo; // array for end points of each passages
     private int routes;   // number of passages generated so far (hardcoded max: 200)
     private int roomCount;
+    private RoomQueue roomQueue;
     
     /**
      * Constructor for the floor.
@@ -49,6 +51,7 @@ public class Floor {
         this.entry = pointOfEntry;
         this.routeFrom = new Point[200];
         this.routeTo = new Point[200];
+        this.roomQueue = new RoomQueue();
     }
 
     /**
@@ -193,7 +196,8 @@ public class Floor {
             roomLayout[reqX[i]][reqY[i]] = room;
 
         }
-
+        this.roomQueue.enqueue(room);
+        
         roomCount++;
         return true;
 
@@ -413,5 +417,7 @@ public class Floor {
        routes++;
     }
        
-    
+    public RoomQueue getRoomQueue() {
+        return this.roomQueue;
+    }
 }

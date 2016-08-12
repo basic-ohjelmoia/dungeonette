@@ -95,20 +95,31 @@ public class Environment {
         
         // here lies the main loop used for the dungeon generation
         while (rooms < maxRooms && failuresSinceLastRoomGeneration < 100) {
-
+            Room temp = null;
+            if (!floor.getRoomQueue().isEmpty()) {temp=floor.getRoomQueue().front();}
+                    
+                    if (temp!=null) {
+                        System.out.println("löytyi q-room");
+                    cx=temp.location.x;
+                    cy=temp.location.y;
+                    } else if (rooms>1) {
+                        failuresSinceLastRoomGeneration=101; cx=-999;
+                        System.out.println("Queue failed on room "+rooms);
+                    }
+                    
             int arpa = randomi.nextInt(4);
             
             // oldFrom is used to avoid trying the previously failed direction again
-            if (oldFrom == 'n' && arpa == 0) {
+            if ((oldFrom == 'n' || cy==0) && arpa == 0) {
                 arpa = 1;
             }
-            if (oldFrom == 's' && arpa == 1) {
+            if ((oldFrom == 's' || cy==9) && arpa == 1) {
                 arpa = 2;
             }
-            if (oldFrom == 'w' && arpa == 2) {
+            if ((oldFrom == 'w' || cx==0) && arpa == 2) {
                 arpa = 3;
             }
-            if (oldFrom == 'e' && arpa == 3) {
+            if ((oldFrom == 'e' || cx==9) && arpa == 3) {
                 arpa = 0;
             }
 
@@ -158,12 +169,28 @@ public class Environment {
                     
                     cx = roomLocations[roomArpa].x;
                     cy = roomLocations[roomArpa].y;
+                    
+                       temp = null;
+                      System.out.println("floor-q empty: "+floor.getRoomQueue().isEmpty());
+                    if (!floor.getRoomQueue().isEmpty()) {temp=floor.getRoomQueue().dequeue();}
+                    
+                    if (temp!=null) {
+                        System.out.println("löytyi q-room #"+temp.id);
+                    cx=temp.location.x;
+                    cy=temp.location.y;
+                    } else {
+                        //failuresSinceLastRoomGeneration=101; 
+                        cx=-999;
+                        System.out.println("Queue failed on room "+rooms);
+                    }
+                    
                     temporaryOrigin = new Point(cx, cy);
                     out = ' ';
                     from = ' ';
+                  //  tries=100;
                 }
 
-                if (cx >= 0 && cx < 10 && cy >= 0 && cy < 10) {
+                else if (cx >= 0 && cx < 10 && cy >= 0 && cy < 10) {
                     Dimension dimension = new Dimension(10, 10);
                     if (rooms % 11 == 7 && tries <= 1) {
                         dimension = new Dimension(20, 10);
@@ -211,6 +238,7 @@ public class Environment {
                     }
                 }
             }
+            System.out.println("failures now "+failuresSinceLastRoomGeneration);
         }
         
         // print out the results (the entire dungeon floor)

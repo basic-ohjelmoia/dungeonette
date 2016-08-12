@@ -31,6 +31,7 @@ public class Room {
     private int area;
     private boolean debugForceCornerRemoval;
     private Point[] doorways;
+    private int pivots;
 
     /**
      * Constructor for a room in a dungeon floor.
@@ -132,6 +133,22 @@ public class Room {
                 doorways[9]=new Point(10-hMargin2-2+(location.x*10), 10-vMargin2-2+(location.y*10));
             }
         }
+        this.pivots = Math.max(1, area/75);
+        this.pivots = Math.min(this.pivots, 4);
+        if (this.id % 7==0) {
+            this.pivots=1;
+        }
+   
+        if (this.id % 19==0) {
+            this.pivots=2;
+        }
+        if (this.id<15) {
+            this.pivots++;
+        }
+        if (this.id==4) {
+            this.pivots+=2;
+        }
+        System.out.println("Room "+this.id+" generated with "+this.pivots+" pivots");
     }
 
     /**
@@ -360,5 +377,10 @@ public class Room {
         return this.area;
     }
     
-    
+    public boolean hasPivots() {
+        if (this.pivots<1) {return false;}
+            
+        this.pivots--;
+        return true;
+    }
 }
