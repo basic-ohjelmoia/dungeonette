@@ -30,18 +30,21 @@ public class RoomStrangifier {
         int shapes=8;
         Random randomi = new Random();
         
-        
         int prevX=room.dimension.width/3;
         int prevY=room.dimension.height/3;
-        int sx=-1; int sx2=0; int sy=0; int sy2=0;
+        int sx=-1; int sx2=-1; int sy=-1; int sy2=-1;
         while(shapes>0) {
            
-            while (sx<=prevX && sx2>=prevX && sy<=prevY && sy2>=prevY) {
+            
+            while (true) {
             sx=randomi.nextInt(xMax-3);
             sy=randomi.nextInt(yMax-3);
            
             sx2=xMax-randomi.nextInt(xMax-sx);
             sy2=yMax-randomi.nextInt(yMax-sy);
+            if (sx<=prevX && sx2>=prevX && sy<=prevY && sy2>=prevY) {
+                break;
+                }
             }
             prevX=sx+1;
             prevY=sy+1;

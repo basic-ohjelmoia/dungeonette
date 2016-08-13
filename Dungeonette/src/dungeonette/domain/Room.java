@@ -66,10 +66,18 @@ public class Room {
             debugForceCornerRemoval=true;
         }
         
-        if (id%2==0 && dimension.height>=20 || dimension.height>=20) {
+        if (id%2==0 && (dimension.height>=20 || dimension.height>=20)) {
          RoomStrangifier.reshape(this);
         } else {
         generateShape();
+        }
+        generatePivots();
+        System.out.println("print out room "+id);
+        for (int y=0; y<dimension.height; y++) {
+            System.out.print("\n");
+            for (int x=0; x<dimension.width; x++) {
+                System.out.print(this.shape[x][y]);
+            } 
         }
     }
 
@@ -102,7 +110,8 @@ public class Room {
         int vCenter=dimension.height/2 - vMargin2+vMargin;
         System.out.println("v cent "+hCenter+","+vCenter);
         int doorCount=0;
-        
+        System.out.println("hMarg "+hMargin+", hMarg2 "+hMargin2+", vMarg "+vMargin+", vMarg2 "+vMargin2);
+        System.out.println("Dims "+dimension.width+", "+dimension.height);
         // This for-loop generates the actual room shape. 
         // It's important to note that unused space needs to be marked as solid ground ('.' tiles).
         // Map key:
@@ -139,26 +148,6 @@ public class Room {
                 doorways[9]=new Point(10-hMargin2-2+(location.x*10), 10-vMargin2-2+(location.y*10));
             }
         }
-        this.pivots = Math.max(1, area/75);
-        this.pivots = Math.min(this.pivots, 4);
-//        if (this.id % 7==0) {
-//            this.pivots=1;
-//        }
-//   
-//        if (this.id % 19==0) {
-//            this.pivots=2;
-//        }
-        if (this.id<15) {
-            this.pivots++;
-        }
-        if (this.id<5) {
-            this.pivots++;
-        }
-        if (this.id%10==0) {
-            this.pivots++;
-        }
-        
-        System.out.println("Room "+this.id+" generated with "+this.pivots+" pivots");
     }
 
     /**
@@ -405,5 +394,23 @@ public class Room {
             
         this.pivots--;
         return true;
+    }
+    
+    public void generatePivots() {
+            this.pivots = Math.max(1, area/75);
+        this.pivots = Math.min(this.pivots, 4);
+
+        if (this.id<15) {
+            this.pivots++;
+        }
+        if (this.id<5) {
+            this.pivots++;
+        }
+        if (this.id%10==0) {
+            this.pivots++;
+        }
+        
+        System.out.println("Room "+this.id+" generated with "+this.pivots+" pivots");
+
     }
 }

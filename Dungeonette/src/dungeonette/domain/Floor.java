@@ -36,27 +36,58 @@ public class Floor {
     private int routes;   // number of passages generated so far (hardcoded max: 200)
     private int roomCount;
     private RoomQueue roomQueue;
+    private Specification spec;
     
     /**
      * Constructor for the floor.
      *
-     * @param xMax Maximum width of the dungeon floor (please use 100 for now)
-     * @param yMax Maximum height of the dungeon floor (please use 100 for now)
+     * @param spec Specification object of the dungeon
      * @param pointOfEntry The 10 by 10 grid location of the first seeIfItFits being
  generated.
      */
-    public Floor(int xMax, int yMax, Point pointOfEntry) {
+    public Floor(Specification spec, Point pointOfEntry) {
+        this.spec=spec;
+        xMax=spec.maxX;
+        yMax=spec.maxY;
         tiles = new char[xMax][yMax];
         roomLayout = new Room[xMax / 10][yMax / 10];
         noRoom= new boolean[xMax / 10][yMax / 10];
-        this.xMax = xMax;
-        this.yMax = yMax;
         this.entry = pointOfEntry;
         this.routeFrom = new Point[200];
         this.routeTo = new Point[200];
         this.roomQueue = new RoomQueue();
+        if (spec.roomDensity<100) {
+            addSaltToGrid();
+        }
     }
 
+    public void addSaltToGrid() {
+        Random randomi = new Random();
+        int addedEmptySpaces=0;
+        
+        for (int y=0; y<spec.gridY; y++) {
+            for (int x=0; x<spec.gridX; x++) {
+                
+                
+                
+                if (x>=entry.x-2 && x<=entry.x+2 && y>=entry.y-2 && y<=entry.y+2) {
+                    // nothing
+                } 
+                else if (randomi.nextInt(5)==1) {
+                      this.noRoom[x][y]=true;
+                }
+//                
+//                else if (addedEmptySpaces>((spec.gridX*spec.gridY)-spec.roomDensity)) {
+//                    // nothing      
+//                }
+//                else if (randomi.nextInt(Math.max(spec.roomDensity,20))<randomi.nextInt(200)) {
+//                    this.noRoom[x][y]=true;
+//                    addedEmptySpaces++;
+//                }
+            }
+        }
+    }
+    
     /**
      * A method which tries to insert a seeIfItFits of specific size into specific
  location on the floor map. Returns TRUE if the placement was successful.

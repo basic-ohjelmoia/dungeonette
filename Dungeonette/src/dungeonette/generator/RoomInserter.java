@@ -35,7 +35,7 @@ public class RoomInserter {
 
      
         int size = (dimension.height * dimension.width) / 100;
-
+        System.out.println("room size "+ size+", dims "+dimension.width+"."+dimension.height);
         // as the seeIfItFits might be too large to fit into a single 10 x 10 grid, these two arrays are used
         // to store the seeIfItFits's theoretical grid locations 
         int reqX[] = new int[size];
@@ -52,6 +52,7 @@ public class RoomInserter {
 
         if (rlx < 5) {
             xStep = -1;
+            
         }
         if (rly < 5) {
             yStep = -1;
@@ -70,7 +71,7 @@ public class RoomInserter {
                 return false;
             }
         }
-        if (size > 3) {
+        if (size >= 4) {
 
             reqX[1] = rlx + xStep;
             reqY[1] = rly;
@@ -93,7 +94,8 @@ public class RoomInserter {
                 yStep = yStep + yStep;
             }
 
-        } else if (dimension.width > 10) {
+        } else if (size==2) {
+            if (dimension.width > 10) {
 
             if (rlx >= 9) {
                 return false;
@@ -102,7 +104,9 @@ public class RoomInserter {
             reqX[1] = rlx + xStep;
             reqY[1] = rly;
             yStep = 0;
-        } else if (dimension.height > 10) {
+           } 
+            
+            if (dimension.height > 10) {
 
             if (rly >= 9) {
                 return false;
@@ -113,20 +117,28 @@ public class RoomInserter {
             xStep = 0;
         }
 
+        }
+        
         reqX[0] = rlx;
         reqY[0] = rly;
 
         boolean failed = false;
-
+        System.out.println("size yhä" +size);
         // if any of the required sub-grids of the seeIfItFits are already in use, the seeIfItFits placement will FAIL
         for (int i = 0; i < size && !failed; i++) {
+            System.out.println("pair "+i+": "+reqX[i]+","+reqY[i]+", ");//result: "+floor.roomLayout[reqX[i]][reqY[i]]!=null);
             if (floor.roomLayout[reqX[i]][reqY[i]] != null) {
                 failed = true;
+                continue;
+            }
+            if (floor.noRoom[reqX[i]][reqY[i]]) {
+                failed=true;
             }
             centerX += reqX[i];
             centerY += reqY[i];
         }
         if (failed) {
+            System.out.println("feilas tässä");
             return false;
         }
         centerX /= size;

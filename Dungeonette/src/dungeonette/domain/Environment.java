@@ -74,7 +74,7 @@ public class Environment {
      *
      */
     public void generate() {
-        Floor floor = new Floor(xMax, yMax, new Point(45, 45));
+        Floor floor = new Floor(spec, new Point(45, 45));
 
         int rooms = 1;        // this is basically the serial number of the room currently being generated
 
@@ -118,7 +118,7 @@ public class Environment {
                 System.out.println("löytyi q-room");
                 cx = temp.location.x;
                 cy = temp.location.y;
-            } else if (rooms > 1) {
+            } else if (rooms > 1 || rooms==0) {
                 failuresSinceLastRoomGeneration = 101;
                 cx = -999;
                 System.out.println("epic fail! Queue failed on room " + rooms);
@@ -150,24 +150,24 @@ public class Environment {
             // after picking a general direction (north, west, east, south) the algorithm
             // makes three tries into that direction trying to generate the next room
             // 
-            for (int tries = 0; tries < 3 && !roomGenerated; tries++) {
+            for (int tries = 0; tries < spec.pivotSeekPersistence && !roomGenerated; tries++) {
 
-                if (arpa == 0 && tries < 2) {
+                if (arpa == 0 && tries < spec.pivotSeekPersistence) {
                     from = 'n';
                     out = 's';
                     cy--;
                 }
-                if (arpa == 1 && tries < 2) {
+                if (arpa == 1 && tries < spec.pivotSeekPersistence) {
                     from = 's';
                     out = 'n';
                     cy++;
                 }
-                if (arpa == 2 && tries < 2) {
+                if (arpa == 2 && tries < spec.pivotSeekPersistence) {
                     from = 'w';
                     out = 'e';
                     cx--;
                 }
-                if (arpa == 3 && tries < 2) {
+                if (arpa == 3 && tries < spec.pivotSeekPersistence) {
                     from = 'e';
                     out = 'w';
                     cx++;
@@ -184,8 +184,8 @@ public class Environment {
                         roomArpa = Math.max(1, randomi.nextInt(rooms));
                     }
 
-                    cx = roomLocations[roomArpa].x;
-                    cy = roomLocations[roomArpa].y;
+                    //cx = roomLocations[roomArpa].x;
+                   // cy = roomLocations[roomArpa].y;
 
                     temp = null;
                     System.out.println("floor-q empty: " + floor.getRoomQueue().isEmpty());
@@ -209,19 +209,22 @@ public class Environment {
                     //  tries=100;
                 } else if (cx >= 0 && cx < 10 && cy >= 0 && cy < 10) {
                     Dimension dimension = new Dimension(10, 10);
-                    if ((rooms) % 11 == 7 && tries <= 1) {
+                    System.out.println("specs. "+spec.twoByOnes);
+                    
+                    int roomHash = (temporaryOrigin.x*temporaryOrigin.y)+arpa+(rooms%3)+cx+cy-floor.getRoomQueue().getSize();
+                    
+                    if ((roomHash) % spec.twoByOnes == 1 && tries <= spec.midsizeRoomPersistence) {
                         dimension = new Dimension(20, 10);
                     }
-                    if ((rooms) % 11 == 5 && tries <= 1) {
+                    if ((roomHash) % spec.twoByOnes == 2 && tries <= spec.midsizeRoomPersistence) {
                         dimension = new Dimension(10, 20);
                     }
-                    if ((rooms % 11) == 3 && tries <= 1) {
+                    if ((roomHash) % spec.twoByTwos == 3 && tries <= spec.largeRoomPersistence) {
                         dimension = new Dimension(20, 20);
                     }
-                    if (( rooms) % 11 == 4 && tries <= 1) {
+                    if (( roomHash) % spec.threeByThrees == 4 && tries <= spec.largeRoomPersistence) {
                         dimension = new Dimension(30, 30);
                     }
-
                     // if the insert room method call returns TRUE then the new room was successfully placed into the map!
                     if (floor.insertRoom(cx, cy, dimension, from, temporaryOrigin, rooms)) {
                         roomGenerated = true;
@@ -250,7 +253,7 @@ public class Environment {
                             System.out.println("Queue failed on room " + rooms);
                         }
                     } // if the room was too large to generate in THIS location, the algorithm generates a passage instead
-                    else if (floor.roomLayout[cx][cy] == null && tries <= 1
+                    else if (floor.roomLayout[cx][cy] == null && tries <= spec.passagePersistence
                             && !(from == 'n' && cy == 0) && !(from == 's' && cy == 9) && !(from == 'w' && cx == 0) && !(from == 'e' && cx == 9)) {
                         floor.noRoom[cx][cy]=true;
                         
