@@ -52,4 +52,7 @@ Rannemurtumani haittaa yhä näppäimistötyöskentelyä. Kirjoitusnopeuteni ei 
 ### Mallituloste satunnaisgeneroidusta luolasta
 
 Tämän viikon malliluola: https://github.com/basic-ohjelmoia/dungeonette/blob/master/dokumentaatio/luola2.txt
+
+Mallitulosteessa huoneet on merkitty id-numeroittensa mukaan. ENTR merkkaa kerroksen aloitushuonetta, EXIT huonetta josta siirrytään seuraavaan kerrokseen. <> symboli huoneen id-numeron alapuolella merkkaa huonetta, jolle on varmistettu yhteys ENTR-huoneeseen. Jos luolasto generoisi huoneen jolta ENTR-yhteys puuttuisi id-numeron alapuolella olisi >< symboli. Luolaan generoidut ovet on merkitty = ja || merkeillä. Risuaidat ovat seiniä, plussat lattioita ja pisteet käyttämätöntä pinta-alaa.
+
 Edellisen viikon malliluola: https://github.com/basic-ohjelmoia/dungeonette/blob/master/dokumentaatio/luola.txt
