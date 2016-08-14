@@ -68,7 +68,7 @@ public class Floor {
         this.roomQueue = new RoomQueue();
         this.connected= new boolean[200];
         this.connected[1]=true;
-        if (spec.roomDensity<10) {
+        if (spec.roomDensity<20) {  // density 20 = no salt added!
             addSaltToGrid();
         }
     }
@@ -218,7 +218,7 @@ public class Floor {
        
     /**
      * Method for calling for the queue of active rooms
-     * @return 
+     * @return returns the queue
      */
     public RoomQueue getRoomQueue() {
         return this.roomQueue;

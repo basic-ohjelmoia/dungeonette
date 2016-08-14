@@ -5,7 +5,7 @@
  */
 package dungeonette.domain;
 
-import dungeonette.generator.Carver;
+import dungeonette.generator.PassageCarver;
 import java.awt.Dimension;
 import java.awt.Point;
 import org.junit.Test;
@@ -25,7 +25,7 @@ public class FloorTest {
     }
 
     /**
-     * Test of insertRoom method, of class Floor.
+     * Test of insertRoom method, of class Floor (also tests the RoomInserterClass).
      */
     @Test
     public void testInsertRoom() {
@@ -74,7 +74,7 @@ public class FloorTest {
     }
 
     /**
-     * Test of carveRoutes method, of class Floor.
+     * Test of carveRoutes method, of class Floor (also tests the PassageCarver class).
      */
     @Test
     public void testCarveRoutes() {
@@ -99,7 +99,7 @@ public class FloorTest {
 
         int floorTilesAfterCarving = 0;
 
-        Carver.processAllRoutes(floor);
+        PassageCarver.processAllRoutes(floor);
 
         for (int y = 0; y < 100; y++) {
             for (int x = 0; x < 100; x++) {

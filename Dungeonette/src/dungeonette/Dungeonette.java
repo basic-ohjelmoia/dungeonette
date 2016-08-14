@@ -9,6 +9,11 @@ import dungeonette.domain.Specification;
 /**
  * Dungeonette is a program which generates random dungeons for an 
  * unnamed tiled-based role playing game I'm working on.
+ * 
+ * PLEASE NOTE:
+ * The core of the dungeon generation is currently run inside of the Environment class under the generate() method.
+ * It's a very messy piece of coding which needs some serious refactoring!!
+ * 
  * @author Tuomas Honkala
  */
 public class Dungeonette {

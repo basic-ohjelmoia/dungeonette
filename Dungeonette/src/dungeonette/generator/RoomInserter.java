@@ -12,30 +12,31 @@ import java.awt.Point;
 
 /**
  *
- * @author mikromafia
+ * Class used to examine wether a room of specific size can be placed on a specific location of a floor
  */
 public class RoomInserter {
-    
-      /**
-     * A method which tries to insert a seeIfItFits of specific size into specific
- location on the floor map. Returns TRUE if the placement was successful.
+
+    /**
+     * A method which tries to insert a seeIfItFits of specific size into
+     * specific location on the floor map. Returns TRUE if the placement was
+     * successful.
      *
      * @param floor Floor being processed
      * @param rlx x coordinate for the new seeIfItFits location
      * @param rly y coordinate for the new seeIfItFits location
-     * @param dimension dimensions of the new seeIfItFits (either 10x10, 20x10, 10x20,
- 20x20 or 30x30)
-     * @param fromDirection general direction of the previous (connecting) seeIfItFits
+     * @param dimension dimensions of the new seeIfItFits (either 10x10, 20x10,
+     * 10x20, 20x20 or 30x30)
+     * @param fromDirection general direction of the previous (connecting)
+     * seeIfItFits
      * @param origin loxation of the previous (connecting) seeIfItFits
-     * @param currentRoomID serial number which will be given to the new seeIfItFits
- (if placement is successful)
+     * @param currentRoomID serial number which will be given to the new
+     * seeIfItFits (if placement is successful)
      * @return true if the placement was successful
      */
     public static boolean seeIfItFits(Floor floor, int rlx, int rly, Dimension dimension, char fromDirection, Point origin, int currentRoomID) {
 
-     
         int size = (dimension.height * dimension.width) / 100;
-        System.out.println("room size "+ size+", dims "+dimension.width+"."+dimension.height);
+        System.out.println("room size " + size + ", dims " + dimension.width + "." + dimension.height);
         // as the seeIfItFits might be too large to fit into a single 10 x 10 grid, these two arrays are used
         // to store the seeIfItFits's theoretical grid locations 
         int reqX[] = new int[size];
@@ -52,7 +53,7 @@ public class RoomInserter {
 
         if (rlx < 5) {
             xStep = -1;
-            
+
         }
         if (rly < 5) {
             yStep = -1;
@@ -94,45 +95,45 @@ public class RoomInserter {
                 yStep = yStep + yStep;
             }
 
-        } else if (size==2) {
+        } else if (size == 2) {
             if (dimension.width > 10) {
 
-            if (rlx >= 9) {
-                return false;
+                if (rlx >= 9) {
+                    return false;
+                }
+
+                reqX[1] = rlx + xStep;
+                reqY[1] = rly;
+                yStep = 0;
             }
 
-            reqX[1] = rlx + xStep;
-            reqY[1] = rly;
-            yStep = 0;
-           } 
-            
             if (dimension.height > 10) {
 
-            if (rly >= 9) {
-                return false;
+                if (rly >= 9) {
+                    return false;
+                }
+
+                reqX[1] = rlx;
+                reqY[1] = rly + yStep;
+                xStep = 0;
             }
 
-            reqX[1] = rlx;
-            reqY[1] = rly + yStep;
-            xStep = 0;
         }
 
-        }
-        
         reqX[0] = rlx;
         reqY[0] = rly;
 
         boolean failed = false;
-        System.out.println("size yhä" +size);
+        System.out.println("size yhä" + size);
         // if any of the required sub-grids of the seeIfItFits are already in use, the seeIfItFits placement will FAIL
         for (int i = 0; i < size && !failed; i++) {
-            System.out.println("pair "+i+": "+reqX[i]+","+reqY[i]+", ");//result: "+floor.roomLayout[reqX[i]][reqY[i]]!=null);
+            System.out.println("pair " + i + ": " + reqX[i] + "," + reqY[i] + ", ");//result: "+floor.roomLayout[reqX[i]][reqY[i]]!=null);
             if (floor.roomLayout[reqX[i]][reqY[i]] != null) {
                 failed = true;
                 continue;
             }
             if (floor.noRoom[reqX[i]][reqY[i]]) {
-                failed=true;
+                failed = true;
             }
             centerX += reqX[i];
             centerY += reqY[i];
@@ -149,43 +150,42 @@ public class RoomInserter {
 
         // The following sets the passage information between the new seeIfItFits and the previous connecting seeIfItFits
         room.roomCenter = new Point(centerX, centerY);
-        
+
         int routes = floor.getRoutes();
-        
+
         floor.getRouteFrom()[routes] = origin;
-        
+
         floor.getRouteTo()[routes] = room.getDoorway();
-        System.out.println("origin : "+origin.toString()+" id "+room.id);
-        
-        if (room.id==1) {
-            floor.getRouteIDFrom()[routes]=0;
+        System.out.println("origin : " + origin.toString() + " id " + room.id);
+
+        if (room.id == 1) {
+            floor.getRouteIDFrom()[routes] = 0;
         } else {
-        floor.getRouteIDFrom()[routes] = floor.roomLayout[origin.x][origin.y].id;
+            floor.getRouteIDFrom()[routes] = floor.roomLayout[origin.x][origin.y].id;
         }
-        
+
         floor.getRouteIDTo()[routes] = room.id;
-        
-        if (floor.roomLayout[origin.x][origin.y]!=null) {
-        floor.getRouteFrom()[routes] = floor.roomLayout[origin.x][origin.y].getDoorway();
+
+        if (floor.roomLayout[origin.x][origin.y] != null) {
+            floor.getRouteFrom()[routes] = floor.roomLayout[origin.x][origin.y].getDoorway();
         } else {
             floor.getRouteFrom()[routes] = floor.getRouteTo()[routes];
         }
-        
-        System.out.println("routeFrom = "+floor.getRouteFrom()[routes].toString());
-        System.out.println("routeTO = "+floor.getRouteTo()[routes].toString());
+
+        System.out.println("routeFrom = " + floor.getRouteFrom()[routes].toString());
+        System.out.println("routeTO = " + floor.getRouteTo()[routes].toString());
         System.out.println("Room loc = " + room.location.toString() + " vs center " + room.roomCenter.toString());
         floor.addRouteCount();
-        
+
         for (int i = 0; i < size; i++) {
             floor.roomLayout[reqX[i]][reqY[i]] = room;
 
         }
         floor.getRoomQueue().enqueue(room);
-        
+
         floor.addRoomCount();
         return true;
 
     }
-    
-    
+
 }

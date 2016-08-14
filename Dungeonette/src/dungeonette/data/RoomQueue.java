@@ -32,7 +32,7 @@ public class RoomQueue {
 
     /**
      * Returns the first room in the queue without removing it from the queue (no pivot spent).
-     * @return 
+     * @return returns the first room without removing it from the queue
      */
     public Room front() {
         return this.first.getRoom();
@@ -41,7 +41,7 @@ public class RoomQueue {
     /**
      * TRIES to remove the first room in the queue. If the room has no more pivots left, then the removal
      * will happen. Otherwise the room will loose one pivot but only get front()'ed.
-     * @return 
+     * @return returns and possibly removes the first room in queue
      */
     public Room dequeue() {
         if (this.first.getRoom().hasPivots()) {

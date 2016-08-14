@@ -374,7 +374,7 @@ public class Room {
     
     /**
      * Return the two dimensional char array containing the room tiles.
-     * @return 
+     * @return returns the array of chars representing tiles
      */
     
     public char[][] getShape() {
@@ -441,5 +441,12 @@ public class Room {
         
         System.out.println("Room "+this.id+" generated with "+this.pivots+" pivots");
 
+    }
+    
+    /**
+     * removes all pivots
+     */
+    public void removeAllPivots() {
+        this.pivots=0;
     }
 }

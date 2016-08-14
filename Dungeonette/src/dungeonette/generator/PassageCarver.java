@@ -10,15 +10,17 @@ import dungeonette.domain.Room;
 
 /**
  *
- * @author mikromafia
+ * Class used to generate passages between existing rooms.
+ * Only run after ALL rooms have been generated!
  */
-public class Carver {
+public class PassageCarver {
  
  
                /**
      * This method draws out the passages between the rooms AFTER all
      * rooms have been placed.
      * 
+     * @param floor floor being carved
      */
     public static void processAllRoutes(Floor floor) { 
             
@@ -103,23 +105,36 @@ public class Carver {
                     }
                 } 
 
-                // map key:
-                // +    ... floor
-                // #    ... outer wall
-                // .    ... unused space (solid ground or whatnot)
              
                 
+                // Below the code tries to place a marker for a POSSIBLE (not guaranteed!) door location
+                // The door placement currently works rather poorly, basically resulting only a fraction of the doors
+                // had been given markers. This is due to the fact that the passages added actually reshape the room boundaries
+                // therefore making many of the previously placed door markers invalid!
                 
                 int roomID = floor.getTileIDs()[cx][cy];
-          //      System.out.println("roomID "+roomID+ " vs prev id "+previousTileID+", vs floor tile id "+floor.getTileIDs()[cx][cy]);
+         
                 if (tiles[cx][cy]=='+' && floor.getTileIDs()[cx][cy]!=previousTileID) {
                     System.out.println("oveksi merkittiin "+cx+","+cy);
-                    floor.getDoorTiles()[cx][cy]=1;
+                  //  floor.getDoorTiles()[cx][cy]=1;
 
+                }
+                if (floor.roomLayout[cx/10][cy/10]!=null) {
+                    if (floor.roomLayout[cx/10][cy/10].id!=previousTileID && (floor.roomLayout[cx/10][cy/10].id==idTrueTo || floor.roomLayout[cx/10][cy/10].id==idTrueFrom)) {
+                        floor.getDoorTiles()[cx][cy]=1;
+                        floor.getTileIDs()[cx][cy]=floor.roomLayout[cx/10][cy/10].id;
+                        roomID=floor.getTileIDs()[cx][cy];
+                    }
                 }
                 
                 previousTileID=roomID;
                         
+                
+                                // map key:
+                // +    ... floor
+                // #    ... outer wall
+                // .    ... unused space (solid ground or whatnot)
+
                 
                 // the strange id checks are basically used to ensure that the dungeon doesn't emd up TOO connected
                 // ideally you're only connecting the two rooms the passageway is inteded to connect, and don't touch any
@@ -155,9 +170,9 @@ public class Carver {
             
             for (int x = 0; x < 100; x++) {
                 if (floor.getDoorTiles()[x][y]==1) {
-                        if (tiles[x+1][y]=='#' && tiles[x-1][y]=='#' && tiles[x][y-1]!='=' && tiles[x][y+1]!='=') {
+                        if (tiles[x+1][y]=='#' && tiles[x-1][y]=='#' && tiles[x][y-1]=='+' && tiles[x][y+1]=='+') {
                             tiles[x][y]='=';
-                        } else if (tiles[x][y-1]=='#' && tiles[x][y+1]=='#' && tiles[x+1][y]!='|' && tiles[x-1][y]!='|' ) {
+                        } else if (tiles[x][y-1]=='#' && tiles[x][y+1]=='#' && tiles[x+1][y]=='+' && tiles[x-1][y]=='+' ) {
                             tiles[x][y]='|';
                         }
                     }

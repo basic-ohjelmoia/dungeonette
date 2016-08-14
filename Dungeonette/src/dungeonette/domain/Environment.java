@@ -5,7 +5,7 @@
  */
 package dungeonette.domain;
 
-import dungeonette.generator.Carver;
+import dungeonette.generator.PassageCarver;
 import dungeonette.generator.DungeonPrinter;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -42,13 +42,8 @@ public class Environment {
      * used to specify the type of dungeon (sparse/dense, long passages/short
      * passages, lots of doors/no doors etc.) that should be generated.
      *
-     * @param floorWidth Maximum width (x) of each dungeon floor (partially
-     * hard-coded to 100)
-     * @param floorHeigth Maximum height (y) of each dungeon floor (partially
-     * hard-coded to 100)
-     * @param numberOfFloors Number of floors (z) of the entirety of the dungeon
-     * 8partially hardcoded to 1)
-     */
+     * @param spec specification of the dungeon
+    */
     public Environment(Specification spec) {
         int floorWidth = spec.maxX;
         int floorHeigth = spec.maxY;
@@ -89,9 +84,9 @@ public class Environment {
      *
      */
     public void generate() {
-        Floor floor = new Floor(spec, new Point(45, 45));
+        Floor floor = new Floor(spec, new Point(45, 45)); // The point object here refers the point of entry (first room location) of the floor.
 
-        int rooms = 1;        // this is basically the serial number of the room currently being generated
+        int rooms = 1;        // this is basically the serial number of the room currently being generated. Must start from one NOT zero!
 
         Random randomi = new Random();
 
@@ -107,14 +102,15 @@ public class Environment {
         char oldFrom = ' ';
 
         int maxRooms = randomi.nextInt(spec.volatility) + spec.density;            // maximum number of rooms being generated for the dungeon
-        // reaching "the max" is NOT guaranteed currently
+        // the actualy reaching of "the max" is NOT guaranteed currently
 
-        int failuresSinceLastRoomGeneration = 0;          // a safety which ensures that the algorithm eventually
-        // fails in case it reaches a logical dead-end
+        int failuresSinceLastRoomGeneration = 0;          // a safety which ensures that the algorithm eventually fails in case it reaches a logical dead-end
 
         
-
-        // here lies the main loop used for the dungeon generation
+        // ================
+        // IMPORTANT!!!!!!!
+        // ================
+        // below lies the main loop used for the dungeon generation
         while (rooms < maxRooms) {// && failuresSinceLastRoomGeneration < 100) {
             Room temp = null;
             if (!floor.getRoomQueue().isEmpty()) {
@@ -146,19 +142,6 @@ public class Environment {
 
             int arpa = randomi.nextInt(4);
 
-            // oldFrom is used to avoid trying the previously failed direction again
-            if ((oldFrom == 'n' || cy == 0) && arpa == 0) {
-                arpa = 1;
-            }
-            if ((oldFrom == 's' || cy == 9) && arpa == 1) {
-                arpa = 2;
-            }
-            if ((oldFrom == 'w' || cx == 0) && arpa == 2) {
-                arpa = 3;
-            }
-            if ((oldFrom == 'e' || cx == 9) && arpa == 3) {
-                arpa = 0;
-            }
 
             char from = ' ';
             char out = ' ';
@@ -198,35 +181,27 @@ public class Environment {
                 if (cx < 0 || cx > 9 || cy < 0 || cy > 9 || obstacleMet) {
                     failuresSinceLastRoomGeneration++;
 
-                    int roomArpa = 1;
-                    if (rooms > 2) {
-                        roomArpa = Math.max(1, randomi.nextInt(rooms));
-                    }
-
-                    //cx = roomLocations[roomArpa].x;
-                   // cy = roomLocations[roomArpa].y;
-
                     temp = null;
                     System.out.println("floor-q empty: " + floor.getRoomQueue().isEmpty());
                     if (!floor.getRoomQueue().isEmpty()) {
                         temp = floor.getRoomQueue().front();
-                    }//dequeue();}
+                    }
 
                     if (temp != null) {
                         System.out.println("löytyi q-room #" + temp.id);
                         cx = temp.location.x;
                         cy = temp.location.y;
                     } else {
-                        //failuresSinceLastRoomGeneration=101; 
-                        // cx=-999;
+                        
                         System.out.println("Queue failed on room " + rooms);
                     }
 
                     temporaryOrigin = new Point(cx, cy);
                     out = ' ';
                     from = ' ';
-                    //  tries=100;
-                } else if (cx >= 0 && cx < 10 && cy >= 0 && cy < 10) {
+                    
+                } else if (cx >= 0 && cx < 10 && cy >= 0 && cy < 10) {  // seeking must stay within the  outer bounds of the floor
+                    
                     Dimension dimension = new Dimension(10, 10);
                     System.out.println("specs. "+spec.twoByOnes);
                     
@@ -247,8 +222,7 @@ public class Environment {
                     // if the insert room method call returns TRUE then the new room was successfully placed into the map!
                     if (floor.insertRoom(cx, cy, dimension, from, temporaryOrigin, rooms)) {
                         roomGenerated = true;
-                        oldFrom = out;
-                        oldFrom = ' ';
+                  
                       
                         temporaryOrigin = new Point(cx, cy);
                         failuresSinceLastRoomGeneration = 0;
@@ -258,18 +232,21 @@ public class Environment {
                         temp = null;
                       
                         if (!floor.getRoomQueue().isEmpty()) {
-                            temp = floor.getRoomQueue().dequeue();
+                            temp = floor.getRoomQueue().dequeue();      // here we fetch the next active room from which the dungeon generation proceeds from
+                                                                        // PLEASE NOTE that the dequeue() CAN result the SAME active room as before if the room still has
+                                                                        // active pivots (outbound passageways) left
                         }
 
                         if (temp != null) {
                             cx = temp.location.x;
                             cy = temp.location.y;
                         } else {
-                            //failuresSinceLastRoomGeneration=101; 
-                            //cx=-999;
+                            System.out.println("*** OH NOES! ****");
                             System.out.println("Queue failed on room " + rooms);
                         }
-                    } // if the room was too large to generate in THIS location, the algorithm generates a passage instead
+                    } 
+                    // if the room was too large to generate in THIS location, the algorithm generates a passage instead
+                    // however, passageway must be placed in a proper direction when the seek has reached the outer bounds of the floor
                     else if (floor.roomLayout[cx][cy] == null && tries <= spec.passagePersistence
                             && !(from == 'n' && cy == 0) && !(from == 's' && cy == 9) && !(from == 'w' && cx == 0) && !(from == 'e' && cx == 9)) {
                         
@@ -285,7 +262,12 @@ public class Environment {
             failuresSinceLastRoomGeneration++;
             System.out.println("failures now " + failuresSinceLastRoomGeneration);
         }
-
+// ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+// THE MAIN DUNGEON GENERATION WHILE-LOOP TERMINATES ABOVE!        
+//   =======================================
+        
+        
+        
         // print out the results (the entire dungeon floor)
         floor.print();
       
@@ -295,7 +277,7 @@ public class Environment {
         floor.addRandomRoute(false);
         floor.addRandomRoute(true);
 
-        Carver.processAllRoutes(floor);
+        PassageCarver.processAllRoutes(floor);
         DungeonPrinter.printFloor(floor);
         //floor.carveRoutes();
 
@@ -304,14 +286,18 @@ public class Environment {
 
     /**
      * Returns the array of floors
-     *
+     * NOT IN USE CURRENTLY!
      * @return array of floors
      */
     public Floor[] getFloors() {
         return this.floors;
     }
 
-    
+    /**
+     * Method for calling out room id numbers tied to specific tiles (id 0 = tile is not related to any specific room)
+     * NOT IN USE CURRENTLY!
+     * @return 3D-array of id numbers
+     */
     public int[][][] getTileIDs() {
         return this.tileID;
     }
