@@ -6,6 +6,7 @@
 package dungeonette.domain;
 
 import dungeonette.generator.Carver;
+import dungeonette.generator.DungeonPrinter;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.util.Random;
@@ -26,6 +27,7 @@ import java.util.Random;
 public class Environment {
 
     private char[][][] tiles;
+    private int[][][] tileID;
     private int xMax;
     private int yMax;
     private int zMax;
@@ -53,6 +55,7 @@ public class Environment {
         int numberOfFloors = spec.maxZ;
 
         this.tiles = new char[floorWidth][floorHeigth][numberOfFloors];
+        this.tileID = new int[floorWidth][floorHeigth][numberOfFloors];
         this.xMax = floorWidth;
         this.yMax = floorHeigth;
         this.zMax = numberOfFloors;
@@ -70,7 +73,19 @@ public class Environment {
      *
      * The point of origin (first room) of the dungeon is currently hard-coded
      * into the center of the floor.
-     *
+     * 
+     * 
+     * A GENERAL DESCRIPTION OF HOW THE GENERATION PROCESS WORKS:
+     * 
+     * 1)   The very first room is placed on the point of origin of the floor map. This location should be considered as the
+     *      entranced to the dungeon floor (ex. staircase)
+     * 2)   each new room gets placed into a queue. While the active room has "pivots" left, the algorithm tries to create
+     *      a neighbour room for this room to connect to. If valid spot to place this neighbor is found, the active room and
+     *      the neighbouring room are marked for a connecting passage (the passage itself is not yet generated).
+     * 3)   if a new room was created, then that will become the NEW active room. If no neighbour was created, then the new 
+     *      active room gets dequeued from the room queue.
+     * 4)   This process goes on and on until enough rooms have been generated OR there are no active rooms with pivots left.
+     * 5)   After all the rooms have been generated, the passages betweem them will get carved out.
      *
      */
     public void generate() {
@@ -91,13 +106,13 @@ public class Environment {
 
         char oldFrom = ' ';
 
-        int maxRooms = randomi.nextInt(40) + 20;            // maximum number of rooms being generated for the dungeon
+        int maxRooms = randomi.nextInt(spec.volatility) + spec.density;            // maximum number of rooms being generated for the dungeon
         // reaching "the max" is NOT guaranteed currently
 
         int failuresSinceLastRoomGeneration = 0;          // a safety which ensures that the algorithm eventually
         // fails in case it reaches a logical dead-end
 
-        Point[] roomLocations = new Point[maxRooms + 1];   // array for room locatios
+        
 
         // here lies the main loop used for the dungeon generation
         while (rooms < maxRooms) {// && failuresSinceLastRoomGeneration < 100) {
@@ -106,23 +121,27 @@ public class Environment {
                 if (failuresSinceLastRoomGeneration>20) {
                     temp = floor.getRoomQueue().dequeue();
                     if (temp==null) {
+                        System.out.println("BREAK! on while-loop's first deque ");
                         break;
                     }
                     failuresSinceLastRoomGeneration=0;
                 } else {
                 temp = floor.getRoomQueue().front();
                 }
+        
             }
 
-            if (temp != null) {
-                System.out.println("löytyi q-room");
-                cx = temp.location.x;
-                cy = temp.location.y;
-            } else if (rooms > 1 || rooms==0) {
+            
+            if (floor.getRoomQueue().isEmpty() && failuresSinceLastRoomGeneration>20) {
                 failuresSinceLastRoomGeneration = 101;
                 cx = -999;
                 System.out.println("epic fail! Queue failed on room " + rooms);
                 break;
+            } else if (temp != null) {
+                System.out.println("löytyi q-room #"+temp.id+" at "+temp.location.x+","+temp.location.y);
+                System.out.println("samaan aikaan queue size "+floor.getRoomQueue().getSize());
+                cx = temp.location.x;
+                cy = temp.location.y;
             }
 
             int arpa = randomi.nextInt(4);
@@ -230,21 +249,19 @@ public class Environment {
                         roomGenerated = true;
                         oldFrom = out;
                         oldFrom = ' ';
-                        System.out.println("Room #" + rooms + " of dim " + dimension.width + "," + dimension.height + " generated at " + cx + ", " + cy);
-                        roomLocations[rooms] = new Point(cx, cy);
+                      
                         temporaryOrigin = new Point(cx, cy);
                         failuresSinceLastRoomGeneration = 0;
                         rooms++;
 
                         floor.roomLayout[cx][cy].outDirection = out;
                         temp = null;
-                        System.out.println("floor-q empty: " + floor.getRoomQueue().isEmpty());
+                      
                         if (!floor.getRoomQueue().isEmpty()) {
                             temp = floor.getRoomQueue().dequeue();
                         }
 
                         if (temp != null) {
-                            System.out.println("löytyi q-room #" + temp.id);
                             cx = temp.location.x;
                             cy = temp.location.y;
                         } else {
@@ -255,34 +272,31 @@ public class Environment {
                     } // if the room was too large to generate in THIS location, the algorithm generates a passage instead
                     else if (floor.roomLayout[cx][cy] == null && tries <= spec.passagePersistence
                             && !(from == 'n' && cy == 0) && !(from == 's' && cy == 9) && !(from == 'w' && cx == 0) && !(from == 'e' && cx == 9)) {
-                        floor.noRoom[cx][cy]=true;
                         
-                        // THIS CODE NO LONGER SERVES PURPOSE??!
-//                        System.out.println("generated a passage on try " + tries);
-//                        int dw = 3;
-//                        int dh = 3;
-//
-//                        if (from == 'n' || from == 's') {
-//                            dh = 10;
-//                        } else {
-//                            dw = 10;
-//                        }
+                        floor.noRoom[cx][cy]=true;  // this basically marks a grid coordinate where no future rooms can be placed.
+                                                    // however, this grid coordiate is still valid realestate for passageways
+                        
+
                     } else if (floor.roomLayout[cx][cy] != null) {
                         obstacleMet = true;
                     }
                 }
             }
+            failuresSinceLastRoomGeneration++;
             System.out.println("failures now " + failuresSinceLastRoomGeneration);
         }
 
         // print out the results (the entire dungeon floor)
         floor.print();
+      
+        // adds some random passage ways to the floor
         floor.addRandomRoute(false);
         floor.addRandomRoute(false);
         floor.addRandomRoute(false);
         floor.addRandomRoute(true);
 
         Carver.processAllRoutes(floor);
+        DungeonPrinter.printFloor(floor);
         //floor.carveRoutes();
 
         this.floors[0] = floor;
@@ -297,4 +311,8 @@ public class Environment {
         return this.floors;
     }
 
+    
+    public int[][][] getTileIDs() {
+        return this.tileID;
+    }
 }

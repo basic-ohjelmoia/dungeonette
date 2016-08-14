@@ -18,7 +18,7 @@ public class EnvironmentTest {
     
     public EnvironmentTest() {
         
-                this.env = new Environment(100,100,1);
+                this.env = new Environment(new Specification(100,100,1));
             
     
     }

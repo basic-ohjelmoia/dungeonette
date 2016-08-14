@@ -18,9 +18,10 @@ public class Dungeonette {
      */
     public static void main(String[] args) {
         
-        Specification spec = new Specification(100,100,1);
-        Environment env = new Environment(spec);
-        env.generate();
+        
+        Specification spec = new Specification(100,100,1); // dungeon specification 
+        Environment env = new Environment(spec);    // the environment for the dungeon generation
+        env.generate(); // go-code
     
     }
     

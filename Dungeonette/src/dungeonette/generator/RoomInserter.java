@@ -153,10 +153,18 @@ public class RoomInserter {
         int routes = floor.getRoutes();
         
         floor.getRouteFrom()[routes] = origin;
-        floor.getRouteTo()[routes] = new Point(room.location);
-        floor.getRouteTo()[routes] = room.roomCenter;
         
         floor.getRouteTo()[routes] = room.getDoorway();
+        System.out.println("origin : "+origin.toString()+" id "+room.id);
+        
+        if (room.id==1) {
+            floor.getRouteIDFrom()[routes]=0;
+        } else {
+        floor.getRouteIDFrom()[routes] = floor.roomLayout[origin.x][origin.y].id;
+        }
+        
+        floor.getRouteIDTo()[routes] = room.id;
+        
         if (floor.roomLayout[origin.x][origin.y]!=null) {
         floor.getRouteFrom()[routes] = floor.roomLayout[origin.x][origin.y].getDoorway();
         } else {

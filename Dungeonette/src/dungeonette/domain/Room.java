@@ -33,6 +33,7 @@ public class Room {
     private boolean debugForceCornerRemoval;
     private Point[] doorways;
     private int pivots;
+    public boolean isConnectedToFloorStart;
 
     /**
      * Constructor for a room in a dungeon floor.
@@ -71,6 +72,8 @@ public class Room {
         } else {
         generateShape();
         }
+        
+        
         generatePivots();
         System.out.println("print out room "+id);
         for (int y=0; y<dimension.height; y++) {
@@ -78,6 +81,9 @@ public class Room {
             for (int x=0; x<dimension.width; x++) {
                 System.out.print(this.shape[x][y]);
             } 
+        }
+        if (id==1) {
+            isConnectedToFloorStart=true;
         }
     }
 
@@ -108,10 +114,9 @@ public class Room {
 
         int hCenter=dimension.width/2 - hMargin2+hMargin;
         int vCenter=dimension.height/2 - vMargin2+vMargin;
-        System.out.println("v cent "+hCenter+","+vCenter);
+      
         int doorCount=0;
-        System.out.println("hMarg "+hMargin+", hMarg2 "+hMargin2+", vMarg "+vMargin+", vMarg2 "+vMargin2);
-        System.out.println("Dims "+dimension.width+", "+dimension.height);
+      
         // This for-loop generates the actual room shape. 
         // It's important to note that unused space needs to be marked as solid ground ('.' tiles).
         // Map key:
@@ -341,6 +346,10 @@ public class Room {
         return ""+c+""+c;
     }
     
+    /**
+     * Returns the array of possible passageway exit points ("doorways", though not necessarily doors) 
+     * @return array of points
+     */
     public Point[] getDoorwayArray() {
         return this.doorways;
     }
@@ -381,14 +390,25 @@ public class Room {
         return this.area;
     }
     
+    /**
+     * Resets the counter for floor tiles of the room
+     */
     public void resetArea() {
         this.area=0;
     }
     
+    /**
+     * Increments the floor tile counter by one
+     */
     public void addArea() {
         this.area++;
     }
     
+    /**
+     * If the room still has accessible pivots (points of outbound passageways) this method returns TRUE-
+     * NOTE: Each time this method is called, the number of pivots is decremented by one.
+     * @return true if the room has atleast 1 pivot left.
+     */
     public boolean hasPivots() {
         if (this.pivots<1) {return false;}
             
@@ -396,11 +416,20 @@ public class Room {
         return true;
     }
     
+    /**
+     * Generates the starting pivots for the room.
+     * Each room should have atleast 1 pivot.
+     * A large room should have several.
+     * 
+     * The pivot count has an YUUUUUGE impact on the type of floor being generated. 
+     * Lot of pivots per room results a very interconnected "messy" dungeon.
+     * Limited number of pivots results a sparse dungeon. If the pivot number is TOO LOW then the algorithm might actually "break" and create a very tiny dungeon.
+     */
     public void generatePivots() {
             this.pivots = Math.max(1, area/75);
-        this.pivots = Math.min(this.pivots, 4);
+        this.pivots = Math.min(this.pivots, 3);
 
-        if (this.id<15) {
+        if (this.id<10) {
             this.pivots++;
         }
         if (this.id<5) {

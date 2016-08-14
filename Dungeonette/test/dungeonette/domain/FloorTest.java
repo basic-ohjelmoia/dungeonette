@@ -5,6 +5,7 @@
  */
 package dungeonette.domain;
 
+import dungeonette.generator.Carver;
 import java.awt.Dimension;
 import java.awt.Point;
 import org.junit.Test;
@@ -20,7 +21,7 @@ public class FloorTest {
 
     public FloorTest() {
 
-        this.floor = new Floor(100, 100, new Point(5, 5));
+        this.floor = new Floor(new Specification(100, 100,1), new Point(5, 5));
     }
 
     /**
@@ -43,7 +44,7 @@ public class FloorTest {
     @Test
     public void testPrint() {
 
-        this.floor = new Floor(100, 100, new Point(5, 5));
+        this.floor = new Floor(new Specification(100, 100,1), new Point(5, 5));
         this.floor.insertRoom(5, 5, new Dimension(10, 10), 'n', new Point(5, 5), 1);
 
         int emptyTileCount = 0;
@@ -78,7 +79,7 @@ public class FloorTest {
     @Test
     public void testCarveRoutes() {
 
-        this.floor = new Floor(100, 100, new Point(5, 5));
+        this.floor = new Floor(new Specification(100, 100,1), new Point(5, 5));
         this.floor.insertRoom(5, 5, new Dimension(10, 10), 'n', new Point(5, 5), 1);
         this.floor.insertRoom(5, 7, new Dimension(10, 10), 'n', new Point(5, 5), 1);
 
@@ -98,7 +99,7 @@ public class FloorTest {
 
         int floorTilesAfterCarving = 0;
 
-        this.floor.carveRoutes();
+        Carver.processAllRoutes(floor);
 
         for (int y = 0; y < 100; y++) {
             for (int x = 0; x < 100; x++) {

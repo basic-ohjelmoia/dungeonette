@@ -36,6 +36,20 @@ public class Carver {
             int endX = (floor.getRouteTo()[i].x);// * 10) + 5;
             int endY = (floor.getRouteTo()[i].y);// * 10) + 5;
 
+            int idTrueFrom = floor.getRouteIDFrom()[i];
+            int idTrueTo = floor.getRouteIDTo()[i];
+            int idMin = floor.getRouteIDFrom()[i]-5;
+            int idMax = floor.getRouteIDFrom()[i]+5;
+            
+            if ((floor.connected[idTrueFrom] || floor.connected[idTrueTo]) && floor.connected[idTrueTo]!=floor.connected[idTrueFrom]) {
+                System.out.println("from  (#"+idTrueFrom+"): "+floor.connected[idTrueFrom]+" vs to  (#"+idTrueTo+"): "+floor.connected[idTrueTo]);
+                floor.connected[idTrueFrom]=true;
+                floor.connected[idTrueTo]=true;
+                idTrueFrom=0;
+                
+            }
+           
+            
             startX=(Math.max(startX, 1)); startX=(Math.min(startX, 98));
             startY=(Math.max(startY, 1)); startY=(Math.min(startY, 98));
             
@@ -46,13 +60,15 @@ public class Carver {
             
             int cx = startX;
             int cy = startY;
-            System.out.println("route " + i + " from " + cx + "," + cy + ", to " + endX + "," + endY);
+          
             int chaos = 0;
    
             // the while loop keeps on going until the route has been carved all the way to the destination
             // coordinates
         
             int chaosStepCounter=0;
+            int previousTileID=idTrueFrom;
+                    
             while (true) {
 
                 int oldChaos = chaos;
@@ -91,11 +107,25 @@ public class Carver {
                 // +    ... floor
                 // #    ... outer wall
                 // .    ... unused space (solid ground or whatnot)
-                System.out.println("cx nw : "+cx+","+cy);
+             
                 
                 
+                int roomID = floor.getTileIDs()[cx][cy];
+          //      System.out.println("roomID "+roomID+ " vs prev id "+previousTileID+", vs floor tile id "+floor.getTileIDs()[cx][cy]);
+                if (tiles[cx][cy]=='+' && floor.getTileIDs()[cx][cy]!=previousTileID) {
+                    System.out.println("oveksi merkittiin "+cx+","+cy);
+                    floor.getDoorTiles()[cx][cy]=1;
+
+                }
                 
-                if (tiles[cx][cy] != '+') {
+                previousTileID=roomID;
+                        
+                
+                // the strange id checks are basically used to ensure that the dungeon doesn't emd up TOO connected
+                // ideally you're only connecting the two rooms the passageway is inteded to connect, and don't touch any
+                // rooms in between
+                // however, connecting a room with no legal route to the dungeon entrance trumps any other considerations!!!
+                if (tiles[cx][cy] != '+' && (roomID==0 || idTrueFrom==0 || idTrueTo==0 || roomID==idTrueTo || (roomID>=idMin && roomID<=idMax))) {
                     tiles[cx][cy] = '+';
                     for (int sy = cy - 1; sy <= cy + 1; sy++) {
                         for (int sx = cx - 1; sx <= cx + 1; sx++) {
@@ -119,43 +149,22 @@ public class Carver {
 
             }
         }
-
-        System.out.println("printing II...");
+        
+        System.out.println("set up doorways"); 
         for (int y = 0; y < 100; y++) {
-            System.out.print("\n");
+            
             for (int x = 0; x < 100; x++) {
-
-                if (tiles[x][y] == 0) {
-                    System.out.print("..");
-
-                } else {
-
-                    
-                    Room room = floor.roomLayout[x / 10][y / 10];
-
-                    if (room!=null && tiles[x][y]=='+' && x%10==4 && y%10==4) {
-                        
-                        if (floor.getRoomCount()==room.id) {
-                            System.out.print("EXIT");x++;
+                if (floor.getDoorTiles()[x][y]==1) {
+                        if (tiles[x+1][y]=='#' && tiles[x-1][y]=='#' && tiles[x][y-1]!='=' && tiles[x][y+1]!='=') {
+                            tiles[x][y]='=';
+                        } else if (tiles[x][y-1]=='#' && tiles[x][y+1]=='#' && tiles[x+1][y]!='|' && tiles[x-1][y]!='|' ) {
+                            tiles[x][y]='|';
                         }
-                        else if (room.id==1) {
-                            System.out.print("ENTR");x++;
-                        }
-                        else {
-                                                if (room.id<10) {
-                            System.out.print("0");
-                        }
-                        System.out.print(room.id);
-                        }
-
-                        
-                    } else {
-                    
-                    System.out.print(tiles[x][y] + "" + tiles[x][y]);
                     }
-                }
             }
         }
+
+ 
 
     }
     
