@@ -7,6 +7,7 @@ package dungeonette.generator;
 
 import dungeonette.domain.Floor;
 import dungeonette.domain.Room;
+import java.awt.Point;
 
 /**
  *
@@ -30,7 +31,7 @@ public class PassageCarver {
         System.out.println("routes " + routes);
     
         // the for loop processes each pair of passage/route departures and destinations.
-        for (int i = 0; i < routes; i++) {
+        for (int i = 0; i < floor.getRoutes(); i++) {
             System.out.println("i = "+i+", routef "+floor.getRouteFrom()[i].toString());
             int startX = (floor.getRouteFrom()[i].x);// * 10) + 5;
             int startY = (floor.getRouteFrom()[i].y);// * 10) + 5;
@@ -71,24 +72,42 @@ public class PassageCarver {
             int chaosStepCounter=0;
             int previousTileID=idTrueFrom;
                     
+            int stepCounter=0;
+            int passageCounter=0;
+            int wallPasses=0;
+            
+            boolean crossyGenerated=false;
+            
             while (true) {
-
+                
                 int oldChaos = chaos;
-
+                char dir = ' ';
+                int roomID = floor.getTileIDs()[cx][cy];
+                boolean isItACrossyPassage = floor.isCrossyPassage[i];
+                
+          
+                
+                
+                System.out.println("passage "+i+", onko crossy: "+isItACrossyPassage);
+                
                 // "chaos" tries to add some randomness to the passage drawa. 
                 // without it, all the passages would be boring straight lines
-                if (chaos < 3 && cx > 1 && cx < 98 && cy > 1 && cy < 98) {
+                if (chaos < 3 && cx > 1 && cx < 98 && cy > 1 && cy < 98 && !isItACrossyPassage) {
                     if ((cx + cy) % 29 == 3) {
                         cx++;
+                        dir='e';
                         chaos++;
                     } else if ((cx + cy) % 29 == 17) {
                         cx--;
+                        dir='w';
                         chaos++;
                     } else if ((cx + cy) % 29 == 13) {
                         cy++;
+                        dir='s';
                         chaos++;
                     } else if ((cx + cy) % 29 == 27) {
                         cy--;
+                        dir='n';
                         chaos++;
                     }
                 }
@@ -96,15 +115,30 @@ public class PassageCarver {
                 if (oldChaos == chaos) {
                     if (cx < endX) {
                         cx++;
+                        dir='e';
                     } else if (cx > endX) {
                         cx--;
+                        dir='w';
                     } else if (cy < endY) {
                         cy++;
+                        dir='s';
                     } else if (cy > endY) {
                         cy--;
+                        dir='n';
                     }
                 } 
 
+                              boolean midPasssage = (
+                                      ((dir=='n' || dir=='s') && (tiles[cx+1][cy]=='+' && tiles[cx+1][cy]=='#' && tiles[cx-1][cy]=='#')) ||
+                                        ((dir=='w' || dir=='e') && (tiles[cx+1][cy]=='+' && tiles[cx][cy+1]=='#' && tiles[cx][cy-1]=='#'))
+                                      );
+                              
+                if (midPasssage) {
+                    passageCounter++;
+                } else {
+                    if (passageCounter>5) {System.out.println("passage of length "+passageCounter+" terminated");}
+                    passageCounter=0;
+                }
              
                 
                 // Below the code tries to place a marker for a POSSIBLE (not guaranteed!) door location
@@ -112,7 +146,7 @@ public class PassageCarver {
                 // had been given markers. This is due to the fact that the passages added actually reshape the room boundaries
                 // therefore making many of the previously placed door markers invalid!
                 
-                int roomID = floor.getTileIDs()[cx][cy];
+                
          
                 if (tiles[cx][cy]=='+' && floor.getTileIDs()[cx][cy]!=previousTileID) {
                     System.out.println("oveksi merkittiin "+cx+","+cy);
@@ -140,8 +174,23 @@ public class PassageCarver {
                 // ideally you're only connecting the two rooms the passageway is inteded to connect, and don't touch any
                 // rooms in between
                 // however, connecting a room with no legal route to the dungeon entrance trumps any other considerations!!!
-                if (tiles[cx][cy] != '+' && (roomID==0 || idTrueFrom==0 || idTrueTo==0 || roomID==idTrueTo || (roomID>=idMin && roomID<=idMax))) {
+                
+                
+                
+                        
+                char tile = tiles[cx][cy];
+                if (tile=='#') {
+                    wallPasses++;
+                }
+                
+                
+                if (tile != '+' && ( (isItACrossyPassage && wallPasses<=1) || ((roomID==0 || idTrueFrom==0 || idTrueTo==0 || roomID==idTrueTo || (roomID>=idMin && roomID<=idMax))))) {
                     tiles[cx][cy] = '+';
+                    if (isItACrossyPassage) {
+                        floor.debugTiles[cx][cy]='¤';
+                        System.out.println("crossy kirjattiin "+cx+","+cy);
+                    }
+                    
                     for (int sy = cy - 1; sy <= cy + 1; sy++) {
                         for (int sx = cx - 1; sx <= cx + 1; sx++) {
                             if (sx == cx && sy == cy) {
@@ -149,15 +198,36 @@ public class PassageCarver {
                             }
                             if (tiles[sx][sy] == '.') {
                                 tiles[sx][sy] = '#';
+                                if ((sx==-1 && sy==0 && dir=='w') || (sx==1 && sy==0 && dir=='e')) {
+                                    wallPasses=0;
+                                }
+                                if ((sy==-1 && sx==0 && dir=='n') || (sx==0 && sy==1 && dir=='s')) {
+                                    wallPasses=0;
+                                }
                             }
                         }
                     }
                 }
                 
+                
+                else if (isItACrossyPassage && wallPasses>1) {
+                    break;
+                }
+                
+//                
+                
                 if (cx == endX && cy == endY) {
                     System.out.println("terminated at " + cx + "," + cy);
                     break;
 
+                }
+                stepCounter++;
+                
+        
+                
+                if (passageCounter>6 && midPasssage && i%2==0 && floor.getRoutes()<199 && !crossyGenerated) {
+                    floor.addCrossyPassage(new Point(cx,cy), dir);
+                    crossyGenerated=true;
                 }
                 
                 

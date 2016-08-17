@@ -27,7 +27,10 @@ public class DungeonPrinter {
 
                 if (tiles[x][y] == 0) {
                     System.out.print("..");
-
+                }
+                else if (floor.debugTiles[x][y]!=0) {
+                            System.out.print("+¤");
+                            
                 } else {
 
                     Room room = floor.roomLayout[x / 10][y / 10];

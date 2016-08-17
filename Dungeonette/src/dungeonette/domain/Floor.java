@@ -24,6 +24,7 @@ import java.util.Random;
  */
 public class Floor {
 
+    public char[][] debugTiles;
     private char[][] tiles; // all coordinates of the floor map
     private int[][] tileIDs; // room id number of each tile (0 = un-used space)
     private char[][] doorTiles;
@@ -31,6 +32,7 @@ public class Floor {
     public Room[][] roomLayout; // seeIfItFits layout is stored into a coarse 10 x 10 grid 
     public boolean[][] noRoom; // rooms can't be placed on these coarse grids
     public boolean[] connected;
+    public boolean[] isCrossyPassage;
     
     private int xMax;
     private int yMax;
@@ -56,6 +58,7 @@ public class Floor {
         xMax=spec.maxX;
         yMax=spec.maxY;
         tiles = new char[xMax][yMax];
+        debugTiles = new char[xMax][yMax];
         doorTiles = new char[xMax][yMax];
         tileIDs = new int[xMax][yMax];
         roomLayout = new Room[xMax / 10][yMax / 10];
@@ -67,6 +70,7 @@ public class Floor {
         this.routeIDTo = new int[200];
         this.roomQueue = new RoomQueue();
         this.connected= new boolean[200];
+        this.isCrossyPassage= new boolean[200];
         this.connected[1]=true;
         if (spec.roomDensity<20) {  // density 20 = no salt added!
             addSaltToGrid();
@@ -216,6 +220,41 @@ public class Floor {
        routes++;
     }
        
+    public void addCrossyPassage(Point start, char dir) {
+        int targetX=start.x;
+        int targetX2=start.x;
+        int targetY=start.y;
+        int targetY2=start.y;
+        
+        Random randomi = new Random();
+        int oneWay=randomi.nextInt(6);
+        int other=randomi.nextInt(6);
+        
+        if (dir=='n' || dir=='s') {
+            targetX=Math.max(1, targetX-oneWay);
+            targetX2=Math.min(97, targetX2+other);
+        } else {
+            targetY=Math.max(1, targetY-oneWay);
+            targetY2=Math.min(97, targetY2+other);
+        }
+        routeFrom[routes]=new Point(start);
+        routeTo[routes]=new Point(new Point(targetX, targetY));
+        isCrossyPassage[routes]=true;
+//        routeIDTo[routes]=-11111;
+//        routeIDFrom[routes]=-11111;
+        
+        routes++;
+        
+        routeFrom[routes]=new Point(start);
+        routeTo[routes]=new Point(new Point(targetX2, targetY2));
+        isCrossyPassage[routes]=true;
+//        routeIDTo[routes]=-11111;
+//        routeIDFrom[routes]=-11111;
+        
+        routes++;
+        System.out.println("crossy road created!");
+    }
+    
     /**
      * Method for calling for the queue of active rooms
      * @return returns the queue
