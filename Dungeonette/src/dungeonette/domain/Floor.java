@@ -37,6 +37,7 @@ public class Floor {
     private int xMax;
     private int yMax;
     private Point entry;    // The starting point of the floor
+    public Point pointOfExit;
     private Point[] routeFrom;  // array for start points of each passages
     private Point[] routeTo; // array for end points of each passages
     private int[] routeIDFrom; // room id number that relates to the originating room of the route)
@@ -106,7 +107,7 @@ public class Floor {
     }
     
     /**
-     * A method which tries to insert a seeIfItFits of specific size into specific
+     * A method which tries to insert a room of specific size into specific
  location on the floor map. Returns TRUE if the placement was successful.
      *
      * @param rlx x coordinate for the new seeIfItFits location
@@ -120,6 +121,7 @@ public class Floor {
     public boolean insertRoom(int rlx, int rly, Dimension dimension, char fromDirection, Point origin, int currentRoomID) {
 
         if (rlx<0 || rly<0 || rlx>=xMax/10 || rly>=yMax/10 ) {
+            System.out.println("rlx "+rlx+" rly "+rly+" yritetriin insertoida laidalle");
             return false;
         }
         if (noRoom[rlx][rly]) {
@@ -131,7 +133,7 @@ public class Floor {
 
 
     /**
-     * Prints the seeIfItFits placement while storing the tiles into the char array.
+     * Prints the room placement while storing the tiles into the char array.
      * Passages between the rooms are not yet carved out.
      */
     public void print() {

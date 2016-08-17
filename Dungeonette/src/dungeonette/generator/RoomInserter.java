@@ -165,8 +165,10 @@ public class RoomInserter {
         }
 
         floor.getRouteIDTo()[routes] = room.id;
-
-        if (floor.roomLayout[origin.x][origin.y] != null) {
+        
+        System.out.println("Origin x ja y "+origin.x+","+origin.y);
+        System.out.println("| lokaatio layoutissa null?: "+(floor.roomLayout[origin.x][origin.y]==null));
+        if (floor.roomLayout[origin.x][origin.y] != null && currentRoomID>1) {
             floor.getRouteFrom()[routes] = floor.roomLayout[origin.x][origin.y].getDoorway();
         } else {
             floor.getRouteFrom()[routes] = floor.getRouteTo()[routes];
@@ -184,6 +186,7 @@ public class RoomInserter {
         floor.getRoomQueue().enqueue(room);
 
         floor.addRoomCount();
+        floor.pointOfExit = new Point (centerX, centerY);//room.location;
         return true;
 
     }

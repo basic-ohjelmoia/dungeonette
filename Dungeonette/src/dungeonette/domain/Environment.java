@@ -57,6 +57,20 @@ public class Environment {
         this.floors = new Floor[zMax];
         this.spec = spec;
     }
+    
+    public void generateFloors() {
+        Point pointOfEntry = new Point(5,5);
+        for (int i = 0; i< spec.maxZ; i++ ) {
+            generate(i, new Point(pointOfEntry.x, pointOfEntry.y));
+            pointOfEntry=floors[i].pointOfExit;
+            System.out.println("gen floors: "+i+" exits at "+pointOfEntry.toString());
+        }
+        
+        for (int i = 0; i< spec.maxZ; i++ ) {
+            System.out.println("\n======================= DUNGEON LEVEL "+i+" ==============================\n");
+        DungeonPrinter.printFloor(floors[i]);
+        }
+    }
 
     /**
      * Placeholderish-method that basically runs the entirety of the dungeon
@@ -82,16 +96,19 @@ public class Environment {
      * 4)   This process goes on and on until enough rooms have been generated OR there are no active rooms with pivots left.
      * 5)   After all the rooms have been generated, the passages betweem them will get carved out.
      *
+     * @param floorLevel floorlevel (number) being generated
+     * @param pointOfEntry coordinates for the first room's entry stairwell
      */
-    public void generate() {
-        Floor floor = new Floor(spec, new Point(45, 45)); // The point object here refers the point of entry (first room location) of the floor.
+    public void generate(int floorLevel, Point pointOfEntry) {
+        Floor floor = new Floor(spec, pointOfEntry); // The point object here refers the point of entry (first room location) of the floor.
 
         int rooms = 1;        // this is basically the serial number of the room currently being generated. Must start from one NOT zero!
 
         Random randomi = new Random();
 
-        int cx = 45 / 10;       // cx and cy refer to the "current x coordinate" and "current y coordinate" of
-        int cy = 45 / 10;       // the dungeon generation process.
+        int cx = pointOfEntry.x;       // cx and cy refer to the "current x coordinate" and "current y coordinate" of the dungeon generation process.
+        int cy = pointOfEntry.y;       // cx and cy are based on the coarse grid 10x10 format
+        System.out.println("%%%% floorlevel "+floorLevel+" start: "+cx+","+cy);
         // as the algorithm actually handles the dungeon in a coarse grid of 10 x 10 tiles
         // the point of origin coordinates need to be divided by 10
 
@@ -101,11 +118,16 @@ public class Environment {
 
         char oldFrom = ' ';
 
-        int maxRooms = randomi.nextInt(spec.volatility) + spec.density;            // maximum number of rooms being generated for the dungeon
+        int maxRooms = randomi.nextInt(spec.volatility) + spec.density ;            // maximum number of rooms being generated for the dungeon
         // the actualy reaching of "the max" is NOT guaranteed currently
 
         int failuresSinceLastRoomGeneration = 0;          // a safety which ensures that the algorithm eventually fails in case it reaches a logical dead-end
 
+        
+        // HERE WE START BY INSERTING THE ENTRY POINT ROOM INTO THE FLOOR AS THE ROOM #1
+        floor.insertRoom(cx, cy, new Dimension(10,10), 'n', temporaryOrigin, rooms);
+        rooms++;
+        
         
         // ================
         // IMPORTANT!!!!!!!
@@ -219,6 +241,11 @@ public class Environment {
                     if (( roomHash) % spec.threeByThrees == 4 && tries <= spec.largeRoomPersistence) {
                         dimension = new Dimension(30, 30);
                     }
+                    
+                    if (rooms==1) {
+                        dimension = new Dimension(10,10);
+                    }
+                    
                     // if the insert room method call returns TRUE then the new room was successfully placed into the map!
                     if (floor.insertRoom(cx, cy, dimension, from, temporaryOrigin, rooms)) {
                         roomGenerated = true;
@@ -278,10 +305,10 @@ public class Environment {
         floor.addRandomRoute(true);
 
         PassageCarver.processAllRoutes(floor);
-        DungeonPrinter.printFloor(floor);
+        
         //floor.carveRoutes();
 
-        this.floors[0] = floor;
+        this.floors[floorLevel] = floor;
     }
 
     /**
