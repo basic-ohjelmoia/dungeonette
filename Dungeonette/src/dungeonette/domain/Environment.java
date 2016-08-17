@@ -153,11 +153,10 @@ public class Environment {
             if (floor.getRoomQueue().isEmpty() && failuresSinceLastRoomGeneration>20) {
                 failuresSinceLastRoomGeneration = 101;
                 cx = -999;
-                System.out.println("epic fail! Queue failed on room " + rooms);
+             //   System.out.println("epic fail! Queue failed on room " + rooms);
                 break;
             } else if (temp != null) {
-                System.out.println("löytyi q-room #"+temp.id+" at "+temp.location.x+","+temp.location.y);
-                System.out.println("samaan aikaan queue size "+floor.getRoomQueue().getSize());
+               
                 cx = temp.location.x;
                 cy = temp.location.y;
             }
@@ -204,18 +203,18 @@ public class Environment {
                     failuresSinceLastRoomGeneration++;
 
                     temp = null;
-                    System.out.println("floor-q empty: " + floor.getRoomQueue().isEmpty());
+                  
                     if (!floor.getRoomQueue().isEmpty()) {
                         temp = floor.getRoomQueue().front();
                     }
 
                     if (temp != null) {
-                        System.out.println("löytyi q-room #" + temp.id);
+                        
                         cx = temp.location.x;
                         cy = temp.location.y;
                     } else {
                         
-                        System.out.println("Queue failed on room " + rooms);
+                       // System.out.println("Queue failed on room " + rooms);
                     }
 
                     temporaryOrigin = new Point(cx, cy);
@@ -225,7 +224,7 @@ public class Environment {
                 } else if (cx >= 0 && cx < 10 && cy >= 0 && cy < 10) {  // seeking must stay within the  outer bounds of the floor
                     
                     Dimension dimension = new Dimension(10, 10);
-                    System.out.println("specs. "+spec.twoByOnes);
+                    
                     
                     int roomHash = (temporaryOrigin.x*temporaryOrigin.y)+arpa+(rooms%3)+cx+cy-floor.getRoomQueue().getSize();
                     

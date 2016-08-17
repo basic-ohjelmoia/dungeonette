@@ -5,6 +5,7 @@ package dungeonette;
 
 import dungeonette.domain.Environment;
 import dungeonette.domain.Specification;
+import java.util.ArrayList;
 
 /**
  * Dungeonette is a program which generates random dungeons for an 
@@ -18,12 +19,13 @@ import dungeonette.domain.Specification;
  */
 public class Dungeonette {
 
+    
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
         
-        
+                
         Specification spec = new Specification(100,100,5); // dungeon specification 
         Environment env = new Environment(spec);    // the environment for the dungeon generation
         env.generateFloors(); // go-code

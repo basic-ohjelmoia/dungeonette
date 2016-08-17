@@ -32,7 +32,7 @@ public class PassageCarver {
     
         // the for loop processes each pair of passage/route departures and destinations.
         for (int i = 0; i < floor.getRoutes(); i++) {
-            System.out.println("i = "+i+", routef "+floor.getRouteFrom()[i].toString());
+           // System.out.println("i = "+i+", routef "+floor.getRouteFrom()[i].toString());
             int startX = (floor.getRouteFrom()[i].x);// * 10) + 5;
             int startY = (floor.getRouteFrom()[i].y);// * 10) + 5;
 
@@ -45,7 +45,7 @@ public class PassageCarver {
             int idMax = floor.getRouteIDFrom()[i]+5;
             
             if ((floor.connected[idTrueFrom] || floor.connected[idTrueTo]) && floor.connected[idTrueTo]!=floor.connected[idTrueFrom]) {
-                System.out.println("from  (#"+idTrueFrom+"): "+floor.connected[idTrueFrom]+" vs to  (#"+idTrueTo+"): "+floor.connected[idTrueTo]);
+             //   System.out.println("from  (#"+idTrueFrom+"): "+floor.connected[idTrueFrom]+" vs to  (#"+idTrueTo+"): "+floor.connected[idTrueTo]);
                 floor.connected[idTrueFrom]=true;
                 floor.connected[idTrueTo]=true;
                 idTrueFrom=0;
@@ -88,7 +88,7 @@ public class PassageCarver {
           
                 
                 
-                System.out.println("passage "+i+", onko crossy: "+isItACrossyPassage);
+             //   System.out.println("passage "+i+", onko crossy: "+isItACrossyPassage);
                 
                 // "chaos" tries to add some randomness to the passage drawa. 
                 // without it, all the passages would be boring straight lines
@@ -136,7 +136,7 @@ public class PassageCarver {
                 if (midPasssage) {
                     passageCounter++;
                 } else {
-                    if (passageCounter>5) {System.out.println("passage of length "+passageCounter+" terminated");}
+                  //  if (passageCounter>5) {System.out.println("passage of length "+passageCounter+" terminated");}
                     passageCounter=0;
                 }
              
@@ -149,7 +149,7 @@ public class PassageCarver {
                 
          
                 if (tiles[cx][cy]=='+' && floor.getTileIDs()[cx][cy]!=previousTileID) {
-                    System.out.println("oveksi merkittiin "+cx+","+cy);
+                //    System.out.println("oveksi merkittiin "+cx+","+cy);
                   //  floor.getDoorTiles()[cx][cy]=1;
 
                 }
@@ -188,7 +188,7 @@ public class PassageCarver {
                     tiles[cx][cy] = '+';
                     if (isItACrossyPassage) {
                         floor.debugTiles[cx][cy]='¤';
-                        System.out.println("crossy kirjattiin "+cx+","+cy);
+                        
                     }
                     
                     for (int sy = cy - 1; sy <= cy + 1; sy++) {

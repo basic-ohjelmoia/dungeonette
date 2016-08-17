@@ -36,7 +36,10 @@ public class RoomInserter {
     public static boolean seeIfItFits(Floor floor, int rlx, int rly, Dimension dimension, char fromDirection, Point origin, int currentRoomID) {
 
         int size = (dimension.height * dimension.width) / 100;
-        System.out.println("room size " + size + ", dims " + dimension.width + "." + dimension.height);
+        //System.out.println("room size " + size + ", dims " + dimension.width + "." + dimension.height);
+        
+        
+        
         // as the seeIfItFits might be too large to fit into a single 10 x 10 grid, these two arrays are used
         // to store the seeIfItFits's theoretical grid locations 
         int reqX[] = new int[size];
@@ -124,10 +127,10 @@ public class RoomInserter {
         reqY[0] = rly;
 
         boolean failed = false;
-        System.out.println("size yhä" + size);
+     
         // if any of the required sub-grids of the seeIfItFits are already in use, the seeIfItFits placement will FAIL
         for (int i = 0; i < size && !failed; i++) {
-            System.out.println("pair " + i + ": " + reqX[i] + "," + reqY[i] + ", ");//result: "+floor.roomLayout[reqX[i]][reqY[i]]!=null);
+           
             if (floor.roomLayout[reqX[i]][reqY[i]] != null) {
                 failed = true;
                 continue;
@@ -139,7 +142,7 @@ public class RoomInserter {
             centerY += reqY[i];
         }
         if (failed) {
-            System.out.println("feilas tässä");
+      
             return false;
         }
         centerX /= size;
@@ -156,7 +159,8 @@ public class RoomInserter {
         floor.getRouteFrom()[routes] = origin;
 
         floor.getRouteTo()[routes] = room.getDoorway();
-        System.out.println("origin : " + origin.toString() + " id " + room.id);
+       
+        
 
         if (room.id == 1) {
             floor.getRouteIDFrom()[routes] = 0;
@@ -166,17 +170,21 @@ public class RoomInserter {
 
         floor.getRouteIDTo()[routes] = room.id;
         
-        System.out.println("Origin x ja y "+origin.x+","+origin.y);
-        System.out.println("| lokaatio layoutissa null?: "+(floor.roomLayout[origin.x][origin.y]==null));
+        
+//        System.out.println("Origin x ja y "+origin.x+","+origin.y);
+//        System.out.println("| lokaatio layoutissa null?: "+(floor.roomLayout[origin.x][origin.y]==null));
+        
+        
         if (floor.roomLayout[origin.x][origin.y] != null && currentRoomID>1) {
             floor.getRouteFrom()[routes] = floor.roomLayout[origin.x][origin.y].getDoorway();
         } else {
             floor.getRouteFrom()[routes] = floor.getRouteTo()[routes];
         }
 
-        System.out.println("routeFrom = " + floor.getRouteFrom()[routes].toString());
-        System.out.println("routeTO = " + floor.getRouteTo()[routes].toString());
-        System.out.println("Room loc = " + room.location.toString() + " vs center " + room.roomCenter.toString());
+//        System.out.println("routeFrom = " + floor.getRouteFrom()[routes].toString());
+//        System.out.println("routeTO = " + floor.getRouteTo()[routes].toString());
+//        System.out.println("Room loc = " + room.location.toString() + " vs center " + room.roomCenter.toString());
+        
         floor.addRouteCount();
 
         for (int i = 0; i < size; i++) {
