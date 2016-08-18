@@ -7,6 +7,7 @@ package dungeonette.generator;
 
 import dungeonette.domain.Floor;
 import dungeonette.domain.Room;
+import dungeonette.domain.Specification;
 
 /**
  *
@@ -18,12 +19,12 @@ public class DungeonPrinter {
      * Prints out the finished floor.
      * @param floor floor being printed
      */
-    public static void printFloor(Floor floor) {
+    public static void printFloor(Floor floor, Specification spec) {
         System.out.println("printing II...");
         char[][] tiles = floor.getTiles();
-        for (int y = 0; y < 100; y++) {
+        for (int y = 0; y < spec.maxY; y++) {
             System.out.print("\n");
-            for (int x = 0; x < 100; x++) {
+            for (int x = 0; x < spec.maxX; x++) {
 
                 if (tiles[x][y] == 0) {
                     System.out.print("..");

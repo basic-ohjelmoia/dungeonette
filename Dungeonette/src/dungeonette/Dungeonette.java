@@ -26,7 +26,7 @@ public class Dungeonette {
     public static void main(String[] args) {
         
                 
-        Specification spec = new Specification(100,100,5); // dungeon specification 
+        Specification spec = new Specification(140,110,5); // dungeon specification 
         Environment env = new Environment(spec);    // the environment for the dungeon generation
         env.generateFloors(); // go-code
     

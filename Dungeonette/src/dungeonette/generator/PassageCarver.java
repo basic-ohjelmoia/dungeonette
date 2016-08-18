@@ -7,6 +7,7 @@ package dungeonette.generator;
 
 import dungeonette.domain.Floor;
 import dungeonette.domain.Room;
+import dungeonette.domain.Specification;
 import java.awt.Point;
 
 /**
@@ -23,7 +24,7 @@ public class PassageCarver {
      * 
      * @param floor floor being carved
      */
-    public static void processAllRoutes(Floor floor) { 
+    public static void processAllRoutes(Floor floor, Specification spec) { 
             
         char[][] tiles=floor.getTiles();
         int routes = floor.getRoutes();
@@ -53,11 +54,11 @@ public class PassageCarver {
             }
            
             
-            startX=(Math.max(startX, 1)); startX=(Math.min(startX, 98));
-            startY=(Math.max(startY, 1)); startY=(Math.min(startY, 98));
+            startX=(Math.max(startX, 1)); startX=(Math.min(startX, spec.maxX-2));
+            startY=(Math.max(startY, 1)); startY=(Math.min(startY, spec.maxY-2));
             
-            endX=(Math.max(endX, 1)); endX=(Math.min(endX, 98));
-            endY=(Math.max(endY, 1)); endY=(Math.min(endY, 98));
+            endX=(Math.max(endX, 1)); endX=(Math.min(endX, spec.maxX-2));
+            endY=(Math.max(endY, 1)); endY=(Math.min(endY, spec.maxY-2));
             
             
             
@@ -92,7 +93,7 @@ public class PassageCarver {
                 
                 // "chaos" tries to add some randomness to the passage drawa. 
                 // without it, all the passages would be boring straight lines
-                if (chaos < 3 && cx > 1 && cx < 98 && cy > 1 && cy < 98 && !isItACrossyPassage) {
+                if (chaos < 3 && cx > 1 && cx < spec.maxX-2 && cy > 1 && cy < spec.maxY-2 && !isItACrossyPassage) {
                     if ((cx + cy) % 29 == 3) {
                         cx++;
                         dir='e';
@@ -236,9 +237,9 @@ public class PassageCarver {
         }
         
         System.out.println("set up doorways"); 
-        for (int y = 0; y < 100; y++) {
+        for (int y = 0; y < spec.maxY; y++) {
             
-            for (int x = 0; x < 100; x++) {
+            for (int x = 0; x < spec.maxX; x++) {
                 if (floor.getDoorTiles()[x][y]==1) {
                         if (tiles[x+1][y]=='#' && tiles[x-1][y]=='#' && tiles[x][y-1]=='+' && tiles[x][y+1]=='+') {
                             tiles[x][y]='=';

@@ -7,6 +7,7 @@ package dungeonette.generator;
 
 import dungeonette.domain.Floor;
 import dungeonette.domain.Room;
+import dungeonette.domain.Specification;
 import java.awt.Dimension;
 import java.awt.Point;
 
@@ -22,6 +23,7 @@ public class RoomInserter {
      * successful.
      *
      * @param floor Floor being processed
+     * @param spec Specification for the dungeon
      * @param rlx x coordinate for the new seeIfItFits location
      * @param rly y coordinate for the new seeIfItFits location
      * @param dimension dimensions of the new seeIfItFits (either 10x10, 20x10,
@@ -33,8 +35,18 @@ public class RoomInserter {
      * seeIfItFits (if placement is successful)
      * @return true if the placement was successful
      */
-    public static boolean seeIfItFits(Floor floor, int rlx, int rly, Dimension dimension, char fromDirection, Point origin, int currentRoomID) {
+    public static boolean seeIfItFits(Floor floor, Specification spec, int rlx, int rly, Dimension dimension, char fromDirection, Point origin, int currentRoomID) {
 
+        
+        if (rlx<0 || rly<0 || rlx>=spec.gridX || rly>=spec.gridY ) {
+            System.out.println("rlx "+rlx+" rly "+rly+" yritetriin insertoida laidalle");
+            return false;
+        }
+        if (floor.noRoom[rlx][rly]) {
+            return false;
+        }
+        
+        
         int size = (dimension.height * dimension.width) / 100;
         //System.out.println("room size " + size + ", dims " + dimension.width + "." + dimension.height);
         
@@ -161,7 +173,9 @@ public class RoomInserter {
         floor.getRouteTo()[routes] = room.getDoorway();
        
         
-
+        System.out.println("room.id: "+room.id);
+        System.out.println("Origin is null ? "+origin==null);
+        System.out.println("floor.roomLayout[origin.x][origin.y].id is null? "+(floor.roomLayout[origin.x][origin.y]==null));
         if (room.id == 1) {
             floor.getRouteIDFrom()[routes] = 0;
         } else {

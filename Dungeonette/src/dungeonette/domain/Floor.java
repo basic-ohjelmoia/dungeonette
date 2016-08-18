@@ -106,41 +106,17 @@ public class Floor {
         }
     }
     
-    /**
-     * A method which tries to insert a room of specific size into specific
- location on the floor map. Returns TRUE if the placement was successful.
-     *
-     * @param rlx x coordinate for the new seeIfItFits location
-     * @param rly y coordinate for the new seeIfItFits location
-     * @param dimension dimensions of the new seeIfItFits (either 10x10, 20x10, 10x20, 20x20 or 30x30)
-     * @param fromDirection general direction of the previous (connecting) seeIfItFits
-     * @param origin loxation of the previous (connecting) seeIfItFits
-     * @param currentRoomID serial number which will be given to the new seeIfItFits (if placement is successful)
-     * @return true if the placement was successful
-     */
-    public boolean insertRoom(int rlx, int rly, Dimension dimension, char fromDirection, Point origin, int currentRoomID) {
-
-        if (rlx<0 || rly<0 || rlx>=xMax/10 || rly>=yMax/10 ) {
-            System.out.println("rlx "+rlx+" rly "+rly+" yritetriin insertoida laidalle");
-            return false;
-        }
-        if (noRoom[rlx][rly]) {
-            return false;
-        }
-        return RoomInserter.seeIfItFits(this, rlx, rly, dimension, fromDirection, origin, currentRoomID);
-
-    }
 
 
     /**
      * Prints the room placement while storing the tiles into the char array.
      * Passages between the rooms are not yet carved out.
      */
-    public void print() {
+    public void storeRoomsIntoTiles() {
         System.out.println("printing...");
-        for (int y = 0; y < 100; y++) {
+        for (int y = 0; y < spec.maxY; y++) {
             System.out.print("\n");
-            for (int x = 0; x < 100; x++) {
+            for (int x = 0; x < spec.maxX; x++) {
                 if (roomLayout[x / 10][y / 10] == null) {
                     
                     tiles[x][y] = '.';
@@ -189,7 +165,7 @@ public class Floor {
        
        while (origin==null)
        {
-           Point point = new Point(randomi.nextInt(10), randomi.nextInt(10));
+           Point point = new Point(randomi.nextInt(spec.gridX), randomi.nextInt(spec.gridY));
            origin = roomLayout[point.x][point.y];
        }
        routeFrom[routes]=origin.getDoorway();
@@ -199,7 +175,7 @@ public class Floor {
            origin=null;
            while (origin==null)
        {
-           Point point = new Point(randomi.nextInt(10), randomi.nextInt(10));
+           Point point = new Point(randomi.nextInt(spec.gridX), randomi.nextInt(spec.gridY));
            origin = roomLayout[point.x][point.y];
        }
         routeTo[routes]=origin.getDoorway();
@@ -209,8 +185,8 @@ public class Floor {
        int toX = randomi.nextInt(50)-25+routeFrom[routes].x;
        int toY = randomi.nextInt(50)-25+routeFrom[routes].y;
        
-       toX=Math.max(1, toX); toX=Math.min(toX, 98);
-       toY=Math.max(1, toY); toY=Math.min(toY, 98);
+       toX=Math.max(1, toX); toX=Math.min(toX, spec.maxX-2);
+       toY=Math.max(1, toY); toY=Math.min(toY, spec.maxY-2);
        
        if (tiles[toX][toY]=='.') {
        routeTo[routes]= new Point(toX,toY);
@@ -234,10 +210,10 @@ public class Floor {
         
         if (dir=='n' || dir=='s') {
             targetX=Math.max(1, targetX-oneWay);
-            targetX2=Math.min(97, targetX2+other);
+            targetX2=Math.min(spec.maxX-3, targetX2+other);
         } else {
             targetY=Math.max(1, targetY-oneWay);
-            targetY2=Math.min(97, targetY2+other);
+            targetY2=Math.min(spec.maxY-3, targetY2+other);
         }
         routeFrom[routes]=new Point(start);
         routeTo[routes]=new Point(new Point(targetX, targetY));

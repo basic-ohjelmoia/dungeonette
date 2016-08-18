@@ -39,7 +39,7 @@ public class FloorTest {
     }
 
     /**
-     * Test of print method, of class Floor.
+     * Test of storeRoomsIntoTiles method, of class Floor.
      */
     @Test
     public void testPrint() {
@@ -60,7 +60,7 @@ public class FloorTest {
 
         int emptyTileCountAfterPrintCall = 0;
 
-        this.floor.print();
+        this.floor.storeRoomsIntoTiles();
 
         for (int y = 0; y < 100; y++) {
             for (int x = 0; x < 100; x++) {
@@ -83,7 +83,7 @@ public class FloorTest {
         this.floor.insertRoom(5, 5, new Dimension(10, 10), 'n', new Point(5, 5), 1);
         this.floor.insertRoom(5, 7, new Dimension(10, 10), 'n', new Point(5, 5), 1);
 
-        this.floor.print();
+        this.floor.storeRoomsIntoTiles();
 
         int floorTiles = 0;
 

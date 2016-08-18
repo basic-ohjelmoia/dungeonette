@@ -24,6 +24,16 @@ public class Specification {
     public int gridY;
     
     /**
+     * Number of additional dead-ends generated per floor
+     */
+    public int deadEndiness;
+    
+    /**
+     * Number of bonus connecting passageways are generated per floor.
+     */
+    public int roomConnectivity;
+    
+    /**
      * minimum number of rooms being generated
      */
     public int density; // 
@@ -31,8 +41,14 @@ public class Specification {
      * maximum additional number of rooms being generated
      *  NOTE: density+volatility  should be less than (gridX*gridY)/2
      */
-    public int volatility; // 
+    public int volatility;  
         
+    /**
+     * Each depts dungeon floor substracts the density/volatility by multiple of funnelEffect.
+     * 1 = no funnelEffect.
+     */
+    public int funnelEffect;
+    
     /**
      * larger the number, the farther the seek for neighbouring room location continues
      */
@@ -87,6 +103,7 @@ public class Specification {
         
         this.density=25;
         this.volatility=30;
+        this.funnelEffect =3;
         
         this.twoByOnes=VERY_COMMON;
         this.twoByTwos=COMMON;
@@ -99,5 +116,8 @@ public class Specification {
         this.roomDensity=12;         
         this.midsizeRoomPersistence=1;
         this.largeRoomPersistence=2;
+        
+        this.deadEndiness = 5;
+        this.roomConnectivity = 1;
     }
 }
