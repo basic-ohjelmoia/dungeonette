@@ -30,7 +30,7 @@ public class RoomInserter {
      * 10x20, 20x20 or 30x30)
      * @param fromDirection general direction of the previous (connecting)
      * seeIfItFits
-     * @param origin loxation of the previous (connecting) seeIfItFits
+     * @param origin location of the previous (connecting) room
      * @param currentRoomID serial number which will be given to the new
      * seeIfItFits (if placement is successful)
      * @return true if the placement was successful
@@ -39,7 +39,7 @@ public class RoomInserter {
 
         
         if (rlx<0 || rly<0 || rlx>=spec.gridX || rly>=spec.gridY ) {
-            System.out.println("rlx "+rlx+" rly "+rly+" yritetriin insertoida laidalle");
+            System.out.println("rlx "+rlx+" rly "+rly+" | yritetriin insertoida yli boundaryn");
             return false;
         }
         if (floor.noRoom[rlx][rly]) {

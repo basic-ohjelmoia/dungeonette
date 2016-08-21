@@ -32,7 +32,7 @@ public class EnvironmentTest {
         System.out.println("== Running dungeon generation test == ");
         int[] results = new int[10];
         for (int i=0; i<10; i++) {
-            env.generate();
+            env.generateFloors();
             
             Floor floor = env.getFloors()[0];
             

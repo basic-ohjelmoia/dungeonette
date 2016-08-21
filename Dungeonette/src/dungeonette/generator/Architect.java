@@ -15,10 +15,13 @@ import java.util.Random;
 
 /**
  *
- *
+ *  Architect contains the main loop used for generating the dungeon floors.
  */
 public class Architect {
 
+    /**
+     * This enum represents north, south, east and west .
+     */
     public enum Dir {
 
         NORTH('n', 0, 0, -1),
@@ -31,6 +34,13 @@ public class Architect {
         public final int x;
         public final int y;
 
+        /**
+         * Constructor for directions.
+         * @param name char representation of the direction
+         * @param id id number of the direction (these are referred to elsewhere in the code)
+         * @param x this direction represents this much change in the x coordinate
+         * @param y this direction represents this much change in the y coordinate
+         */
         private Dir(char name, int id, int x, int y) {
             this.name = name;
             this.id = id;
@@ -38,6 +48,11 @@ public class Architect {
             this.y = y;
         }
 
+        /**
+         * Returns a direction based on the id number
+         * @param id id number of the direction
+         * @return a direction is returned
+         */
         public static Dir getDir(int id) {
             if (id == 0) {
                 return Dir.NORTH;
@@ -58,7 +73,7 @@ public class Architect {
     }
 
     /**
-     * Placeholderish-method that basically runs the entirety of the dungeon
+     * A much refactored  method that basically runs the entirety of the dungeon
      * generation process.
      *
      * The code here needs some serious refactoring and general cleaning up.
@@ -84,6 +99,8 @@ public class Architect {
      * generated OR there are no active rooms with pivots left. 5) After all the
      * rooms have been generated, the passages betweem them will get carved out.
      *
+     * @param env Container of the Environment where the dungeon is stored
+     * @param spec Specification of the dungeon
      * @param floorLevel floorlevel (number) being generated
      * @param pointOfEntry coordinates for the first room's entry stairwell
      */
@@ -176,28 +193,13 @@ public class Architect {
 
                     parentOfTheNextRoom = null;
 
-                    if (!floor.getRoomQueue().isEmpty()) {
-                        parentOfTheNextRoom = floor.getRoomQueue().front();
-                    }
-
-                    if (parentOfTheNextRoom != null) {
-
-                        cx = parentOfTheNextRoom.location.x;
-                        cy = parentOfTheNextRoom.location.y;
-                    } else {
-
-                        // System.out.println("Queue failed on room " + rooms);
-                    }
-
-                    temporaryOrigin = new Point(cx, cy);
-
-                    from = ' ';
+                    
 
                 } else if (cx >= 0 && cx < spec.gridX && cy >= 0 && cy < spec.gridY) {  // seeking must stay within the  outer bounds of the floor
 
                     Dimension dimension = new Dimension(10, 10);
 
-                    int roomHash = (temporaryOrigin.x * temporaryOrigin.y) + arpa + (rooms % 3) + cx + cy - floor.getRoomQueue().getSize();
+                    int roomHash = (parentOfTheNextRoom.location.x * parentOfTheNextRoom.location.y) + arpa + (rooms % 3) + cx + cy - floor.getRoomQueue().getSize();
 
                     if ((roomHash) % spec.twoByOnes == 1 && tries <= spec.midsizeRoomPersistence) {
                         dimension = new Dimension(20, 10);
@@ -217,28 +219,16 @@ public class Architect {
                     }
 
                     // if the insert room method call returns TRUE then the new room was successfully placed into the map!
-                    if (RoomInserter.seeIfItFits(floor, spec, cx, cy, dimension, from, temporaryOrigin, rooms)) {
+                    if (RoomInserter.seeIfItFits(floor, spec, cx, cy, dimension, from, parentOfTheNextRoom.location, rooms)) {
                         roomGenerated = true;
 
-                        temporaryOrigin = new Point(cx, cy);
+                        
                         failuresSinceLastRoomGeneration = 0;
                         rooms++;
 
                         parentOfTheNextRoom = null;
 
-                        if (!floor.getRoomQueue().isEmpty()) {
-                            parentOfTheNextRoom = floor.getRoomQueue().dequeue();      // here we fetch the next active room from which the dungeon generation proceeds from
-                            // PLEASE NOTE that the dequeue() CAN result the SAME active room as before if the room still has
-                            // active pivots (outbound passageways) left
-                        }
-
-                        if (parentOfTheNextRoom != null) {
-                            cx = parentOfTheNextRoom.location.x;
-                            cy = parentOfTheNextRoom.location.y;
-                        } else {
-                            System.out.println("*** OH NOES! ****");
-                            System.out.println("Queue failed on room " + rooms);
-                        }
+                      
                     } // if the room was too large to generate in THIS location, the algorithm generates a passage instead
                     // however, passageway must be placed in a proper direction when the seek has reached the outer bounds of the floor
                     else if (floor.roomLayout[cx][cy] == null && tries <= spec.passagePersistence
@@ -263,6 +253,11 @@ public class Architect {
         env.getFloors()[floorLevel] = floor;
     }
 
+    /**
+     * Finalizes the dungeon floor by storing the room tiles into the char matrix, adding connecting passages, adding random passages and placing doorways.
+     * @param floor floor being processed
+     * @param spec specification of the dungeon containg the floor
+     */
     private static void finalize(Floor floor, Specification spec) {
         // storeRoomsIntoTiles out the results (the entire dungeon floor)
         floor.storeRoomsIntoTiles();
@@ -278,7 +273,10 @@ public class Architect {
             floor.addRandomRoute(true);
         }
 
+        
+        
         PassageCarver.processAllRoutes(floor, spec);
+        DoorInserter.processAllDoors(floor, spec);
 
         
     }

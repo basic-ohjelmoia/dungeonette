@@ -47,6 +47,9 @@ public class Floor {
     private RoomQueue roomQueue;    // queue for active rooms looking for neighbours
     private Specification spec;     // object for dungeon's specifications
     
+    private final int maxNumberOfPassages = 200;
+    private int plusThese;
+    
     /**
      * Constructor for the floor.
      *
@@ -56,6 +59,7 @@ public class Floor {
      */
     public Floor(Specification spec, Point pointOfEntry) {
         this.spec=spec;
+        this.plusThese=spec.volatility+spec.density;
         xMax=spec.maxX;
         yMax=spec.maxY;
         tiles = new char[xMax][yMax];
@@ -65,13 +69,13 @@ public class Floor {
         roomLayout = new Room[xMax / 10][yMax / 10];
         noRoom= new boolean[xMax / 10][yMax / 10];
         this.entry = pointOfEntry;
-        this.routeFrom = new Point[200];
-        this.routeTo = new Point[200];
-        this.routeIDFrom = new int[200];
-        this.routeIDTo = new int[200];
+        this.routeFrom = new Point[maxNumberOfPassages+plusThese];
+        this.routeTo = new Point[maxNumberOfPassages+plusThese];
+        this.routeIDFrom = new int[maxNumberOfPassages+plusThese];
+        this.routeIDTo = new int[maxNumberOfPassages+plusThese];
         this.roomQueue = new RoomQueue();
-        this.connected= new boolean[200];
-        this.isCrossyPassage= new boolean[200];
+        this.connected= new boolean[maxNumberOfPassages+plusThese];
+        this.isCrossyPassage= new boolean[maxNumberOfPassages+plusThese];
         this.connected[1]=true;
         if (spec.roomDensity<20) {  // density 20 = no salt added!
             addSaltToGrid();
@@ -106,6 +110,13 @@ public class Floor {
         }
     }
     
+    /**
+     * Removes all salts from the floor. 
+     * Used in debugging, might have further uses as well.
+     */
+    public void removeSalts() {
+                      this.noRoom= new boolean [spec.gridX][spec.gridY];
+    }
 
 
     /**
@@ -198,6 +209,13 @@ public class Floor {
        routes++;
     }
        
+    /**
+     * Calling this method adds a crossing passageway to the specified location.
+     * The crossing passageway should result as a dead-end (terminate before breaching any room outer boundary walls).
+     * Crossy passage tiles are marked as ¤+ in the dungeon printouts.
+     * @param start starting coordinates of the crossed passageway
+     * @param dir direction of the MAIN passageway (not the crossing passageway!!!!!)
+     */
     public void addCrossyPassage(Point start, char dir) {
         int targetX=start.x;
         int targetX2=start.x;

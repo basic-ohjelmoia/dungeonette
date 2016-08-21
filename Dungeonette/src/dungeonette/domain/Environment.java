@@ -34,6 +34,7 @@ public class Environment {
     private int zMax;
     private Floor[] floors;
     private Specification spec;
+    private long timer;
 
     /**
      * Constructor for an environment object. The constructor is basically given
@@ -46,6 +47,7 @@ public class Environment {
      * @param spec specification of the dungeon
     */
     public Environment(Specification spec) {
+        this.timer=System.currentTimeMillis();
         int floorWidth = spec.maxX;
         int floorHeigth = spec.maxY;
         int numberOfFloors = spec.maxZ;
@@ -66,10 +68,12 @@ public class Environment {
             pointOfEntry=floors[i].pointOfExit;
             System.out.println("gen floors: "+i+" exits at "+pointOfEntry.toString());
         }
-        
+        long result = System.currentTimeMillis()-timer;
+       // result/=1000;
+        System.out.println("Aikaa meni: "+result);
         for (int i = 0; i< spec.maxZ; i++ ) {
             System.out.println("\n======================= DUNGEON LEVEL "+i+" ==============================\n");
-        DungeonPrinter.printFloor(floors[i], spec);
+       DungeonPrinter.printFloor(floors[i], spec);
         }
     }
 

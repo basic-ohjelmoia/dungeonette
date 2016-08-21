@@ -18,6 +18,7 @@ public class DungeonPrinter {
     /**
      * Prints out the finished floor.
      * @param floor floor being printed
+     * @param spec specification of the dungeon containing the floor
      */
     public static void printFloor(Floor floor, Specification spec) {
         System.out.println("printing II...");
