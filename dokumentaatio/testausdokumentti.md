@@ -11,3 +11,9 @@ Koska Dungeonetten tehtänä on tuottaa mielekkäällä tavalla tutkittavia satu
 
 Dungeonettea varten luodun RoomQueue-tietorakenteen virheettömän toiminnan varmistaminen on niin ikään testaamisen keskiössä. Jos RoomQueuen toiminta menisi rikki, luolagenerointiprosessi ei voisi selvitä virheestä.
 
+### Suorituskykytestauksesta
+
+Dungeonetten suorituskykytestaus on toistaiseksi varsin alkeellista. Dungeonette käynnistää suorituskykyajastimen kun Environment-luolasäiliö konstruktoidaan ja pysäyttää sen kun koko luolasto on generoitu, mutta sen printtaamista ei vielä aloitettu. Suorituskyvyn mittaamista haittaa, että koodissa on yhä debug-henkisiä system.print.out-käskyjä. Konsoliin tulostaminen syö Dungeonetten suorituskykyä ratkaisevasti.
+
+Millisekunneissa ilmoitettavaa luolageneroinnin suoritusaikaa voi hakea konsolitulosteesta hakusanalla "Aikaa meni: ".
+
