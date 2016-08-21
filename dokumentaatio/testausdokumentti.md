@@ -15,5 +15,5 @@ Dungeonettea varten luodun RoomQueue-tietorakenteen virheettömän toiminnan var
 
 Dungeonetten suorituskykytestaus on toistaiseksi varsin alkeellista. Dungeonette käynnistää suorituskykyajastimen kun Environment-luolasäiliö konstruktoidaan ja pysäyttää sen kun koko luolasto on generoitu, mutta sen printtaamista ei vielä aloitettu. Suorituskyvyn mittaamista haittaa, että koodissa on yhä debug-henkisiä system.print.out-käskyjä. Konsoliin tulostaminen syö Dungeonetten suorituskykyä ratkaisevasti.
 
-Millisekunneissa ilmoitettavaa luolageneroinnin suoritusaikaa voi hakea konsolitulosteesta hakusanalla "Aikaa meni: ".
+Millisekunneissa ilmoitettavaa luolageneroinnin suoritusaikaa voi hakea konsolitulosteesta hakusanalla "Aikaa meni: "
 
