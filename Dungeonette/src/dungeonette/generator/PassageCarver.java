@@ -124,6 +124,11 @@ public class PassageCarver {
                         dir = 'n';
                     }
                 }
+                
+                if (floor.roomLayout[cx/10][cy/10]!=null) {
+                    floor.getItems()[cx][cy]=0;
+                }
+                
 
                 boolean midPasssage = (((dir == 'n' || dir == 's') && (tiles[cx + 1][cy] == '+' && tiles[cx + 1][cy] == '#' && tiles[cx - 1][cy] == '#'))
                         || ((dir == 'w' || dir == 'e') && (tiles[cx + 1][cy] == '+' && tiles[cx][cy + 1] == '#' && tiles[cx][cy - 1] == '#')));

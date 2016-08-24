@@ -5,6 +5,7 @@
  */
 package dungeonette.domain;
 
+import dungeonette.generator.RoomDecorator;
 import dungeonette.generator.RoomStrangifier;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -29,6 +30,7 @@ public class Room {
     private boolean horizontalPassage;
     private boolean verticalPassage;
     private char[][] shape;
+    private char[][] items;
     private int area;
     private boolean debugForceCornerRemoval;
     private Point[] doorways;
@@ -62,6 +64,7 @@ public class Room {
         this.id = newID;
         this.fromDirection = from;
         this.shape = new char[dimension.width][dimension.height];
+        this.items = new char[dimension.width][dimension.height];
 
         if (from=='x') {
             debugForceCornerRemoval=true;
@@ -152,6 +155,9 @@ public class Room {
             } else {
                 doorways[9]=new Point(10-hMargin2-2+(location.x*10), 10-vMargin2-2+(location.y*10));
             }
+        }
+        if (randomi.nextBoolean()) {
+            RoomDecorator.decorate(this);
         }
     }
 
@@ -317,9 +323,10 @@ public class Room {
      *  
      * @param x Fine x coordinate on the dungeon floor.
      * @param y Fine y coordinate on the dungeon floor.
+     * @param trueForTileFalseForItem set true if you want to fetch the actual TILE, false if you want to fetch the item
      * @return Returns the char of the tile
      */
-    public char getTile(int x, int y) {
+    public char getTile(int x, int y, boolean trueForTileFalseForItem) {
         
         
         x -= location.x * 10;
@@ -328,8 +335,10 @@ public class Room {
         if (x<0 || y<0 || x>=dimension.width || y>=dimension.height) {
             return '?';
         }
-        
+        if (trueForTileFalseForItem) {
         return shape[x][y];
+        }
+        return items[x][y];
     }
     
      /**
@@ -341,7 +350,7 @@ public class Room {
      * @return Returns the tile, with the char doubled for better console visualization.
      */
     public String print(int x, int y) {
-        char c = getTile(x, y);
+        char c = getTile(x, y,true);
         
         return ""+c+""+c;
     }
@@ -380,6 +389,16 @@ public class Room {
     public char[][] getShape() {
         return this.shape;
     }
+    
+     /**
+     * Return the two dimensional char array containing the room items.
+     * @return returns the array of chars representing items.
+     */
+    
+    public char[][] getItems() {
+        return this.items;
+    }
+
 
     /**
      * Returns the number of floor tiles in the room.

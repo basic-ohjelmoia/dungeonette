@@ -26,6 +26,7 @@ public class Floor {
 
     public char[][] debugTiles;
     private char[][] tiles; // all coordinates of the floor map
+    private char[][] items;
     private int[][] tileIDs; // room id number of each tile (0 = un-used space)
     private char[][] doorTiles;
     
@@ -63,6 +64,7 @@ public class Floor {
         xMax=spec.maxX;
         yMax=spec.maxY;
         tiles = new char[xMax][yMax];
+        items = new char[xMax][yMax];
         debugTiles = new char[xMax][yMax];
         doorTiles = new char[xMax][yMax];
         tileIDs = new int[xMax][yMax];
@@ -140,10 +142,11 @@ public class Floor {
                     Room room = roomLayout[x / 10][y / 10];
 
                     System.out.print(room.print(x, y));
-                    tiles[x][y] = room.print(x, y).charAt(1);
+                    tiles[x][y] = room.getTile(x, y,true);//.print(x, y).charAt(1);
                     if (tiles[x][y]!='.') {
                         tileIDs[x][y]=room.id;
                     }
+                    items[x][y] = room.getTile(x, y, false);
 
                 }
             }
@@ -159,6 +162,14 @@ public class Floor {
      */
     public char[][] getTiles() {
         return this.tiles;
+    }
+    
+       /**
+     * Returns two dimensional array of char items of the floor.
+     * @return two dimensional array of char items of the floor.
+     */
+    public char[][] getItems() {
+        return this.items;
     }
     
     /**
