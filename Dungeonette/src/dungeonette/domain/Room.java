@@ -152,9 +152,10 @@ public class Room {
     }
     
     public Point getDoorway() {
-        long timer = System.currentTimeMillis();
-        int dice = (int)(timer%10);
-        System.out.println("dice: "+dice);
+        //long timer = System.currentTimeMillis();
+        //int dice = (int)(timer%10);
+        //System.out.println("dice: "+dice);
+        int dice = randomi.nextInt(10);
         if (doorways[dice]!=null) {
         return doorways[dice];
         }

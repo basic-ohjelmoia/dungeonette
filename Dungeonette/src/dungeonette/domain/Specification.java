@@ -17,8 +17,14 @@ import java.util.Random;
  * 
  */
 public class Specification {
-    
+
+    /**
+     * The common random object shared by the entire dungeon.
+     */
     public Random randomi;
+    /**
+     * Seed word which dictates the layout of the dungeon. The size and the parameters of the dungeon need to be identical in order for the same seed to recreate the same dungeon.
+     */
     public String seed;
     
     public int maxX;
@@ -127,12 +133,30 @@ public class Specification {
         randomi = new Random();
     }
     
+    /**
+     * Sets a new seed for the Random object.
+     * @param seed seed word.
+     */
     public void setSeed(String seed) {
+        this.seed=seed;
+        
         int actual = 0;
-        for (int i = 0; i<seed.length();i++) {
-            actual*=seed.charAt(i);
-            actual-=seed.charAt(i);
+        if (seed.length()%3==0) {
+            actual=Integer.MAX_VALUE;
+        } else if (seed.length()%3==1) {
+            actual=Integer.MIN_VALUE;
         }
+            
+        
+        for (int i = 0; i<seed.length();i++) {
+            if (seed.charAt(i)==0) {
+                actual*=(1+seed.length()+i);
+            } else {
+            actual*=seed.charAt(i);
+            }
+            actual-=(seed.charAt(i)+(seed.length()/3));
+        }
+  
         System.out.println(seed+" is the new seed : "+actual);
         this.randomi = new Random(actual);
     }
