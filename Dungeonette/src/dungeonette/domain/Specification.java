@@ -5,6 +5,8 @@
  */
 package dungeonette.domain;
 
+import java.util.Random;
+
 /**
  *
  * This class is used for storing the paramets which control the type of dungeon being generated.
@@ -15,6 +17,9 @@ package dungeonette.domain;
  * 
  */
 public class Specification {
+    
+    public Random randomi;
+    public String seed;
     
     public int maxX;
     public int maxY;
@@ -119,5 +124,16 @@ public class Specification {
         
         this.deadEndiness = 5;
         this.roomConnectivity = 1;
+        randomi = new Random();
+    }
+    
+    public void setSeed(String seed) {
+        int actual = 0;
+        for (int i = 0; i<seed.length();i++) {
+            actual*=seed.charAt(i);
+            actual-=seed.charAt(i);
+        }
+        System.out.println(seed+" is the new seed : "+actual);
+        this.randomi = new Random(actual);
     }
 }

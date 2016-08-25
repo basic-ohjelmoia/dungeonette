@@ -27,6 +27,7 @@ public class Dungeonette {
         
                 
         Specification spec = new Specification(140,110,5); // dungeon specification 
+        spec.setSeed("Tuomas!");
         Environment env = new Environment(spec);    // the environment for the dungeon generation
         env.generateFloors(); // go-code
     

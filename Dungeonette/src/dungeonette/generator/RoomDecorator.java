@@ -23,11 +23,11 @@ public class RoomDecorator {
      * This method is run once every time a new room is constructed.
      * The higher the room.id number is, the more likely the room is going to contain items.
      * 
-     * @param room 
+     * @param room Room being decorated
      */
     public static void decorate(Room room) {
 
-        Random randomi = new Random();
+        Random randomi = room.getRandom();
         
         char[][] shape = room.getShape();
         char[][] items = room.getItems();

@@ -33,7 +33,7 @@ public class RoomStrangifier {
         }
 
         int shapes = 8;
-        Random randomi = new Random();
+        Random randomi = room.getRandom();
 
         int prevX = room.dimension.width / 3;
         int prevY = room.dimension.height / 3;

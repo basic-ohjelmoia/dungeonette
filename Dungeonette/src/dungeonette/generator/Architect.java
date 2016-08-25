@@ -110,7 +110,7 @@ public class Architect {
 
         int rooms = 1;        // this is basically the serial number of the room currently being generated. Must start from one NOT zero!
 
-        Random randomi = new Random();
+        Random randomi = spec.randomi;
 
         int cx = pointOfEntry.x;       // cx and cy refer to the "current x coordinate" and "current y coordinate" of the dungeon generation process.
         int cy = pointOfEntry.y;       // cx and cy are based on the coarse grid 10x10 format
@@ -118,10 +118,7 @@ public class Architect {
         // as the algorithm actually handles the dungeon in a coarse grid of 10 x 10 tiles
         // the point of origin coordinates need to be divided by 10
 
-        Point temporaryOrigin = new Point(cx, cy);       // this information is needed in order to connect
-        // passages from the point of origin and the next room
-        // being generated
-
+       
         int maxRooms = randomi.nextInt(Math.max(2, (spec.volatility-(spec.funnelEffect*floorLevel))))
                 + Math.max(0, (spec.density - (spec.funnelEffect*floorLevel)));            // maximum number of rooms being generated for the dungeon
         // the actualy reaching of "the max" is NOT guaranteed currently
@@ -131,7 +128,7 @@ public class Architect {
         int failuresSinceLastRoomGeneration = 0;          // a safety which ensures that the algorithm eventually fails in case it reaches a logical dead-end
 
         // HERE WE START BY INSERTING THE ENTRY POINT ROOM INTO THE FLOOR AS THE ROOM #1
-        RoomInserter.seeIfItFits(floor, spec, cx, cy, new Dimension(10, 10), 'n', temporaryOrigin, rooms);
+        RoomInserter.seeIfItFits(floor, spec, cx, cy, new Dimension(10, 10), 'n', new Point(cx, cy), rooms);
         rooms++;
 
         // ================

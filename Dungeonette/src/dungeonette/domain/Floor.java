@@ -92,7 +92,7 @@ public class Floor {
      * 
      */
     public void addSaltToGrid() {
-        Random randomi = new Random();
+        Random randomi = spec.randomi;
         
         
         for (int y=0; y<spec.gridY; y++) {
@@ -179,7 +179,7 @@ public class Floor {
      * @param connecting true if the route connects to another room, false if the route is a deadend
      */
     public void addRandomRoute(boolean connecting) {
-       Random randomi = new Random();
+       Random randomi = spec.randomi;
        Room origin = null;
        
        routeIDTo[routes]=0;
@@ -233,7 +233,7 @@ public class Floor {
         int targetY=start.y;
         int targetY2=start.y;
         
-        Random randomi = new Random();
+        Random randomi = spec.randomi;
         int oneWay=randomi.nextInt(6);
         int other=randomi.nextInt(6);
         

@@ -6,6 +6,7 @@
 package dungeonette.domain;
 
 import dungeonette.generator.RoomDecorator;
+import dungeonette.generator.RoomShaper;
 import dungeonette.generator.RoomStrangifier;
 import java.awt.Dimension;
 import java.awt.Point;
@@ -21,6 +22,7 @@ import java.util.Random;
  */
 public class Room {
 
+    private Random randomi;
     public Dimension dimension;
     public int id;
     public char fromDirection;
@@ -32,7 +34,7 @@ public class Room {
     private char[][] shape;
     private char[][] items;
     private int area;
-    private boolean debugForceCornerRemoval;
+    public boolean debugForceCornerRemoval;
     private Point[] doorways;
     private int pivots;
     public boolean isConnectedToFloorStart;
@@ -49,8 +51,10 @@ public class Room {
      * throughout the entire multi-floor dungeon)
      * @param from Direction (n-s-w-e) of the rooms previous connecting room
      * ("parent room")
+     * @param randomi Random object received from Specification object
      */
-    public Room(Point location, Dimension dimension, int newID, char from) {
+    public Room(Point location, Dimension dimension, int newID, char from, Random randomi) {
+        this.randomi=randomi;
         if (!(dimension.width==10 || dimension.width==20 || dimension.width==30)) {
             dimension.width=10;
         }
@@ -69,251 +73,35 @@ public class Room {
         if (from=='x') {
             debugForceCornerRemoval=true;
         }
+        initialize();
+    }
+    
+    private void initialize() {
         
         if (id%2==0 && (dimension.height>=20 || dimension.height>=20)) {
-         RoomStrangifier.reshape(this);
+             RoomStrangifier.reshape(this);
         } else {
-        generateShape();
+            RoomShaper.generateShape(this);
         }
         
         
         generatePivots();
-        System.out.println("print out room "+id);
-        for (int y=0; y<dimension.height; y++) {
-            System.out.print("\n");
-            for (int x=0; x<dimension.width; x++) {
-                System.out.print(this.shape[x][y]);
-            } 
-        }
+        
+        
+//        System.out.println("print out room "+id);
+//        for (int y=0; y<dimension.height; y++) {
+//            System.out.print("\n");
+//            for (int x=0; x<dimension.width; x++) {
+//                System.out.print(this.shape[x][y]);
+//            } 
+//        }
+        
         if (id==1) {
             isConnectedToFloorStart=true;
         }
     }
 
-    /**
-     * Generates the general shape of the room.
-     *
-     * The rooms are constructed as square-shaped. generateShape() deforms the
-     * room into a rectangle.
-     *
-     */
-    public void generateShape() {
-        Random randomi = new Random();
 
-        // h(orizontal)Margins and v(ertical)Margins set the new boundaries for the room's outer walls.
-        int hMargin = randomi.nextInt(3 + (dimension.width / 8));
-        int hMargin2 = randomi.nextInt(3 + (dimension.width / 8)) + 1;
-        int vMargin = randomi.nextInt(3 + (dimension.height / 8));
-        int vMargin2 = randomi.nextInt(3 + (dimension.height / 8)) + 1;
-        
-        
-        // Some rooms should ignore the prior vertical and horizontal margin deformations and stay as perfect (full size) squares.
-        if (randomi.nextInt(15) > 4) {
-            hMargin = 0;
-            vMargin = 0;
-            hMargin2 = 1;
-            vMargin2 = 1;
-        }
-
-        int hCenter=dimension.width/2 - hMargin2+hMargin;
-        int vCenter=dimension.height/2 - vMargin2+vMargin;
-      
-        int doorCount=0;
-      
-        // This for-loop generates the actual room shape. 
-        // It's important to note that unused space needs to be marked as solid ground ('.' tiles).
-        // Map key:
-        // #    ... Outer wall tile
-        // +    ... Floor tile 
-        // .    ... Unused space (solid ground)
-        for (int y = 0; y < dimension.height; y++) {
-            for (int x = 0; x < dimension.width; x++) {
-                if (x < hMargin || x > dimension.width - hMargin2
-                        || y < vMargin || y > dimension.height - vMargin2) {
-                    shape[x][y] = '.';
-                } else if (x == hMargin || x == dimension.width - hMargin2
-                        || y == vMargin || y == dimension.height - vMargin2) {
-                    shape[x][y] = '#';
-
-                } else {
-                    shape[x][y] = '+';
-                    area++;
-                    if (Math.abs(x-hCenter)<=1 && Math.abs(y-vCenter)<=1) {
-                        doorways[doorCount]=new Point(x+(location.x*10),y+(location.y*10));
-                        doorCount++;
-                    }
-                }
-
-            }
-        }
-        // 50 % of the rooms will be further deformed with a deCornerize() call.
-        if (randomi.nextBoolean() || debugForceCornerRemoval) {
-            deCornerize();
-        } else {
-            if (randomi.nextBoolean()) {
-            doorways[9]=new Point(hMargin+2+(location.x*10), vMargin+2+(location.y*10));
-            } else {
-                doorways[9]=new Point(10-hMargin2-2+(location.x*10), 10-vMargin2-2+(location.y*10));
-            }
-        }
-        if (randomi.nextBoolean()) {
-            RoomDecorator.decorate(this);
-        }
-    }
-
-    /**
-     * This method deforms the room by removing as many as four corners from the
-     * original shape.
-     *
-     * The room might also be deformed by adding a solid center ("doughnut
-     * shaped room").
-     *
-     * Some rooms might survive the deCornerize() completely unchanged!
-     */
-    public void deCornerize() {
-        Random randomi = new Random();
-
-        // These booleans refer to the corners being removed. If "nw" is true, then the north-west corner will get cut.
-        boolean nw = randomi.nextBoolean();  if (debugForceCornerRemoval) {nw=true;}
-        boolean ne = randomi.nextBoolean();
-        boolean sw = randomi.nextBoolean();
-        boolean se = randomi.nextBoolean();
-
-        int cutCorners = 0;
-        if (nw) {
-            cutCorners++;
-        }
-        if (ne) {
-            cutCorners++;
-        }
-        if (sw) {
-            cutCorners++;
-        }
-        if (ne) {
-            cutCorners++;
-        }
-
-        // The center boolean refers to the addition of the solid room center. 
-        // There probably should be better safeguards against adding too large of a center into a too small of a room...
-        boolean center = false;
-        if (randomi.nextInt(4) == 1 && area >= 75) {// && !nw&&!ne&&!sw&&!se) {
-            center = true;
-        }
-
-        // These dividers refer to the severity of the floor-space being removed. The smaller the divider is, the larger the cut.
-        int cornerDivider = 4;
-        int centerDivider = 4;
-        if (cutCorners > 0) {
-            centerDivider = 3;
-
-            // Addition of a solid center will be cancelled, if a small-ish room is already having all 4 corners removed.
-            if (ne && nw && sw && se && area < 100) {
-                center = false;
-            }
-        }
-        int mod=0;
-        
-        if (!center && area >64) {
-            cornerDivider = 3;
-            System.out.println("cut corners: " + cutCorners + ", dims: " + dimension.width + ", " + dimension.height);
-            if (cutCorners == 1 && (dimension.width > 10 || dimension.height > 10)) {// && area>=81) {
-                cornerDivider = 2;
-                mod=1;
-                System.out.println("cordir2");
-            }
-        }
-
-        // These ints mark the coordinate boundaries for the corners/center being removed from the room.
-        int cornerClipX = (dimension.width / cornerDivider) -mod;
-        int cornerClipX2 = dimension.width - (dimension.width / cornerDivider) + mod;
-        int cornerClipY = (dimension.height / cornerDivider) -mod;
-        int cornerClipY2 = dimension.height - (dimension.height / cornerDivider) + mod;
-
-        int centerClipX = dimension.width / centerDivider;
-        int centerClipX2 = dimension.width - (dimension.width / centerDivider);
-        int centerClipY = dimension.height / centerDivider;
-        int centerClipY2 = dimension.height - (dimension.height / centerDivider);
-
-        // This for-loop handles the actual deformation of the room.
-        // Map key:
-        // #    ... Outer wall tile
-        // +    ... Floor tile 
-        // .    ... Unused space (solid ground)
-        for (int y = 0; y < dimension.height; y++) {
-            for (int x = 0; x < dimension.width; x++) {
-
-                if (center) {
-                    if (x > centerClipX + 1 && x < centerClipX2 - 1 && y > centerClipY + 1 && y < centerClipY2 - 1) {
-                        shape[x][y] = '.';
-                    }
-                    if ((x == centerClipX + 1 || x == centerClipX2 - 1) && y >= centerClipY + 1 && y <= centerClipY2 - 1 && shape[x][y] != '.') {
-                        shape[x][y] = '#';
-                    }
-                    if ((y == centerClipY + 1 || y == centerClipY2 - 1) && x >= centerClipX + 1 && x <= centerClipX2 - 1 && shape[x][y] != '.') {
-                        shape[x][y] = '#';
-                    }
-
-                }
-
-                if (nw && x < cornerClipX && y < cornerClipY) {
-                    shape[x][y] = '.';
-                }
-                if (nw && x == cornerClipX && y < cornerClipY && shape[x][y] != '.') {
-                    shape[x][y] = '#';
-                }
-                if (nw && y == cornerClipY && x < cornerClipX && shape[x][y] != '.') {
-                    shape[x][y] = '#';
-                }
-                if (nw && y == cornerClipY && x == cornerClipX && shape[x][y] != '.') {
-                    shape[x][y] = '#';
-                }
-
-                if (ne && x > cornerClipX2 && y < cornerClipY) {
-                    shape[x][y] = '.';
-                }
-                if (ne && x == cornerClipX2 && y < cornerClipY && shape[x][y] != '.') {
-                    shape[x][y] = '#';
-                }
-                if (ne && y == cornerClipY && x > cornerClipX2 && shape[x][y] != '.') {
-                    shape[x][y] = '#';
-                }
-                if (ne && y == cornerClipY && x == cornerClipX2 && shape[x][y] != '.') {
-                    shape[x][y] = '#';
-                }
-
-                if (sw && x < cornerClipX && y > cornerClipY2) {
-                    shape[x][y] = '.';
-                }
-                if (sw && x == cornerClipX && y > cornerClipY2 && shape[x][y] != '.') {
-                    shape[x][y] = '#';
-                }
-                if (sw && y == cornerClipY2 && x < cornerClipX && shape[x][y] != '.') {
-                    shape[x][y] = '#';
-                }
-                if (sw && y == cornerClipY2 && x == cornerClipX && shape[x][y] != '.') {
-                    shape[x][y] = '#';
-                }
-
-                if (se && x > cornerClipX2 && y > cornerClipY2) {
-                    shape[x][y] = '.';
-                }
-                if (se && x == cornerClipX2 && y > cornerClipY2 && shape[x][y] != '.') {
-                    shape[x][y] = '#';
-                }
-                if (se && y == cornerClipY2 && x > cornerClipX2 && shape[x][y] != '.') {
-                    shape[x][y] = '#';
-                }
-                if (se && y == cornerClipY2 && x == cornerClipX2 && shape[x][y] != '.') {
-                    shape[x][y] = '#';
-                }
-
-                if (shape[x][y]=='+' && doorways[9]==null) {
-                    doorways[9]=new Point(x+(location.x*10),y+(location.y*10));
-                }
-                
-            }
-        }
-    }
 
     
     
@@ -467,5 +255,13 @@ public class Room {
      */
     public void removeAllPivots() {
         this.pivots=0;
+    }
+    
+    /**
+     * Returns the common random object used throughout the dungeon
+     * @return random object
+     */
+    public Random getRandom() {
+        return this.randomi;
     }
 }

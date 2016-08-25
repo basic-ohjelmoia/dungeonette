@@ -29,7 +29,7 @@ public class PassageCarver {
         char[][] tiles = floor.getTiles();
         int routes = floor.getRoutes();
 
-        System.out.println("routes " + routes);
+        
 
         // the for loop processes each pair of passage/route departures and destinations.
         for (int i = 0; i < floor.getRoutes(); i++) {
@@ -40,13 +40,16 @@ public class PassageCarver {
             int endX = (floor.getRouteTo()[i].x);// * 10) + 5;
             int endY = (floor.getRouteTo()[i].y);// * 10) + 5;
 
-            int idTrueFrom = floor.getRouteIDFrom()[i];
-            int idTrueTo = floor.getRouteIDTo()[i];
-            int idMin = floor.getRouteIDFrom()[i] - 5;
+            int idTrueFrom = floor.getRouteIDFrom()[i];     // id number of the room from which the passage originates from
+            int idTrueTo = floor.getRouteIDTo()[i];         // id number of the room to which the passage is targetting
+            int idMin = floor.getRouteIDFrom()[i] - 5;      // passages are allowed to punch thru non related rooms within -5...+5 range of id numbers
             int idMax = floor.getRouteIDFrom()[i] + 5;
 
+            
+            // A connected room is a room that has a legal pathway to the first room of the floor.
+            // If the passage is being carved between two rooms (i.e. it's not a dead-end) then if either of these rooms is "connected", the passage will make both of them "connected"
             if ((floor.connected[idTrueFrom] || floor.connected[idTrueTo]) && floor.connected[idTrueTo] != floor.connected[idTrueFrom]) {
-                //   System.out.println("from  (#"+idTrueFrom+"): "+floor.connected[idTrueFrom]+" vs to  (#"+idTrueTo+"): "+floor.connected[idTrueTo]);
+               
                 floor.connected[idTrueFrom] = true;
                 floor.connected[idTrueTo] = true;
                 idTrueFrom = 0;
@@ -81,8 +84,10 @@ public class PassageCarver {
 
             while (true) {
 
+                Architect.Dir direction = Architect.Dir.NORTH;
+                
                 int oldChaos = chaos;
-                char dir = ' ';
+                
                 int roomID = floor.getTileIDs()[cx][cy];
                 boolean isItACrossyPassage = floor.isCrossyPassage[i];
 
@@ -91,45 +96,41 @@ public class PassageCarver {
                 // without it, all the passages would be boring straight lines
                 if (chaos < 3 && cx > 1 && cx < spec.maxX - 2 && cy > 1 && cy < spec.maxY - 2 && !isItACrossyPassage) {
                     if ((cx + cy) % 29 == 3) {
-                        cx++;
-                        dir = 'e';
+                        direction = Architect.Dir.EAST;
                         chaos++;
                     } else if ((cx + cy) % 29 == 17) {
-                        cx--;
-                        dir = 'w';
+                        direction = Architect.Dir.WEST;
                         chaos++;
                     } else if ((cx + cy) % 29 == 13) {
-                        cy++;
-                        dir = 's';
+                        direction = Architect.Dir.SOUTH;
                         chaos++;
                     } else if ((cx + cy) % 29 == 27) {
-                        cy--;
-                        dir = 'n';
+                        direction = Architect.Dir.NORTH;
                         chaos++;
                     }
                 }
 
                 if (oldChaos == chaos) {
                     if (cx < endX) {
-                        cx++;
-                        dir = 'e';
+                        direction = Architect.Dir.EAST;
                     } else if (cx > endX) {
-                        cx--;
-                        dir = 'w';
+                        direction = Architect.Dir.WEST;
                     } else if (cy < endY) {
-                        cy++;
-                        dir = 's';
+                        direction = Architect.Dir.SOUTH;
                     } else if (cy > endY) {
-                        cy--;
-                        dir = 'n';
+                        direction = Architect.Dir.NORTH;
                     }
                 }
                 
+                cx+=direction.x;
+                cy+=direction.y;
+                
                 if (floor.roomLayout[cx/10][cy/10]!=null) {
-                    floor.getItems()[cx][cy]=0;
+                    floor.getItems()[cx][cy]=0;     // passages supercede items
                 }
                 
-
+                char dir = direction.name;
+                
                 boolean midPasssage = (((dir == 'n' || dir == 's') && (tiles[cx + 1][cy] == '+' && tiles[cx + 1][cy] == '#' && tiles[cx - 1][cy] == '#'))
                         || ((dir == 'w' || dir == 'e') && (tiles[cx + 1][cy] == '+' && tiles[cx][cy + 1] == '#' && tiles[cx][cy - 1] == '#')));
 

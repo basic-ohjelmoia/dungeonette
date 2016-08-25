@@ -161,7 +161,7 @@ public class RoomInserter {
         centerY /= size;
 
         // Here the actual seeIfItFits object gets constructed
-        Room room = new Room(new Point(Math.min(rlx, rlx + xStep), Math.min(rly, rly + yStep)), dimension, currentRoomID, fromDirection);
+        Room room = new Room(new Point(Math.min(rlx, rlx + xStep), Math.min(rly, rly + yStep)), dimension, currentRoomID, fromDirection, spec.randomi);
 
         // The following sets the passage information between the new seeIfItFits and the previous connecting seeIfItFits
         room.roomCenter = new Point(centerX, centerY);
