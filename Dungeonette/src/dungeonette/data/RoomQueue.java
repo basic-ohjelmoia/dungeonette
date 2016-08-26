@@ -8,15 +8,17 @@ package dungeonette.data;
 import dungeonette.domain.Room;
 
 /**
- *  Queue for RoomNodes, with each RoomNode containg a room.
- * 
- * This class has some built-in integration for the dungeon generation algorithm.
- * 
- * The queue revolves around the concept of pivots.
- * A pivot is a POTENTIAL place for a passageway connecting to a neighbouring room.
- * As long as a room has pivots left, it's considered "active" anc will NOT get dequeued by a dequeue() call.
- * However, each call for a dequeue() WILL deplete a single pivot from the room.
- * Once all pivots have been spent, the room will be ripe for a proper dequeue.
+ * Queue for RoomNodes, with each RoomNode containg a room.
+ *
+ * This class has some built-in integration for the dungeon generation
+ * algorithm.
+ *
+ * The queue revolves around the concept of pivots. A pivot is a POTENTIAL place
+ * for a passageway connecting to a neighbouring room. As long as a room has
+ * pivots left, it's considered "active" anc will NOT get dequeued by a
+ * dequeue() call. However, each call for a dequeue() WILL deplete a single
+ * pivot from the room. Once all pivots have been spent, the room will be ripe
+ * for a proper dequeue.
  *
  */
 public class RoomQueue {
@@ -24,6 +26,7 @@ public class RoomQueue {
     private RoomNode first;
     private RoomNode last;
     private int size;
+    public boolean debugTelegraphInnerWorkings;
 
     public RoomQueue() {
         this.first = null;
@@ -31,7 +34,9 @@ public class RoomQueue {
     }
 
     /**
-     * Returns the first room in the queue without removing it from the queue (no pivot spent).
+     * Returns the first room in the queue without removing it from the queue
+     * (no pivot spent).
+     *
      * @return returns the first room without removing it from the queue
      */
     public Room front() {
@@ -39,20 +44,21 @@ public class RoomQueue {
     }
 
     /**
-     * TRIES to remove the first room in the queue. If the room has no more pivots left, then the removal
-     * will happen. Otherwise the room will loose one pivot but only get front()'ed.
+     * TRIES to remove the first room in the queue. If the room has no more
+     * pivots left, then the removal will happen. Otherwise the room will loose
+     * one pivot but only get front()'ed.
+     *
      * @return returns and possibly removes the first room in queue
      */
     public Room dequeue() {
         if (this.first.getRoom().hasPivots()) {
-            System.out.println(this.first.getRoom().id + " had a pivot");
+            if (debugTelegraphInnerWorkings) {
+                System.out.println("DEBUG! dequeue did not happen since " + this.first.getRoom().id + " had a pivot(s) left!");
+            }
             return front();
         }
 
         RoomNode dequed = this.first;
-        System.out.println("removed (" + size + ") " + this.first.getRoom().id);
-        System.out.print("after DEq: first: " + this.first.getRoom().id);
-        System.out.print(", last: " + this.last.getRoom().id + "\n");
 
         if (size > 1) {
             this.first = dequed.getNext();
@@ -72,6 +78,7 @@ public class RoomQueue {
 
     /**
      * Adds a new room to the end of the queue.
+     *
      * @param room room being added
      */
     public void enqueue(Room room) {
@@ -85,12 +92,15 @@ public class RoomQueue {
         }
         last = enqued;
         size++;
-        System.out.println("after eq: (" + size + ") first: " + this.first.getRoom().id + ", last: " + this.last.getRoom().id);
+        if (debugTelegraphInnerWorkings) {
+            System.out.println("DEBUG! after enqueue the queue has size of (" + size + ") with first room id being: " + this.first.getRoom().id + ", last room id: " + this.last.getRoom().id);
+        }
     }
 
     /**
      * Returns the size of the queue
-     * @return queue size 
+     *
+     * @return queue size
      */
     public int getSize() {
         return this.size;
@@ -98,6 +108,7 @@ public class RoomQueue {
 
     /**
      * If the queue is empty, this method will return TRUE
+     *
      * @return true if empty
      */
     public boolean isEmpty() {

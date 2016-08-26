@@ -7,6 +7,7 @@ package dungeonette.domain;
 
 import java.awt.Dimension;
 import java.awt.Point;
+import java.util.Random;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -19,7 +20,7 @@ public class RoomTest {
     public Room room;
     
     public RoomTest() {
-        this.room = new Room(new Point(5,5), new Dimension(10,10), 1, 'n');
+        this.room = new Room(new Point(5,5), new Dimension(10,10), 1, 'n', new Random());
     }
 
     /**
@@ -80,7 +81,7 @@ public class RoomTest {
         System.out.println("== RUNNING TEST: testDeCornerize == ");
            for (int i = 0; i<100; i++) {
         
-        Room cRoom = new Room(new Point(5,5), new Dimension(20,20), 1, 'x');  // 'x' designates a forced corner removal
+        Room cRoom = new Room(new Point(5,5), new Dimension(20,20), 1, 'x', new Random());  // 'x' designates a forced corner removal
         
         int floorCount=0;
                 

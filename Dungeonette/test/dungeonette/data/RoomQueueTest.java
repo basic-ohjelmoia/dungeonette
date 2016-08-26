@@ -8,6 +8,7 @@ package dungeonette.data;
 import dungeonette.domain.Room;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.util.Random;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -17,9 +18,11 @@ import static org.junit.Assert.*;
 public class RoomQueueTest {
 
     private RoomQueue rq;
+    private Random randomi;
 
     public RoomQueueTest() {
         rq = new RoomQueue();
+        randomi = new Random(10);
     }
 
     /**
@@ -29,9 +32,9 @@ public class RoomQueueTest {
     public void testFrontAndEnqueueAndDeQueueAndEmptyAndSize() {
         rq = new RoomQueue();
 
-        Room r1 = new Room(new Point(0, 0), new Dimension(10, 10), 1, 'n');
-        Room r2 = new Room(new Point(0, 0), new Dimension(10, 10), 2, 'n');
-        Room r3 = new Room(new Point(0, 0), new Dimension(10, 10), 3, 'n');
+        Room r1 = new Room(new Point(0, 0), new Dimension(10, 10), 1, 'n', randomi);
+        Room r2 = new Room(new Point(0, 0), new Dimension(10, 10), 2, 'n', randomi);
+        Room r3 = new Room(new Point(0, 0), new Dimension(10, 10), 3, 'n', randomi);
 
         r1.removeAllPivots();
         r2.removeAllPivots();

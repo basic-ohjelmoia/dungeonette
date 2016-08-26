@@ -8,6 +8,7 @@ package dungeonette.generator;
 import dungeonette.domain.Room;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.util.Random;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -20,7 +21,7 @@ public class RoomStrangifierTest {
     public Room room;
 
     public RoomStrangifierTest() {
-        room = new Room(new Point(0, 0), new Dimension(20, 20), 1, 'n');
+        room = new Room(new Point(0, 0), new Dimension(20, 20), 1, 'n', new Random());
     }
 
     /**
@@ -29,7 +30,7 @@ public class RoomStrangifierTest {
     @Test
     public void testReshape() {
         for (int i = 0; i<10; i++) {
-        room = new Room(new Point(0, 0), new Dimension(20, 20), 1, 'n');
+        room = new Room(new Point(0, 0), new Dimension(20, 20), 1, 'n', new Random());
         RoomStrangifier.reshape(room);
 
         room.generatePivots();

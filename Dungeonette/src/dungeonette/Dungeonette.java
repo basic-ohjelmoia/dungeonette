@@ -10,7 +10,7 @@ import dungeonette.domain.Specification;
 /**
  * Dungeonette is a program which generates random dungeons for an 
  * unnamed tiled-based role playing game I'm working on.
- * 
+ *
  * 
  * @author Tuomas Honkala
  */

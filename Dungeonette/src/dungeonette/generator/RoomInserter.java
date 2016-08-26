@@ -66,6 +66,8 @@ public class RoomInserter {
         int xStep = 1;
         int yStep = 1;
 
+        
+        
         if (rlx < 5) {
             xStep = -1;
 
@@ -185,9 +187,6 @@ public class RoomInserter {
         floor.getRouteIDTo()[routes] = room.id;
         
         
-//        System.out.println("Origin x ja y "+origin.x+","+origin.y);
-//        System.out.println("| lokaatio layoutissa null?: "+(floor.roomLayout[origin.x][origin.y]==null));
-        
         
         if (floor.roomLayout[origin.x][origin.y] != null && currentRoomID>1) {
             floor.getRouteFrom()[routes] = floor.roomLayout[origin.x][origin.y].getDoorway();
@@ -195,10 +194,6 @@ public class RoomInserter {
             floor.getRouteFrom()[routes] = floor.getRouteTo()[routes];
         }
 
-//        System.out.println("routeFrom = " + floor.getRouteFrom()[routes].toString());
-//        System.out.println("routeTO = " + floor.getRouteTo()[routes].toString());
-//        System.out.println("Room loc = " + room.location.toString() + " vs center " + room.roomCenter.toString());
-        
         floor.addRouteCount();
 
         for (int i = 0; i < size; i++) {
