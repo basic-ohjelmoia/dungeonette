@@ -117,4 +117,13 @@ public class RoomQueue {
         }
         return false;
     }
+    
+    /**
+     * empties the roomqueue!
+     */
+    public void flush() {
+        this.first = null;
+        this.last = null;
+        this.size = 0;
+    }
 }

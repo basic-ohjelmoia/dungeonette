@@ -65,6 +65,17 @@ public class DungeonPrinter {
                         } else {
                             char first = tiles[x][y];
                             char second = floor.getItems()[x][y];
+                          
+                            
+                            if (room!=null) {// && (x+y)%2==0) {
+                                if (room.id==1 && first=='+') {
+                                        first='°';
+                                }
+                                if (room.id==floor.getRoomCount() && first=='+') {
+                                        first='°';
+                                }
+                            }
+                            
                             if (second==0) {
                                 second=first;
                             } 

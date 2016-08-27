@@ -13,8 +13,7 @@ import static org.junit.Assert.*;
 
 /**
  *
- * @author mikromafia
- */
+  */
 public class RoomTest {
     
     public Room room;

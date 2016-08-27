@@ -29,8 +29,6 @@ public class PassageCarver {
         char[][] tiles = floor.getTiles();
         int routes = floor.getRoutes();
 
-        
-
         // the for loop processes each pair of passage/route departures and destinations.
         for (int i = 0; i < floor.getRoutes(); i++) {
             // System.out.println("i = "+i+", routef "+floor.getRouteFrom()[i].toString());
@@ -45,11 +43,10 @@ public class PassageCarver {
             int idMin = floor.getRouteIDFrom()[i] - 5;      // passages are allowed to punch thru non related rooms within -5...+5 range of id numbers
             int idMax = floor.getRouteIDFrom()[i] + 5;
 
-            
             // A connected room is a room that has a legal pathway to the first room of the floor.
             // If the passage is being carved between two rooms (i.e. it's not a dead-end) then if either of these rooms is "connected", the passage will make both of them "connected"
             if ((floor.connected[idTrueFrom] || floor.connected[idTrueTo]) && floor.connected[idTrueTo] != floor.connected[idTrueFrom]) {
-               
+
                 floor.connected[idTrueFrom] = true;
                 floor.connected[idTrueTo] = true;
                 idTrueFrom = 0;
@@ -76,6 +73,11 @@ public class PassageCarver {
             int chaosStepCounter = 0;
             int previousTileID = idTrueFrom;
 
+            boolean passageIsNowDetouring = false;
+            int detourLength = 0;
+            Architect.Dir detourDirection = Architect.Dir.NORTH;
+            int detoursConducted = 0;
+
             int stepCounter = 0;
             int passageCounter = 0;
             int wallPasses = 0;
@@ -85,54 +87,57 @@ public class PassageCarver {
             while (true) {
 
                 Architect.Dir direction = Architect.Dir.NORTH;
-                
-                int oldChaos = chaos;
-                
+
+                if (cx < endX) {
+                    direction = Architect.Dir.EAST;
+                } else if (cx > endX) {
+                    direction = Architect.Dir.WEST;
+                } else if (cy < endY) {
+                    direction = Architect.Dir.SOUTH;
+                } else if (cy > endY) {
+                    direction = Architect.Dir.NORTH;
+                }
+
                 int roomID = floor.getTileIDs()[cx][cy];
                 boolean isItACrossyPassage = floor.isCrossyPassage[i];
+                boolean notNearFloorBoundary = cx > 1 && cx < spec.maxX - 2 && cy > 1 && cy < spec.maxY - 2;
+                boolean detourFrequencyReached = passageCounter > 2 + (2 * detoursConducted);
+                boolean detourIsGreenToGo = spec.randomi.nextInt(100) > Math.min(95, spec.passageStraightnessPercentile);
 
-                //   System.out.println("passage "+i+", onko crossy: "+isItACrossyPassage);
-                // "chaos" tries to add some randomness to the passage drawa. 
-                // without it, all the passages would be boring straight lines
-                if (chaos < 3 && cx > 1 && cx < spec.maxX - 2 && cy > 1 && cy < spec.maxY - 2 && !isItACrossyPassage) {
-                    if ((cx + cy) % 29 == 3) {
-                        direction = Architect.Dir.EAST;
-                        chaos++;
-                    } else if ((cx + cy) % 29 == 17) {
-                        direction = Architect.Dir.WEST;
-                        chaos++;
-                    } else if ((cx + cy) % 29 == 13) {
-                        direction = Architect.Dir.SOUTH;
-                        chaos++;
-                    } else if ((cx + cy) % 29 == 27) {
-                        direction = Architect.Dir.NORTH;
-                        chaos++;
+                // PassageDetouring is basically the process of adding extra bends to passageways which otherwise would continue straight
+                if (!passageIsNowDetouring && !isItACrossyPassage && notNearFloorBoundary && detourFrequencyReached && detourIsGreenToGo) { // passageCounter>2+(2*detoursConducted) && 
+                    passageIsNowDetouring = true;
+                    detoursConducted++;
+                    detourLength = spec.randomi.nextInt(7) + 1 + spec.randomi.nextInt(1);
+                    boolean headsOrTails = spec.randomi.nextBoolean();
+
+                    if (direction == Architect.Dir.EAST || direction == Architect.Dir.WEST) {
+                        if (headsOrTails) {
+                            detourDirection = Architect.Dir.NORTH;
+                        } else {
+                            detourDirection = Architect.Dir.SOUTH;
+                        }
+                    }
+                    if (direction == Architect.Dir.NORTH || direction == Architect.Dir.SOUTH) {
+                        if (headsOrTails) {
+                            detourDirection = Architect.Dir.WEST;
+                        } else {
+                            detourDirection = Architect.Dir.EAST;
+                        }
                     }
                 }
 
-                if (oldChaos == chaos) {
-                    if (cx < endX) {
-                        direction = Architect.Dir.EAST;
-                    } else if (cx > endX) {
-                        direction = Architect.Dir.WEST;
-                    } else if (cy < endY) {
-                        direction = Architect.Dir.SOUTH;
-                    } else if (cy > endY) {
-                        direction = Architect.Dir.NORTH;
-                    }
+                if (detourLength > 0 && notNearFloorBoundary) {
+                    direction = detourDirection;
+                    detourLength--;
+                } else {
+                    passageIsNowDetouring = false;
+                    detourLength = 0;
                 }
-                
-                cx+=direction.x;
-                cy+=direction.y;
-                
-                if (floor.roomLayout[cx/10][cy/10]!=null) {
-                    floor.getItems()[cx][cy]=0;     // passages supercede items
-                }
-                
+
                 char dir = direction.name;
-                
-                boolean midPasssage = (((dir == 'n' || dir == 's') && (tiles[cx + 1][cy] == '+' && tiles[cx + 1][cy] == '#' && tiles[cx - 1][cy] == '#'))
-                        || ((dir == 'w' || dir == 'e') && (tiles[cx + 1][cy] == '+' && tiles[cx][cy + 1] == '#' && tiles[cx][cy - 1] == '#')));
+                boolean midPasssage = (((dir == 'n' || dir == 's') && (tiles[cx][cy] == '+' && tiles[cx + 1][cy] == '#' && tiles[cx - 1][cy] == '#'))
+                        || ((dir == 'w' || dir == 'e') && (tiles[cx][cy] == '+' && tiles[cx][cy + 1] == '#' && tiles[cx][cy - 1] == '#')));
 
                 if (midPasssage) {
                     passageCounter++;
@@ -140,18 +145,17 @@ public class PassageCarver {
                     passageCounter = 0;
                 }
 
-                // Below the code tries to place a marker for a POSSIBLE (not guaranteed!) door location
-                // The door placement currently works rather poorly, basically resulting only a fraction of the doors
-                // had been given markers. This is due to the fact that the passages added actually reshape the room boundaries
-                // therefore making many of the previously placed door markers invalid!
-                if (tiles[cx][cy] == '+' && floor.getTileIDs()[cx][cy] != previousTileID) {
-                    //    System.out.println("oveksi merkittiin "+cx+","+cy);
-                    //  floor.getDoorTiles()[cx][cy]=1;
+                cx += direction.x;
+                cy += direction.y;
 
+                if (floor.roomLayout[cx / 10][cy / 10] != null) {
+                    floor.getItems()[cx][cy] = 0;     // passages supercede items
                 }
+
+                // Below the code tries to place a marker for a POSSIBLE (not guaranteed!) door location
                 if (floor.roomLayout[cx / 10][cy / 10] != null) {
                     if (floor.roomLayout[cx / 10][cy / 10].id != previousTileID && (floor.roomLayout[cx / 10][cy / 10].id == idTrueTo || floor.roomLayout[cx / 10][cy / 10].id == idTrueFrom)) {
-                        floor.getDoorTiles()[cx][cy] = 1;
+                        floor.getDoorTiles()[cx][cy] = 1; // a door location is added when the destination room boundary has been reached
                         floor.getTileIDs()[cx][cy] = floor.roomLayout[cx / 10][cy / 10].id;
                         roomID = floor.getTileIDs()[cx][cy];
                     }
@@ -163,19 +167,30 @@ public class PassageCarver {
                 // +    ... floor
                 // #    ... outer wall
                 // .    ... unused space (solid ground or whatnot)
-                // the strange id checks are basically used to ensure that the dungeon doesn't emd up TOO connected
+                // the room id checks are basically used to ensure that the dungeon doesn't emd up TOO connected
                 // ideally you're only connecting the two rooms the passageway is inteded to connect, and don't touch any
                 // rooms in between
                 // however, connecting a room with no legal route to the dungeon entrance trumps any other considerations!!!
                 char tile = tiles[cx][cy];
-                if (tile == '#') {
+
+                boolean tileIsAWall = tile == '#';
+                boolean tileIsAFloor = tile == '+';
+                boolean tileIsPartOfARoom = roomID != 0;
+                boolean passageMissingEitherOriginOrDestination = (idTrueFrom == 0 || idTrueTo == 0);
+                boolean passageHasReachedTheDestinationRoom = roomID == idTrueTo;
+                boolean passageIsBreachingNeighbouringRoomID = roomID >= idMin && roomID <= idMax;
+                boolean deadEndPassageIsStillWithinWallPassLimit = isItACrossyPassage && wallPasses <= 1;
+                boolean deadEndPassageHasToppedTheWallPassLimit = isItACrossyPassage && wallPasses > 1;
+
+                if (tileIsAWall) {
                     wallPasses++;
                 }
 
                 // The following 'if' is used to check wether the tile carver is about to remove a wall tile AND IF SO wether the wall removal is LEGAL. 
-                if (tile != '+' && ((isItACrossyPassage && wallPasses <= 1) || 
-                        ((roomID == 0 || idTrueFrom == 0 || idTrueTo == 0 || roomID == idTrueTo || (roomID >= idMin && roomID <= idMax))))) {
-                    
+                if (!tileIsAFloor && notNearFloorBoundary
+                        && (deadEndPassageIsStillWithinWallPassLimit || !tileIsPartOfARoom || passageMissingEitherOriginOrDestination
+                        || passageHasReachedTheDestinationRoom || passageIsBreachingNeighbouringRoomID)) {
+
                     tiles[cx][cy] = '+';
                     if (isItACrossyPassage) {
                         floor.debugTiles[cx][cy] = '¤';
@@ -184,13 +199,12 @@ public class PassageCarver {
 
                     wallPasses = checkForAWallPass(cx, cy, wallPasses, dir, tiles);
 
-                } else if (isItACrossyPassage && wallPasses > 1) {
+                } else if (deadEndPassageHasToppedTheWallPassLimit) {
                     break;
                 }
 
-//                
                 if (cx == endX && cy == endY) {
-                    System.out.println("terminated at " + cx + "," + cy);
+
                     break;
 
                 }
@@ -204,11 +218,14 @@ public class PassageCarver {
             }
         }
 
+        removeThinPassageWalls(floor, spec);
+
     }
 
     /**
-     * This method checks wether a wall tile is about to be passaed.
-     * It also surrounds any such floor tile with walls which has a blank '.' tile next to it.
+     * This method checks wether a wall tile is about to be passaed. It also
+     * surrounds any such floor tile with walls which has a blank '.' tile next
+     * to it.
      *
      * @param cx carver x coordinate
      * @param cy carver y coordinate
@@ -218,7 +235,7 @@ public class PassageCarver {
      * @return updated number of wallpasses (the int might stay the same!)
      */
     public static int checkForAWallPass(int cx, int cy, int wallPasses, char dir, char[][] tiles) {
-
+        System.out.println("cx: " + cx + ", cy: " + cy);
         for (int sy = cy - 1; sy <= cy + 1; sy++) {
             for (int sx = cx - 1; sx <= cx + 1; sx++) {
                 if (sx == cx && sy == cy) {
@@ -236,6 +253,36 @@ public class PassageCarver {
             }
         }
         return wallPasses;
+    }
+
+    
+    /**
+     * If two passageways are running parrallel next to each other, then the wall between them will be removed,
+     * creating a wider room-like space. While these open areas might look like rooms, they are not considered as such.
+     * 
+     * Thin wall will not be removed, if the tiles in question connect to a "real" (id numbered) room.
+     * 
+     * @param floor floor being checked for this wall removal
+     * @param spec specification of the dungeon
+     */
+    public static void removeThinPassageWalls(Floor floor, Specification spec) {
+
+        for (int y = 1; y < spec.maxY - 1; y++) {
+
+            for (int x = 1; x < spec.maxX - 1; x++) {
+
+                char tile = floor.getTiles()[x][y];
+
+                if (tile == '#' && floor.getTileIDs()[x][y] == 0) {
+
+                    if ((floor.getTiles()[x + 1][y] == '+' && floor.getTiles()[x - 1][y] == '+' && floor.getTileIDs()[x + 1][y] == 0 && floor.getTileIDs()[x - 1][y] == 0)
+                            || (floor.getTiles()[x][y + 1] == '+' && floor.getTiles()[x][y - 1] == '+' && floor.getTileIDs()[x][y + 1] == 0 && floor.getTileIDs()[x][y - 1] == 0)) {
+                        floor.getTiles()[x][y] = '+';
+                    }
+                }
+            }
+        }
+
     }
 
 }

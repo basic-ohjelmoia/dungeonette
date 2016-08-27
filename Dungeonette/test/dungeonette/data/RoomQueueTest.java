@@ -68,6 +68,24 @@ public class RoomQueueTest {
         assertTrue(rq.isEmpty());
     }
 
+        @Test
+    public void testFlush() {
+        rq = new RoomQueue();
+
+        Room r1 = new Room(new Point(0, 0), new Dimension(10, 10), 1, 'n', randomi);
+        Room r2 = new Room(new Point(0, 0), new Dimension(10, 10), 2, 'n', randomi);
+        Room r3 = new Room(new Point(0, 0), new Dimension(10, 10), 3, 'n', randomi);
+
+        r1.removeAllPivots();
+        r2.removeAllPivots();
+        r3.removeAllPivots();
+
+        assertTrue(rq.isEmpty());
+        rq.enqueue(r1);rq.enqueue(r2);rq.enqueue(r3);
+        assertTrue(rq.getSize() == 3);
+        rq.flush();
+        assertTrue(rq.isEmpty());
+    }
   
 
 }

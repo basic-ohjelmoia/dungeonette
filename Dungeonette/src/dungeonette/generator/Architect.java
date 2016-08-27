@@ -25,9 +25,9 @@ public class Architect {
     public enum Dir {
 
         NORTH('n', 0, 0, -1),
-        SOUTH('n', 1, 0, 1),
-        WEST('n', 2, -1, 0),
-        EAST('n', 3, 1, 0);
+        SOUTH('s', 1, 0, 1),
+        WEST('w', 2, -1, 0),
+        EAST('e', 3, 1, 0);
 
         public final char name;
         public final int id;
@@ -73,6 +73,21 @@ public class Architect {
     }
 
     /**
+     * Initiates floors (all levels) for the entire dungeon
+     * @param env environment object where the floors are stored
+     * @param spec specification of the dungeon
+     */
+    public static void initiateFloors(Environment env, Specification spec) {
+        
+            
+        for (int i = 0; i< spec.maxZ; i++ ) {
+            env.getFloors()[i]= new Floor(spec);
+        }
+
+    }
+    
+    
+    /**
      * A much refactored  method that basically runs the entirety of the dungeon
      * generation process.
      *
@@ -106,8 +121,9 @@ public class Architect {
      */
     public static void generateFloor(Environment env, Specification spec, int floorLevel, Point pointOfEntry) {
 
-        Floor floor = new Floor(spec, pointOfEntry); // The point object here refers the point of entry (first room location) of the floor.
-
+        Floor floor = env.getFloors()[floorLevel]; // The point object here refers the point of entry (first room location) of the floor.
+        floor.setPointOfEntry(pointOfEntry);
+        
         int rooms = 1;        // this is basically the serial number of the room currently being generated. Must start from one NOT zero!
 
         Random randomi = spec.randomi;
@@ -138,6 +154,8 @@ public class Architect {
         while (rooms < maxRooms) {// && failuresSinceLastRoomGeneration < 100) {
             Room parentOfTheNextRoom = null;
 
+         
+            
             if (!floor.getRoomQueue().isEmpty()) {
                 if (failuresSinceLastRoomGeneration > 20) {
                     parentOfTheNextRoom = floor.getRoomQueue().dequeue();
@@ -145,6 +163,7 @@ public class Architect {
                         System.out.println("BREAK! on while-loop's first deque ");
                         break;
                     }
+                    
                     failuresSinceLastRoomGeneration = 0;
                 } else {
                     parentOfTheNextRoom = floor.getRoomQueue().front();
@@ -192,7 +211,7 @@ public class Architect {
 
                     
 
-                } else if (cx >= 0 && cx < spec.gridX && cy >= 0 && cy < spec.gridY) {  // seeking must stay within the  outer bounds of the floor
+                } else if (cx >= 0 && cx < spec.gridX && cy >= 0 && cy < spec.gridY && parentOfTheNextRoom!=null) {  // seeking must stay within the  outer bounds of the floor
 
                     Dimension dimension = new Dimension(10, 10);
 

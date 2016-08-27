@@ -62,7 +62,12 @@ public class Environment {
     }
     
     public void generateFloors() {
-        Point pointOfEntry = new Point(5,5);
+        Point pointOfEntry = new Point(spec.gridX/2,spec.gridY/2);
+        
+    
+            Architect.initiateFloors(this, spec);
+    
+        
         for (int i = 0; i< spec.maxZ; i++ ) {
             Architect.generateFloor(this, spec, i, new Point(pointOfEntry.x, pointOfEntry.y));
             pointOfEntry=floors[i].pointOfExit;

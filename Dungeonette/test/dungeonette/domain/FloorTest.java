@@ -27,7 +27,8 @@ public class FloorTest {
     public FloorTest() {
 
         this.spec = new Specification(100, 100,1);
-        this.floor = new Floor(spec, new Point(5, 5));
+        this.floor = new Floor(spec);
+        floor.setPointOfEntry(new Point(5, 5));
         this.floor.removeSalts();
     }
 
@@ -52,7 +53,8 @@ public class FloorTest {
     @Test
     public void testPrint() {
 
-        this.floor = new Floor(new Specification(100, 100,1), new Point(5, 5));
+        this.floor = new Floor(new Specification(100, 100,1));
+        floor.setPointOfEntry(new Point(5, 5));
         this.floor.removeSalts();
         assertTrue(RoomInserter.seeIfItFits(floor, spec, 5, 5, new Dimension(10, 10), 'n', new Point(5, 5), 1));
 
@@ -88,7 +90,8 @@ public class FloorTest {
     @Test
     public void testPassageCarving() {
 
-        this.floor = new Floor(new Specification(100, 100,1), new Point(5, 5));
+                this.floor = new Floor(new Specification(100, 100,1));
+        floor.setPointOfEntry(new Point(5, 5));
         this.floor.removeSalts();
         assertTrue(RoomInserter.seeIfItFits(this.floor, this.spec, 5, 5, new Dimension(10, 10), 'n', new Point(5, 5), 1));
         assertTrue(RoomInserter.seeIfItFits(this.floor, this.spec, 5, 7, new Dimension(10, 10), 'n', new Point(5, 5), 2));
@@ -130,7 +133,8 @@ public class FloorTest {
     @Test
     public void testPassageCarverWithAdditionalRoutesAndDoorPlacement() {
 
-        this.floor = new Floor(new Specification(100, 100,1), new Point(5, 5));
+                this.floor = new Floor(new Specification(100, 100,1));
+        floor.setPointOfEntry(new Point(5, 5));
         this.floor.removeSalts();
         assertTrue(RoomInserter.seeIfItFits(this.floor, this.spec, 5, 5, new Dimension(10, 10), 'n', new Point(5, 5), 1));
         assertTrue(RoomInserter.seeIfItFits(this.floor, this.spec, 5, 8, new Dimension(10, 10), 'n', new Point(5, 5), 2));
@@ -188,7 +192,8 @@ public class FloorTest {
     @Test
     public void testCrossyPassages() {
 
-        this.floor = new Floor(new Specification(100, 100,1), new Point(5, 5));
+                this.floor = new Floor(new Specification(100, 100,1));
+        floor.setPointOfEntry(new Point(5, 5));
         
         this.floor.addCrossyPassage(new Point(50,50), 'n');
         this.floor.addCrossyPassage(new Point(60,60), 's');

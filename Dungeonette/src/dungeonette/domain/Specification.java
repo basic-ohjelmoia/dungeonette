@@ -19,6 +19,10 @@ import java.util.Random;
 public class Specification {
 
     /**
+     * If this classicPringing is false, then extended char set is used for printing
+     */
+    public boolean classicPrinting;
+    /**
      * The common random object shared by the entire dungeon.
      */
     public Random randomi;
@@ -96,6 +100,11 @@ public class Specification {
      */
     public int threeByThrees;   
     
+    /**
+     * Likelyhood  of passage staying on course. 80...90 should be a pretty good figure. Less than 50 might look crazy.
+     */
+    public int passageStraightnessPercentile;
+    
     public final int VERY_COMMON = 3;
     public final int COMMON = 7;
     public final int UNCOMMON = 12;
@@ -120,9 +129,11 @@ public class Specification {
         this.twoByTwos=COMMON;
         this.threeByThrees=RARE;
         
+        this.classicPrinting=false;
         
         this.pivotSeekPersistence=4;
         
+        this.passageStraightnessPercentile=85;
         this.passagePersistence=2;
         this.roomDensity=12;         
         this.midsizeRoomPersistence=1;

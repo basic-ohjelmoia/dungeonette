@@ -37,7 +37,7 @@ public class Floor {
     
     private int xMax;
     private int yMax;
-    private Point entry;    // The starting point of the floor
+    private Point pointOfEntry;    // The starting point of the floor
     public Point pointOfExit;
     private Point[] routeFrom;  // array for start points of each passages
     private Point[] routeTo; // array for end points of each passages
@@ -58,7 +58,7 @@ public class Floor {
      * @param pointOfEntry The 10 by 10 grid location of the first seeIfItFits being
  generated.
      */
-    public Floor(Specification spec, Point pointOfEntry) {
+    public Floor(Specification spec) {
         this.spec=spec;
         this.plusThese=spec.volatility+spec.density;
         xMax=spec.maxX;
@@ -70,7 +70,6 @@ public class Floor {
         tileIDs = new int[xMax][yMax];
         roomLayout = new Room[xMax / 10][yMax / 10];
         noRoom= new boolean[xMax / 10][yMax / 10];
-        this.entry = pointOfEntry;
         this.routeFrom = new Point[maxNumberOfPassages+plusThese];
         this.routeTo = new Point[maxNumberOfPassages+plusThese];
         this.routeIDFrom = new int[maxNumberOfPassages+plusThese];
@@ -79,9 +78,6 @@ public class Floor {
         this.connected= new boolean[maxNumberOfPassages+plusThese];
         this.isCrossyPassage= new boolean[maxNumberOfPassages+plusThese];
         this.connected[1]=true;
-        if (spec.roomDensity<20) {  // density 20 = no salt added!
-            addSaltToGrid();
-        }
     }
 
     
@@ -100,7 +96,7 @@ public class Floor {
                 
                 
                 
-                if (x>=entry.x-2 && x<=entry.x+2 && y>=entry.y-2 && y<=entry.y+2) {
+                if (x>=pointOfEntry.x-2 && x<=pointOfEntry.x+2 && y>=pointOfEntry.y-2 && y<=pointOfEntry.y+2) {
                     // nothing --- secures the space around the floor entrance 
                 } 
                 else if (randomi.nextInt(spec.roomDensity)==1) {
@@ -349,5 +345,17 @@ public class Floor {
        */
       public char[][] getDoorTiles() {
           return this.doorTiles;
+      }
+      
+      /**
+       * Sets the point of entry (the first room) of the floor.
+       * After the point is set, the salt is added.
+       * @param pt grid coordinate of the first room of the floor
+       */
+      public void setPointOfEntry(Point pt) {
+         this.pointOfEntry=pt;
+         if (spec.roomDensity<20) {  // density 20 = no salt added!
+            addSaltToGrid();
+        }
       }
 }

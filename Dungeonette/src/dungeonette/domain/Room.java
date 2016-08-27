@@ -265,4 +265,12 @@ public class Room {
     public Random getRandom() {
         return this.randomi;
     }
+    
+    /**
+     * Sets the pivot count manually
+     * @param pivots number of pivots
+     */
+    public void setPivots(int pivots) {
+        this.pivots=pivots;
+    }
 }
