@@ -121,7 +121,7 @@ public class FloorTest {
                 }
             }
         }
-        DungeonPrinter.printFloor(this.floor, this.spec);
+        DungeonPrinter.printFloor(this.floor, this.floor, this.spec);
         assertTrue(floorTilesAfterCarving > floorTiles);
 
     }
