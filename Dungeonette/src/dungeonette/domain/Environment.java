@@ -78,7 +78,11 @@ public class Environment {
         System.out.println("Aikaa meni: "+result);
         for (int i = 0; i< spec.maxZ; i++ ) {
             System.out.println("\n======================= DUNGEON LEVEL "+i+" ==============================\n");
-       DungeonPrinter.printFloor(floors[i], spec);
+            Floor next = null;
+            if (i<spec.maxZ-1 && spec.maxZ>1) {
+                next=floors[i+1];
+            }
+            DungeonPrinter.printFloor(floors[i], next, spec);
         }
     }
 

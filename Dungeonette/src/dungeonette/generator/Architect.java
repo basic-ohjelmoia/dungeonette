@@ -156,6 +156,7 @@ public class Architect {
 
          
             
+            // parentOfTheNextRoom will be fetched from the RoomQueue.
             if (!floor.getRoomQueue().isEmpty()) {
                 if (failuresSinceLastRoomGeneration > 20) {
                     parentOfTheNextRoom = floor.getRoomQueue().dequeue();
@@ -173,9 +174,8 @@ public class Architect {
 
             if (floor.getRoomQueue().isEmpty() && failuresSinceLastRoomGeneration > 20) {
                 failuresSinceLastRoomGeneration = 101;
-
-                //   System.out.println("epic fail! Queue failed on room " + rooms);
                 break;
+
             } else if (parentOfTheNextRoom != null) {
 
                 cx = parentOfTheNextRoom.location.x;
@@ -188,7 +188,8 @@ public class Architect {
 
             boolean roomGenerated = false;
             boolean obstacleMet = false;
-
+            boolean insideFloorBounds=true;
+            
             // after picking a general direction (north, west, east, south) the algorithm
             // makes three tries into that direction trying to generate the next room
             // 
@@ -199,6 +200,7 @@ public class Architect {
                     from = direction.name;
                     cx += direction.x;
                     cy += direction.y;
+                    insideFloorBounds = !(from == 'n' && cy == 0) && !(from == 's' && cy == spec.gridY-1) && !(from == 'w' && cx == 0) && !(from == 'e' && cx == spec.gridX-1);
                 }
 
                 // if the room generation process goes out of bounds or meets and obstace,
@@ -213,6 +215,7 @@ public class Architect {
 
                 } else if (cx >= 0 && cx < spec.gridX && cy >= 0 && cy < spec.gridY && parentOfTheNextRoom!=null) {  // seeking must stay within the  outer bounds of the floor
 
+                    // Here we pick the dimensions (size) for the room being generated
                     Dimension dimension = new Dimension(10, 10);
 
                     int roomHash = (parentOfTheNextRoom.location.x * parentOfTheNextRoom.location.y) + arpa + (rooms % 3) + cx + cy - floor.getRoomQueue().getSize();
@@ -247,8 +250,7 @@ public class Architect {
                       
                     } // if the room was too large to generate in THIS location, the algorithm generates a passage instead
                     // however, passageway must be placed in a proper direction when the seek has reached the outer bounds of the floor
-                    else if (floor.roomLayout[cx][cy] == null && tries <= spec.passagePersistence
-                            && !(from == 'n' && cy == 0) && !(from == 's' && cy == spec.gridY-1) && !(from == 'w' && cx == 0) && !(from == 'e' && cx == spec.gridX-1)) {
+                    else if (floor.roomLayout[cx][cy] == null && tries <= spec.passagePersistence && insideFloorBounds) {
 
                         floor.noRoom[cx][cy] = true;  // this basically marks a grid coordinate where no future rooms can be placed.
                         // however, this grid coordiate is still valid realestate for passageways

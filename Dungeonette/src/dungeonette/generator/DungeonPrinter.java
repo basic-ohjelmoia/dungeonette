@@ -18,10 +18,13 @@ public class DungeonPrinter {
     /**
      * Prints out the finished floor.
      * @param floor floor being printed
+     * @param next the floor under the floor
      * @param spec specification of the dungeon containing the floor
      */
-    public static void printFloor(Floor floor, Specification spec) {
-        System.out.println("::: map key ::: ## wall ::: ++ floor ::: ||   == doors ::: ½ $ € % £ § generic items ::: Æ boss ::: <> room reachable ::: >< room unreachable :::");
+    public static void printFloor(Floor floor, Floor next, Specification spec) {
+        if (next==null) {next=floor;}
+        
+        System.out.println("::: map key ::: ## wall ::: ++ floor ::: ||   == doors ::: ½ $ € % £ § generic items ::: Æ boss ::: <> room reachable ::: >< room unreachable :::  : shape of the room below");
         char[][] tiles = floor.getTiles();
         for (int y = 0; y < spec.maxY; y++) {
             System.out.print("\n");
@@ -66,6 +69,9 @@ public class DungeonPrinter {
                             char first = tiles[x][y];
                             char second = floor.getItems()[x][y];
                           
+                            if (first=='.' && next.getTiles()[x][y]!='.') {
+                                first=':';
+                            }
                             
                             if (room!=null) {// && (x+y)%2==0) {
                                 if (room.id==1 && first=='+') {
