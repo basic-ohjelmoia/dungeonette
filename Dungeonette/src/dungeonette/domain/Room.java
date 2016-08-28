@@ -222,8 +222,9 @@ public class Room {
      */
     public boolean hasPivots() {
         if (this.pivots<1) {return false;}
-            
+        
         this.pivots--;
+       
         return true;
     }
     
@@ -250,7 +251,7 @@ public class Room {
             this.pivots++;
         }
         
-        System.out.println("Room "+this.id+" generated with "+this.pivots+" pivots");
+       
 
     }
     

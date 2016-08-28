@@ -82,6 +82,7 @@ public class Architect {
             
         for (int i = 0; i< spec.maxZ; i++ ) {
             env.getFloors()[i]= new Floor(spec);
+            env.getFloors()[i].level=i;
         }
 
     }
@@ -146,8 +147,9 @@ public class Architect {
         // the point of origin coordinates need to be divided by 10
 
        
-        int maxRooms = randomi.nextInt(Math.max(2, (spec.volatility-(spec.funnelEffect*floorLevel))))
-                + Math.max(0, (spec.density - (spec.funnelEffect*floorLevel)));            // maximum number of rooms being generated for the dungeon
+        int maxRooms = randomi.nextInt(Math.max(5, (spec.volatility-(spec.funnelEffect*floorLevel))))
+                + Math.max(3, (spec.density - (spec.funnelEffect*floorLevel))) + randomi.nextInt(1+(floorLevel*2));          
+        // maximum number of rooms being generated for the dungeon
         // the actualy reaching of "the max" is NOT guaranteed currently
 
         System.out.println("%%%% floorlevel " + floorLevel + " start: " + cx + "," + cy+", max rooms:  "+maxRooms);
@@ -172,7 +174,7 @@ public class Architect {
                 if (failuresSinceLastRoomGeneration > 20) {
                     parentOfTheNextRoom = floor.getRoomQueue().dequeue();
                     if (parentOfTheNextRoom == null) {
-                        System.out.println("BREAK! on while-loop's first deque ");
+                       // System.out.println("BREAK! on while-loop's first deque ");
                         break;
                     }
                     
@@ -208,6 +210,11 @@ public class Architect {
 
                 if (tries < spec.pivotSeekPersistence) {
                     Dir direction = Dir.getDir(arpa);
+                    if (direction==Dir.NORTH && cy==0) {direction=Dir.SOUTH;}
+                    if (direction==Dir.SOUTH && cy==spec.gridY-1) {direction=Dir.NORTH;}
+                    if (direction==Dir.WEST && cx==0) {direction=Dir.EAST;}
+                    if (direction==Dir.EAST && cx==spec.gridX-1) {direction=Dir.WEST;}
+                    
                     from = direction.name;
                     cx += direction.x;
                     cy += direction.y;
@@ -272,7 +279,7 @@ public class Architect {
                 }
             }
             failuresSinceLastRoomGeneration++;
-            System.out.println("failures now " + failuresSinceLastRoomGeneration);
+          
         }
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // THE MAIN DUNGEON GENERATION WHILE-LOOP TERMINATES ABOVE!        

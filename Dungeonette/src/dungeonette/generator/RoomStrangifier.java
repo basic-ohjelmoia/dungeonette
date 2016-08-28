@@ -21,7 +21,7 @@ public class RoomStrangifier {
   * @param room room being reshaped
   */
     public static void reshape(Room room) {
-        System.out.println("room " + room.id + " strangified!!!!!!!");
+    
         int xMax = room.dimension.width;
         int yMax = room.dimension.height;
         room.resetArea();

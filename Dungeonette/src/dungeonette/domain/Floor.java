@@ -50,6 +50,7 @@ public class Floor {
     
     private final int maxNumberOfPassages = 200;
     private int plusThese;
+    public int level;
     
     /**
      * Constructor for the floor. Note that the object is constructed WITHOUT the pointOfEntry object.
@@ -120,22 +121,23 @@ public class Floor {
      * Passages between the rooms are not yet carved out.
      */
     public void storeRoomsIntoTiles() {
-        System.out.println("printing...");
+      //  System.out.println("printing...");
         for (int y = 0; y < spec.maxY; y++) {
-            System.out.print("\n");
+        //    System.out.print("\n");
             for (int x = 0; x < spec.maxX; x++) {
                 if (roomLayout[x / 10][y / 10] == null) {
                     
                     tiles[x][y] = '.';
                     if (noRoom[x/10][y/10]) {
-                        System.out.print("s.");
+          //              System.out.print("s.");
                     } else {
+            //
                         System.out.print("..");
                     }
                 } else {
                     Room room = roomLayout[x / 10][y / 10];
 
-                    System.out.print(room.print(x, y));
+    //                System.out.print(room.print(x, y));
                     tiles[x][y] = room.getTile(x, y,true);//.print(x, y).charAt(1);
                     if (tiles[x][y]!='.') {
                         tileIDs[x][y]=room.id;
@@ -253,7 +255,7 @@ public class Floor {
 //        routeIDFrom[routes]=-11111;
         
         routes++;
-        System.out.println("crossy road created!");
+        
     }
     
     /**

@@ -40,15 +40,19 @@ public class PassageCarver {
 
             int idTrueFrom = floor.getRouteIDFrom()[i];     // id number of the room from which the passage originates from
             int idTrueTo = floor.getRouteIDTo()[i];         // id number of the room to which the passage is targetting
+            int idTrueFromMemory = idTrueFrom;
+            
             int idMin = floor.getRouteIDFrom()[i] - 5;      // passages are allowed to punch thru non related rooms within -5...+5 range of id numbers
             int idMax = floor.getRouteIDFrom()[i] + 5;
 
             // A connected room is a room that has a legal pathway to the first room of the floor.
             // If the passage is being carved between two rooms (i.e. it's not a dead-end) then if either of these rooms is "connected", the passage will make both of them "connected"
-            if ((floor.connected[idTrueFrom] || floor.connected[idTrueTo]) && floor.connected[idTrueTo] != floor.connected[idTrueFrom]) {
+            boolean atleastOneOfTheRoomsHasAccessToFirstRoomOfTheFloor = ((floor.connected[idTrueFrom] || floor.connected[idTrueTo]) && floor.connected[idTrueTo] != floor.connected[idTrueFrom]) ;
+            
+            if (atleastOneOfTheRoomsHasAccessToFirstRoomOfTheFloor) {
 
-                floor.connected[idTrueFrom] = true;
-                floor.connected[idTrueTo] = true;
+//                floor.connected[idTrueFrom] = true;
+//                floor.connected[idTrueTo] = true;
                 idTrueFrom = 0;
 
             }
@@ -83,24 +87,39 @@ public class PassageCarver {
             int wallPasses = 0;
 
             boolean crossyGenerated = false;
+          //  boolean neverDetour = false;
+            
+            boolean forceN = false;
+            boolean forceS = false;
+            boolean forceW = false;
+            boolean forceE = false;
 
             while (true) {
 
                 Architect.Dir direction = Architect.Dir.NORTH;
-
-                if (cx < endX) {
+                boolean notNearFloorBoundary = cx > 1 && cx < spec.maxX - 2 && cy > 1 && cy < spec.maxY - 2;
+                if (notNearFloorBoundary) {
+                    forceN=false;forceS=false;forceW=false;forceE=false;
+                }
+                
+                boolean forceDirection = (forceN || forceS || forceW || forceE);
+                
+                if ((cx < endX && !forceDirection) || forceE) {
                     direction = Architect.Dir.EAST;
-                } else if (cx > endX) {
+                } else if ((cx > endX && !forceDirection) || forceW) {
                     direction = Architect.Dir.WEST;
-                } else if (cy < endY) {
+                } else if ((cy < endY && !forceDirection) || forceS) {
                     direction = Architect.Dir.SOUTH;
-                } else if (cy > endY) {
+                } else if ((cy > endY && !forceDirection) || forceN) {
                     direction = Architect.Dir.NORTH;
                 }
-
+                
+                
+                
+                
                 int roomID = floor.getTileIDs()[cx][cy];
                 boolean isItACrossyPassage = floor.isCrossyPassage[i];
-                boolean notNearFloorBoundary = cx > 1 && cx < spec.maxX - 2 && cy > 1 && cy < spec.maxY - 2;
+                
                 boolean detourFrequencyReached = passageCounter > 2 + (2 * detoursConducted);
                 boolean detourIsGreenToGo = spec.randomi.nextInt(100) > Math.min(95, spec.passageStraightnessPercentile);
 
@@ -127,7 +146,7 @@ public class PassageCarver {
                     }
                 }
 
-                if (detourLength > 0 && notNearFloorBoundary) {
+                if (detourLength > 0 && notNearFloorBoundary && passageIsNowDetouring && !forceDirection) {
                     direction = detourDirection;
                     detourLength--;
                 } else {
@@ -198,13 +217,24 @@ public class PassageCarver {
                     }
 
                     wallPasses = checkForAWallPass(cx, cy, wallPasses, dir, tiles);
-
+                } else if (!notNearFloorBoundary && cx != endX && cy != endY && !isItACrossyPassage) {
+                   // Point newDoorways = floor.
+                    //cx=startX; cy=startY; neverDetour=true;
+                    if (cx<5) {forceE=true;}
+                    else if (cx>spec.maxX-5) {forceW=true;}
+                    else if (cy<5) {forceS=true;}
+                    else if (cy>spec.maxY-5) {forceN=true;}
+                  //  System.out.println("Floor "+floor.level+" room #"+idTrueTo+" connection FAIL to room #"+idTrueFromMemory+", "+startX+","+startY+"->{"+cx+","+cy+"}->"+endX+","+endY);
                 } else if (deadEndPassageHasToppedTheWallPassLimit) {
                     break;
                 }
 
                 if (cx == endX && cy == endY) {
-
+                    if (atleastOneOfTheRoomsHasAccessToFirstRoomOfTheFloor) {
+                    //    System.out.println("Floor "+floor.level+" room #"+idTrueTo+" was connected by room #"+idTrueFromMemory+", "+startX+","+startY+"->"+endX+","+endY);
+                        floor.connected[idTrueFromMemory] = true;
+                        floor.connected[idTrueTo] = true;
+                    }
                     break;
 
                 }
@@ -235,7 +265,7 @@ public class PassageCarver {
      * @return updated number of wallpasses (the int might stay the same!)
      */
     public static int checkForAWallPass(int cx, int cy, int wallPasses, char dir, char[][] tiles) {
-        System.out.println("cx: " + cx + ", cy: " + cy);
+        
         for (int sy = cy - 1; sy <= cy + 1; sy++) {
             for (int sx = cx - 1; sx <= cx + 1; sx++) {
                 if (sx == cx && sy == cy) {

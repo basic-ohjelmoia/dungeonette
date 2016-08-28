@@ -11,6 +11,7 @@ import dungeonette.generator.DungeonPrinter;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.util.Random;
+import java.util.Scanner;
 
 /**
  * Environment is the parent object class for a multi-floor dungeon. The dungeon
@@ -71,11 +72,12 @@ public class Environment {
         for (int i = 0; i< spec.maxZ; i++ ) {
             Architect.generateFloor(this, spec, i, new Point(pointOfEntry.x, pointOfEntry.y));
             pointOfEntry=floors[i].pointOfExit;
-            System.out.println("gen floors: "+i+" exits at "+pointOfEntry.toString());
         }
         long result = System.currentTimeMillis()-timer;
        // result/=1000;
-        System.out.println("Aikaa meni: "+result);
+        System.out.println("___________________________________________________________");
+        System.out.println("Generated "+spec.maxZ+" levels of "+(spec.maxX*spec.maxY)+" coordinates each in  "+result+" ms");
+        System.out.println("___________________________________________________________");
         for (int i = 0; i< spec.maxZ; i++ ) {
             System.out.println("\n======================= DUNGEON LEVEL "+i+" ==============================\n");
             Floor next = null;
@@ -83,6 +85,7 @@ public class Environment {
                 next=floors[i+1];
             }
             DungeonPrinter.printFloor(floors[i], next, spec);
+            
         }
     }
 

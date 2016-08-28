@@ -185,11 +185,11 @@ public class RoomInserter {
         }
 
         if (size > 1) {
-            if (rlx + xStep > spec.gridX || rly + yStep > spec.gridY || rlx + xStep < 0 || rly + yStep < 0
-                    || rlx > spec.gridX || rly > spec.gridY || rlx < 0 || rly < 0) {
+            if (rlx + xStep >= spec.gridX || rly + yStep >= spec.gridY || rlx + xStep < 0 || rly + yStep < 0
+                    || rlx >= spec.gridX || rly >= spec.gridY || rlx < 0 || rly < 0) {
                 return null;
             }
-            if (size == 9 && (rlx < 3 || rlx > spec.gridX-3 || rly < 3 || rly > spec.gridY-3)) {
+            if (size == 9 && (rlx < 3 || rlx >= spec.gridX-3 || rly < 3 || rly >= spec.gridY-3)) {
                 return null;
             }
         }
