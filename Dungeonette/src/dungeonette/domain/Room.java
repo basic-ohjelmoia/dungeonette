@@ -29,8 +29,6 @@ public class Room {
     public char outDirection;
     public Point location;
     public Point roomCenter;
-    private boolean horizontalPassage;
-    private boolean verticalPassage;
     private char[][] shape;
     private char[][] items;
     private int area;
@@ -76,6 +74,9 @@ public class Room {
         initialize();
     }
     
+    /**
+     * This method helps to sets up the general shape of the room.
+     */
     private void initialize() {
         
         if (id%2==0 && (dimension.height>=20 || dimension.height>=20)) {
@@ -150,7 +151,11 @@ public class Room {
     public Point[] getDoorwayArray() {
         return this.doorways;
     }
-    
+
+    /**
+     * Returns a random doorway location. The doorway is basically a legal connecting point coordinate for an outbound/inbound passageway.
+     * @return coordiate of a random doorway
+     */
     public Point getDoorway() {
         //long timer = System.currentTimeMillis();
         //int dice = (int)(timer%10);
@@ -174,7 +179,6 @@ public class Room {
      * Return the two dimensional char array containing the room tiles.
      * @return returns the array of chars representing tiles
      */
-    
     public char[][] getShape() {
         return this.shape;
     }
@@ -183,7 +187,6 @@ public class Room {
      * Return the two dimensional char array containing the room items.
      * @return returns the array of chars representing items.
      */
-    
     public char[][] getItems() {
         return this.items;
     }

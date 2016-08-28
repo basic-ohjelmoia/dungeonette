@@ -52,11 +52,9 @@ public class Floor {
     private int plusThese;
     
     /**
-     * Constructor for the floor.
+     * Constructor for the floor. Note that the object is constructed WITHOUT the pointOfEntry object.
      *
      * @param spec Specification object of the dungeon
-     * @param pointOfEntry The 10 by 10 grid location of the first seeIfItFits being
- generated.
      */
     public Floor(Specification spec) {
         this.spec=spec;

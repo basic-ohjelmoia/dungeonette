@@ -39,16 +39,16 @@ public class RoomInserter {
 
         
         if (rlx<0 || rly<0 || rlx>=spec.gridX || rly>=spec.gridY ) {
-            System.out.println("rlx "+rlx+" rly "+rly+" | yritetriin insertoida yli boundaryn");
+            // room cannot be inserted outside the floor boundaries.
             return false;
         }
         if (floor.noRoom[rlx][rly]) {
+            // room cannot be inserted into a coarse grid that's been pre-flagged as illegal.
             return false;
         }
         
         
         int size = (dimension.height * dimension.width) / 100;
-        //System.out.println("room size " + size + ", dims " + dimension.width + "." + dimension.height);
         
         
         
@@ -66,79 +66,15 @@ public class RoomInserter {
         int xStep = 1;
         int yStep = 1;
 
-        
-        
-        if (rlx < 5) {
-            xStep = -1;
-
-        }
-        if (rly < 5) {
-            yStep = -1;
-        }
-        if (size == 1) {
-            xStep = 0;
-            yStep = 0;
+        // Below we setup the coarse grid matrix of the room. A dimension 10,10 room would only fill up one 1x1 coarse grid.
+        Point steps = initiateRoomMatrix(reqX, reqY, rlx,rly, size, dimension, spec);
+        if (steps==null) {
+            return false;
+        } else {
+            xStep=steps.x; yStep=steps.y;
         }
 
-        if (size > 1) {
-            if (rlx + xStep > 9 || rly + yStep > 9 || rlx + xStep < 0 || rly + yStep < 0
-                    || rlx > 9 || rly > 9 || rlx < 0 || rly < 0) {
-                return false;
-            }
-            if (size == 9 && (rlx < 3 || rlx > 7 || rly < 3 || rly > 7)) {
-                return false;
-            }
-        }
-        if (size >= 4) {
-
-            reqX[1] = rlx + xStep;
-            reqY[1] = rly;
-            reqX[2] = rlx;
-            reqY[2] = rly + yStep;
-            reqX[3] = rlx + xStep;
-            reqY[3] = rly + yStep;
-            if (size == 9) {
-                reqX[4] = rlx + xStep + xStep;
-                reqY[4] = rly;
-                reqX[5] = rlx + xStep + xStep;
-                reqY[5] = rly + yStep;
-                reqX[6] = rlx + xStep + xStep;
-                reqY[6] = rly + yStep + yStep;
-                reqX[7] = rlx;
-                reqY[7] = rly + yStep + yStep;
-                reqX[8] = rlx + xStep;
-                reqY[8] = rly + yStep + yStep;
-                xStep = xStep + xStep;
-                yStep = yStep + yStep;
-            }
-
-        } else if (size == 2) {
-            if (dimension.width > 10) {
-
-                if (rlx >= 9) {
-                    return false;
-                }
-
-                reqX[1] = rlx + xStep;
-                reqY[1] = rly;
-                yStep = 0;
-            }
-
-            if (dimension.height > 10) {
-
-                if (rly >= 9) {
-                    return false;
-                }
-
-                reqX[1] = rlx;
-                reqY[1] = rly + yStep;
-                xStep = 0;
-            }
-
-        }
-
-        reqX[0] = rlx;
-        reqY[0] = rly;
+      
 
         boolean failed = false;
      
@@ -175,9 +111,12 @@ public class RoomInserter {
         floor.getRouteTo()[routes] = room.getDoorway();
        
         
-        System.out.println("room.id: "+room.id);
-        System.out.println("Origin is null ? "+origin==null);
-        System.out.println("floor.roomLayout[origin.x][origin.y].id is null? "+(floor.roomLayout[origin.x][origin.y]==null));
+        // If this method starts to put out null pointer exceptions, use the 3x system.print.outs below to debug!
+        //System.out.println("room.id: "+room.id);
+        //System.out.println("Origin is null ? "+origin==null);
+        //System.out.println("floor.roomLayout[origin.x][origin.y].id is null? "+(floor.roomLayout[origin.x][origin.y]==null));
+      
+        
         if (room.id == 1) {
             floor.getRouteIDFrom()[routes] = 0;
         } else {
@@ -208,4 +147,104 @@ public class RoomInserter {
 
     }
 
+    /**
+     * This private method sets up the coarse grid matrix required to check wether the room will fit the floor location it's been offered. 
+     * The placement will fail early if the room is large enough to cross the outer boundaries of the floor.
+     * 
+     * Please note that this method operates within the coarse grid system. One coarse grid equals an area of 10 x 10 tiles!
+     * 
+     * 
+     *
+     * @param reqX array of x coordinates of the room matrix
+     * @param reqY array of y coordinates of the room matrix
+     * @param rlx room's initial x coordiate 
+     * @param rly room's initial y coordiate
+     * @param size size of the room (number of coarse grids)
+     * @param dimension dimensions of the room
+     * @param spec Specification of the dungeon
+     * @return Point object with xStep stored in point.x and yStep stored in point.y. If this method returns a NULL, then the placement was illegal! (out of bounds)
+     */
+    private static Point initiateRoomMatrix(int[] reqX, int[] reqY, int rlx, int rly, int size, Dimension dimension, Specification spec) {
+
+        // xStep and yStep are used to ensure that the seeIfItFits is oriented correctly in relation to the  floor map boundaries
+        int xStep = 1;
+        int yStep = 1;
+
+        
+        
+        if (rlx < 5) {
+            xStep = -1;
+
+        }
+        if (rly < 5) {
+            yStep = -1;
+        }
+        if (size == 1) {
+            xStep = 0;
+            yStep = 0;
+        }
+
+        if (size > 1) {
+            if (rlx + xStep > spec.gridX || rly + yStep > spec.gridY || rlx + xStep < 0 || rly + yStep < 0
+                    || rlx > spec.gridX || rly > spec.gridY || rlx < 0 || rly < 0) {
+                return null;
+            }
+            if (size == 9 && (rlx < 3 || rlx > spec.gridX-3 || rly < 3 || rly > spec.gridY-3)) {
+                return null;
+            }
+        }
+        if (size >= 4) {
+
+            reqX[1] = rlx + xStep;
+            reqY[1] = rly;
+            reqX[2] = rlx;
+            reqY[2] = rly + yStep;
+            reqX[3] = rlx + xStep;
+            reqY[3] = rly + yStep;
+            if (size == 9) {
+                reqX[4] = rlx + xStep + xStep;
+                reqY[4] = rly;
+                reqX[5] = rlx + xStep + xStep;
+                reqY[5] = rly + yStep;
+                reqX[6] = rlx + xStep + xStep;
+                reqY[6] = rly + yStep + yStep;
+                reqX[7] = rlx;
+                reqY[7] = rly + yStep + yStep;
+                reqX[8] = rlx + xStep;
+                reqY[8] = rly + yStep + yStep;
+                xStep = xStep + xStep;
+                yStep = yStep + yStep;
+            }
+
+        } else if (size == 2) {
+            if (dimension.width > 10) {
+
+                if (rlx >= 9) {
+                    return null;
+                }
+
+                reqX[1] = rlx + xStep;
+                reqY[1] = rly;
+                yStep = 0;
+            }
+
+            if (dimension.height > 10) {
+
+                if (rly >= 9) {
+                    return null;
+                }
+
+                reqX[1] = rlx;
+                reqY[1] = rly + yStep;
+                xStep = 0;
+            }
+
+        }
+
+        reqX[0] = rlx;
+        reqY[0] = rly;
+        
+        return new Point(xStep, yStep);
+    }
+    
 }

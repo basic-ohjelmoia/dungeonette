@@ -114,6 +114,17 @@ public class Architect {
      * generated OR there are no active rooms with pivots left. 5) After all the
      * rooms have been generated, the passages betweem them will get carved out.
      *
+     *
+     * NOTE FOR FURTHER DEVELOPMENT: Directional placement of new rooms is currently
+     * 100 % random and therefore blind to the outer boundaries of the floor.
+     * The randomization should be changed to give a (slight) preference to directions
+     * that try to place rooms away from the outer edges.
+     * 
+     * NOTE FOR EVEN FURTHER DEVELOPMENT: The floors should probably be divided
+     * to two or more segments, with no overlap (interconnecting passageways) from
+     * one segment to next. The single passageway from segment A to segment B should
+     * be divided by a locked door, a pre-made puzzle, a boss or some other obstacle.
+     * 
      * @param env Container of the Environment where the dungeon is stored
      * @param spec Specification of the dungeon
      * @param floorLevel floorlevel (number) being generated
