@@ -7,13 +7,13 @@ Dungeonetten testaus perustuu JUnit-testeihin. Testikattavuudessa tähdätään 
 
 Koska satunnaisluolagenerointiin liittyy nimensä mukaisesti vahva satunnaisuuden elementti, Dungeonetten koodiin on kätketty joitakin debug-henkisiä piirteitä, jotka aktivoidaan testauksen toistettavuuden varmistamiseksi.
 
-Koska Dungeonetten tehtänä on tuottaa mielekkäällä tavalla tutkittavia satunnaisluolia, JUnit-testeillä pyritään ensisijaisesti varmistamaan, että luolatuotos on laillinen. Hyvä esimerkki laittomasta tuotoksesta voisi olla esimerkiksi satunnaisgeneroitu huone, jolla ei olisi lainkaan lattiapinta-alaa. 
+Koska Dungeonetten tehtänä on tuottaa mielekkäällä tavalla tutkittavia satunnaisluolia, JUnit-testeillä pyritään ensisijaisesti varmistamaan, että luolatuotos on laillinen. Hyvä esimerkki laittomasta tuotoksesta voisi olla esimerkiksi satunnaisgeneroitu huone, jolla ei olisi lainkaan lattiapinta-alaa. On myönnettävä, että luolan kokonaisrakenteen laillisuuden varmistamisessa testaus on jossain määrin puutteellista. Testauksen laadun parantamiseksi tältä osin voisin harkita esimerkiksi saman tyyppistä fill-tarkistusta kuin aikaisemmin vertaisarvioimassani Dungeongen-harjoitustyössä.
 
 Dungeonettea varten luodun RoomQueue-tietorakenteen virheettömän toiminnan varmistaminen on niin ikään testaamisen keskiössä. Jos RoomQueuen toiminta menisi rikki, luolagenerointiprosessi ei voisi selvitä virheestä.
 
 ### Suorituskykytestauksesta
 
-Dungeonetten suorituskykytestaus on toistaiseksi varsin alkeellista. Dungeonette käynnistää suorituskykyajastimen kun Environment-luolasäiliö konstruktoidaan ja pysäyttää sen kun koko luolasto on generoitu, mutta sen printtaamista ei vielä aloitettu. Suorituskyvyn mittaamista haittaa, että koodissa on yhä debug-henkisiä system.print.out-käskyjä. Konsoliin tulostaminen syö Dungeonetten suorituskykyä ratkaisevasti.
+Dungeonetten suorituskykytestaus on toistaiseksi varsin alkeellista. Dungeonette käynnistää suorituskykyajastimen kun Environment-luolasäiliö konstruktoidaan ja pysäyttää sen kun koko luolasto on generoitu, mutta sen printtaamista ei vielä aloitettu. Suorituskyvyn mittaamista haittaavat ylimääräiset System.out.print-käskyt on kuitenkin pyritty eliminoimaan koodista, joten mittauksen pitäisi sinänsä olla varsin vertailukelpoinen ja akkuraatti.
 
-Millisekunneissa ilmoitettavaa luolageneroinnin suoritusaikaa voi hakea konsolitulosteesta hakusanalla "Aikaa meni: "
+Millisekunneissa ilmoitettava luolageneroinnin suoritusaika lukee aivan konsolitulosteen alussa.
 
