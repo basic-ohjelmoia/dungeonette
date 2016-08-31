@@ -26,7 +26,7 @@ public class DoorInserter {
     public static void processAllDoors(Floor floor, Specification spec) {
 
         char[][] tiles = floor.getTiles();
-        System.out.println("process doorways");
+     
         for (int y = 0; y < spec.maxY; y++) {
 
             for (int x = 0; x < spec.maxX; x++) {

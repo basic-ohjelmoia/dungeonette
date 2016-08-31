@@ -236,7 +236,7 @@ public class Architect {
                     // Here we pick the dimensions (size) for the room being generated
                     Dimension dimension = new Dimension(10, 10);
 
-                    int roomHash = (parentOfTheNextRoom.location.x * parentOfTheNextRoom.location.y) + arpa + (rooms % 3) + cx + cy - floor.getRoomQueue().getSize();
+                    int roomHash = (parentOfTheNextRoom.location.x * parentOfTheNextRoom.location.y) + arpa + (rooms % 3) + cx + cy - (floor.getRoomQueue().getSize()/2);
 
                     if ((roomHash) % spec.twoByOnes == 1 && tries <= spec.midsizeRoomPersistence) {
                         dimension = new Dimension(20, 10);

@@ -105,13 +105,15 @@ public class Specification {
      */
     public int passageStraightnessPercentile;
     
-    public final int VERY_COMMON = 3;
-    public final int COMMON = 7;
-    public final int UNCOMMON = 12;
-    public final int RARE = 13;
-    public final int VERY_RARE = 23;
-    public final int NEVER = 99999;
+    public static final int VERY_COMMON = 3;
+    public static final int SEMI_COMMON = 5;
+    public static final int COMMON = 7;
+    public static final int UNCOMMON = 12;
+    public static final int RARE = 13;
+    public static final int VERY_RARE = 23;
+    public static final int NEVER = 99999;
     
+    public boolean fileWritingOnly;
            
     public Specification(int x, int y, int z) {
         this.maxX=x;
@@ -123,7 +125,7 @@ public class Specification {
         
         this.density=25;
         this.volatility=30;
-        this.funnelEffect =3;
+        this.funnelEffect =1;
         
         this.twoByOnes=VERY_COMMON;
         this.twoByTwos=COMMON;
@@ -131,16 +133,17 @@ public class Specification {
         
         this.classicPrinting=false;
         
-        this.pivotSeekPersistence=4;
+        this.pivotSeekPersistence=2;
         
         this.passageStraightnessPercentile=85;
-        this.passagePersistence=2;
+        this.passagePersistence=4;
         this.roomDensity=12;         
         this.midsizeRoomPersistence=1;
         this.largeRoomPersistence=2;
         
         this.deadEndiness = 5;
         this.roomConnectivity = 1;
+        
         randomi = new Random();
     }
     

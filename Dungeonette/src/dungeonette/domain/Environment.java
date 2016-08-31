@@ -10,6 +10,8 @@ import dungeonette.generator.PassageCarver;
 import dungeonette.generator.DungeonPrinter;
 import java.awt.Dimension;
 import java.awt.Point;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -75,18 +77,33 @@ public class Environment {
         }
         long result = System.currentTimeMillis()-timer;
        // result/=1000;
-        System.out.println("___________________________________________________________");
-        System.out.println("Generated "+spec.maxZ+" levels of "+(spec.maxX*spec.maxY)+" coordinates each in  "+result+" ms");
-        System.out.println("___________________________________________________________");
-        for (int i = 0; i< spec.maxZ; i++ ) {
-            System.out.println("\n======================= DUNGEON LEVEL "+i+" ==============================\n");
-            Floor next = null;
-            if (i<spec.maxZ-1 && spec.maxZ>1) {
-                next=floors[i+1];
-            }
-            DungeonPrinter.printFloor(floors[i], next, spec);
+        
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("dungeon.txt", false));
+            for (int i = 0; i< spec.maxZ; i++ ) {
+                
+                
+                Floor next = null;
+                    if (i<spec.maxZ-1 && spec.maxZ>1) {
+                        next=floors[i+1];
+                    }
+                  for (String line: DungeonPrinter.printFloor(floors[i], next, spec)) {
+                          writer.write(line);
+                }
             
+            
+            }
+            writer.write("\n\n\n__________________________________________________________");
+            String quickTake = "Generated "+spec.maxZ+" levels of "+(spec.maxX*spec.maxY)+" coordinates each ("+spec.maxX+" x "+spec.maxY+" x "+spec.maxZ+") in "+result+" ms";
+            writer.close();
+            System.out.println(quickTake);
+            
+        } catch (Exception e) {
+            System.out.println("Oops!");
         }
+        
+
+        
     }
 
 
