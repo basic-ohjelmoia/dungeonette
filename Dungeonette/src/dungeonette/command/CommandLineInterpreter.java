@@ -20,15 +20,16 @@ public class CommandLineInterpreter {
         System.out.println(" |    |  \\|  |  \\/    \\_/ __ \\/  _ \\ /    \\_/ __ \\   __\\   __\\    __)_"); 
         System.out.println(" |    `   \\  |  /   |  \\  ___(  <_> )   |  \\  ___/|  |  |  | |        \\");
         System.out.println("/_______  /____/|___|  /\\___  >____/|___|  /\\___  >__|  |__|/_______  /");
-        System.out.println("\\/           \\/     \\/           \\/     \\/                  \\/ ");
+        System.out.println("        \\/           \\/     \\/           \\/     \\/                  \\/ ");
         System.out.println("by Tuomas Honkala\n\n");
         System.out.println("Available command line commands:\n\n");
-        System.out.println("-x 10...2000 | width of each floor");
-        System.out.println("-y 10...2000 | height of each floor");
-        System.out.println("-z 1...10000 | number of floors");
-        System.out.println("-density 1...100 | floor density (100 = very closely packed rooms)");
-        System.out.println("-interconnectivity 1...100 | room interconnectivity (100 = as interconnected as possible)");
-        System.out.println("-deadendiness 1...100 | generate additional deadend corridors (100 = a lot of times)");
+        System.out.println("-x <10...2000> | width (units of 10) of each floor ");
+        System.out.println("-y <10...2000> | height (units of 10) of each floor ");
+        System.out.println("-z <1...10000> | number of floors");
+        System.out.println("-density <10...100> | room density (100 = very closely packed rooms)");
+        System.out.println("-interconnectivity <1...100> | room interconnectivity (100 = as interconnected as possible)");
+        System.out.println("-straightness <50...100> | higher the value, the straighter the passageways");
+        System.out.println("-deadendiness <1...100> | higher the value the more dead-ends are added)");
         System.out.println("-supersize | try to create as many large rooms as possible");
         System.out.println("-long | try to create a sprawling dungeon with long winding tunnels.");
         System.out.println("-random | use a RANDOM seed");
@@ -45,7 +46,8 @@ public class CommandLineInterpreter {
         int deadEndiness=5;
         int roomConnectivity=1;
         int pivotSeekPersistence=4;
-        int density = 50;
+        int density = 88;
+        int passageStraightness = 80;
         int interconnectivity = 10;
         int deadendiness = 50;
         boolean supersizeRooms = false;
@@ -64,11 +66,11 @@ public class CommandLineInterpreter {
             }
             if (args[i].contains("-x") && hasNext) {
                     x = Integer.parseInt(args[i+1])*10;
-                    x = Math.max(50, Math.min(2000, x));
+                    x = Math.max(50, Math.min(20000, x));
             }
             if (args[i].contains("-y") && hasNext) {
                     y = Integer.parseInt(args[i+1])*10;
-                    y = Math.max(50, Math.min(2000, y));
+                    y = Math.max(50, Math.min(20000, y));
             }
             if (args[i].contains("-z") && hasNext) {
                     z = Integer.parseInt(args[i+1]);
@@ -76,8 +78,13 @@ public class CommandLineInterpreter {
             }
             if (args[i].contains("-density") && hasNext) {
                     density = Integer.parseInt(args[i+1]);
-                    density = Math.max(1, Math.min(100, density));
+                    density = Math.max(10, Math.min(100, density));
             }
+             if (args[i].contains("-straight") && hasNext) {
+                    passageStraightness = Integer.parseInt(args[i+1]);
+                    passageStraightness = Math.max(50, Math.min(100, passageStraightness));
+            }
+            
             if (args[i].contains("-intercon") && hasNext) {
                     interconnectivity = Integer.parseInt(args[i+1]);
                     interconnectivity = Math.max(1, Math.min(100, interconnectivity));
@@ -97,7 +104,7 @@ public class CommandLineInterpreter {
         Specification spec = new Specification(x,y,z);
         spec.density=(int)((x+y)/7);//*((density+1)/10));
         spec.volatility=(int)((x+y)/9);//*((density+1)/10));
-        spec.roomDensity=Math.max(Math.min(2, (int)((double)(density/100))*24),20);
+        spec.roomDensity=density;//Math.max(Math.min(2, (int)((double)(density/50))*24),20);
         System.out.println("density: "+spec.density+", volatility: "+spec.volatility+", roomDensity: "+spec.roomDensity);
         if (supersizeRooms) {
             spec.twoByTwos=Specification.SEMI_COMMON;
@@ -107,12 +114,13 @@ public class CommandLineInterpreter {
         }
         if (longCorridors) {
             spec.pivotSeekPersistence=(x+y)/4;
-            spec.roomDensity=Math.min(2, spec.roomDensity);
+            spec.roomDensity=Math.min(15, spec.roomDensity);
             spec.largeRoomPersistence=-2+(x+y)/4;
             spec.midsizeRoomPersistence=-1+(x+y)/4;
         }
         spec.roomConnectivity=interconnectivity/10;
         spec.deadEndiness=(int)(x+y/25)*(deadendiness/100);
+        spec.passageStraightnessPercentile=passageStraightness;
         
         spec.setSeed(seed);
         if (useRandomSeed) {

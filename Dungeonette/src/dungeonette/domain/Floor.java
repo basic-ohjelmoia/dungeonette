@@ -97,7 +97,7 @@ public class Floor {
 
                 if (x >= pointOfEntry.x - 2 && x <= pointOfEntry.x + 2 && y >= pointOfEntry.y - 2 && y <= pointOfEntry.y + 2) {
                     // nothing --- secures the space around the floor entrance 
-                } else if (randomi.nextInt(spec.roomDensity) == 1) {
+                } else if (randomi.nextInt(100)>spec.roomDensity) {
                     this.noRoom[x][y] = true;
                     x++;
                 }

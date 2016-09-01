@@ -51,7 +51,9 @@ public class Specification {
     /**
      * minimum number of rooms being generated
      */
-    public int density; // 
+    public int density; 
+    
+    
     /**
      * maximum additional number of rooms being generated
      *  NOTE: density+volatility  should be less than (gridX*gridY)/2
@@ -77,6 +79,8 @@ public class Specification {
      * VERY IMPACTFUL to dungeon's appearance... 20 = full room density... 10 = nicely balanced look... 3 = very sparse dungeon
      */
     public int roomDensity;         
+    
+    
     
     /**
      *  how often mid sized rooms get (theoretically) generated
@@ -135,9 +139,9 @@ public class Specification {
         
         this.pivotSeekPersistence=2;
         
-        this.passageStraightnessPercentile=85;
+        this.passageStraightnessPercentile=75;
         this.passagePersistence=4;
-        this.roomDensity=12;         
+        this.roomDensity=92;         
         this.midsizeRoomPersistence=1;
         this.largeRoomPersistence=2;
         
