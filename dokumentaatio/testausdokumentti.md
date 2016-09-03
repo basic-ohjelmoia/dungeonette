@@ -1,13 +1,15 @@
 Testausdokumentti: Dungeonette
 ==============================
 
-Dungeonetten testaus perustuu JUnit-testeihin. Testikattavuudessa tähdätään siihen, että suurin piirtein jokaisen luokan jokainen metodi tulee vähintään kertaalleen haastettua testipatterin puitteissa. Ihan jokaiselle luokalle ei ole kirjoitettu omia erillisiä JUnit-testejä, sillä joitakin luokkia olisi melko epäkäytännöllistä testata muista erillään.
+Dungeonetten testaus perustuu JUnit-testeihin. Testikattavuudessa tähdätään siihen, että suurin piirtein jokaisen luokan jokainen metodi tulee vähintään kertaalleen haastettua testipatterin puitteissa. Ihan jokaiselle luokalle ei ole kirjoitettu omia erillisiä JUnit-testejä, sillä osa luokista suorittaa niin erikoistuneita tehtäviä, ettei testaaminen tuntuisi mielekkäältä suuremmasta kokonaisuudesta irrallaan.  
 
-Koska satunnaisluolagenerointiin liittyy nimensä mukaisesti vahva satunnaisuuden elementti, Dungeonetten koodiin on kätketty joitakin debug-henkisiä piirteitä, jotka aktivoidaan testauksen toistettavuuden varmistamiseksi.
+Koska satunnaisluolagenerointiin liittyy nimensä mukaisesti vahva satunnaisuuden elementti, Dungeonetten koodiin on upotettu eräitä debug-henkisiä elementtejä, joita aktivoidaan silloin, kun testien toistettavuus sitä edellyttää.
 
-Koska Dungeonetten tehtänä on tuottaa mielekkäällä tavalla tutkittavia satunnaisluolia, JUnit-testeillä pyritään ensisijaisesti varmistamaan, että luolatuotos on laillinen. Hyvä esimerkki laittomasta tuotoksesta voisi olla esimerkiksi satunnaisgeneroitu huone, jolla ei olisi lainkaan lattiapinta-alaa. On myönnettävä, että luolan kokonaisrakenteen laillisuuden varmistamisessa testaus on jossain määrin puutteellista. Testauksen laadun parantamiseksi tältä osin voisin harkita esimerkiksi saman tyyppistä fill-tarkistusta kuin aikaisemmin vertaisarvioimassani Dungeongen-harjoitustyössä.
+Koska Dungeonetten tehtänä on tuottaa mielekkäällä tavalla tutkittavia satunnaisluolia, JUnit-testien avulla pyritään validoimaan luolatuotoksen laillisuutta. Hyvä esimerkki laittomasta tuotoksesta voisi olla esimerkiksi satunnaisgeneroitu huone, jolla ei olisi lainkaan lattiapinta-alaa. On myönnettävä, että luolan kokonaisrakenteen laillisuuden varmistamisessa testaus on jossain määrin puutteellista. Testauksen laadun parantamiseksi tältä osin voisin harkita esimerkiksi saman tyyppistä fill-tarkistusta kuin aikaisemmin vertaisarvioimassani Dungeongen-harjoitustyössä.
 
-Dungeonettea varten luodun RoomQueue-tietorakenteen virheettömän toiminnan varmistaminen on niin ikään testaamisen keskiössä. Jos RoomQueuen toiminta menisi rikki, luolagenerointiprosessi ei voisi selvitä virheestä.
+Dungeonettea varten luodun jonomaisen RoomQueue-tietorakenteen virheettömän toiminnan varmistaminen on niin ikään testaamisen keskiössä. Jos RoomQueuen toiminta menisi rikki, luolagenerointiprosessi ei voisi selvitä virheestä.
+
+
 
 ### Suorituskykytestauksesta
 
