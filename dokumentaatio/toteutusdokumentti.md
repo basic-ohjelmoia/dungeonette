@@ -31,6 +31,7 @@ Kartan eheyden kannalta Dungeonette lähtee olettamuksesta, että PassageCarver 
 
 Aika- ja tilavaatimukset
 ------------------------
+https://github.com/basic-ohjelmoia/dungeonette/blob/master/dokumentaatio/kuvat/luolagenerointi.png
 Kuten tekemäni mittaukset näyttäisivät osoittavan, Dungeonetten aika- ja tilavaativuuden pitäisi olla O(n) eli täysin linjassa Specification-luokalle annettujen syötteiden suuruusluokkaan. Teoreettisen suurilla syötteillä aikavaativuudessa aikavaativuus saattaa painua jopa selvästi O(n):n alle, riippuen siitä sisällytetäänkö generoitavien huoneiden lukumäärä osaksi syötettä vai ei. Huoneluku ei nimittäin kaikilla parametrisoinneilla skaalaudu ylöspäin syötteen mukana. Huonemäärää toisaalta rajoittaa sekin, ettei huoneita voi generoida enempää kuin mitä kerroksen lattiapinta-alaan mahtuu.
 
 Suorituskykyanalyysi
@@ -40,3 +41,7 @@ Kaikkine luolagenerointia valvovine aputauluineen Dungeonette osoittautui varsin
 Onnistuin lievittämään muistipaineita poistamalla Environment-luokasta kaksi tarpeetonta kolmiulotteista matriisia, joihin oli tarkoitus säilöä sama tieto luolaston rakenteesta, joka on jo poimittavissa Floor[] -tietorakenteesta. Tämän muutoksen jälkeen Dungeonette generoi jopa 5000 x 5000 koordinaattia x 10 luolakerrosta kokoisia ympäristöjä. Ilahduttavana sivuvaikutuksena kolmiulotteisen matriisin poistaminen suurin piirtein puolitti luolagenerointiin kuluvan ajan!
 
 Sen jälkeen kun olin siivonnut koodistani ylettömän määrän System.out.print -käskyjä, minun oli aluksia vaikea keksiä muita keinoja, joilla luolageneroinnin kestoa olisi saanut olennaisesti nopeutettua. Poistamalla Dungeonettesta esimerkiksi rutiinin, joka yhdistää rinnakkaisia käytäviä alkoveiksi, nopeutti luolagenerointia vain muutamilla prosenteilla. Se ei tuntunut mielekkäältä parannukselta, koska hintana oli luolien esteettisten arvojen heikentyminen. Vastaava muutaman prosentin nopeuslisä oli lopulta saavutettavissa sillä, että muutin luolageneroinnin suunnan määrittelyn täysin satunnaisesta painotetun satunnaiseksi (tarkoittaen, että hakupää välttelee kerrosten äärilaitoja). 
+
+Dungeonette tallentaa luolansa tekstitiedostoksi lähinnä demonstratiivisessa mielessä, tallennusmuodolla kun ei ole mitään tekemistä pelini tiilikarttatiedostojen kanssa. Oli kuitenkin mielenkiintoista huomata kuinka paljon kirjoitusnopeuteen pystyi vaikuttamaan sillä, että "torttua tortun päälle" kirjoittava String-merkkijono korvattiin StringBuilderilla. 2000 x 2000 x 10 -kokoisen luolan kohdalla kirjoitusnopeus lyheni 21 sekunnista 2,4 sekuntiin!
+
+https://github.com/basic-ohjelmoia/dungeonette/blob/master/dokumentaatio/kuvat/kirjoitusnopeus.png
