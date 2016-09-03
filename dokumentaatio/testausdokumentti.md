@@ -1,7 +1,5 @@
 Testausdokumentti: Dungeonette
 ==============================
-Tämä dokumentti on "work-in-progress"
--------------------------------------
 
 Dungeonetten testaus perustuu JUnit-testeihin. Testikattavuudessa tähdätään siihen, että suurin piirtein jokaisen luokan jokainen metodi tulee vähintään kertaalleen haastettua testipatterin puitteissa. Ihan jokaiselle luokalle ei ole kirjoitettu omia erillisiä JUnit-testejä, sillä joitakin luokkia olisi melko epäkäytännöllistä testata muista erillään.
 
@@ -13,7 +11,11 @@ Dungeonettea varten luodun RoomQueue-tietorakenteen virheettömän toiminnan var
 
 ### Suorituskykytestauksesta
 
-Dungeonetten suorituskykytestaus on toistaiseksi varsin alkeellista. Dungeonette käynnistää suorituskykyajastimen kun Environment-luolasäiliö konstruktoidaan ja pysäyttää sen kun koko luolasto on generoitu, mutta sen printtaamista ei vielä aloitettu. Suorituskyvyn mittaamista haittaavat ylimääräiset System.out.print-käskyt on kuitenkin pyritty eliminoimaan koodista, joten mittauksen pitäisi sinänsä olla varsin vertailukelpoinen ja akkuraatti.
+Dungeonetten suorituskykytestaus on jakaantuu luolan generointiin ja luolaa esittävät tekstitiedoston kirjoittamiseen kuluvan ajan mittaamiseen.
 
-Millisekunneissa ilmoitettava luolageneroinnin suoritusaika lukee aivan konsolitulosteen alussa.
+Dungeonette käynnistää luolageneraatiota koskevan suorituskykyajastimen kun Environment-luolasäiliö konstruktoidaan ja pysäyttää sen kun koko luolasto on generoitu, mutta tiedoston kirjoittamista (tai luolan printtaamista) ei ole vielä aloitettu. Suorituskyvyn mittaamista haittaavat ylimääräiset System.out.print-käskyt on kuitenkin pyritty eliminoimaan koodista, joten mittauksen pitäisi toimia varsin laadukkaasti.
+
+Jos luola kirjoitetaan tiedostoksi (komentorivikäskyllä -speedtest tiedostoa ei kirjoiteta), kirjoittamiseen kuluva ajastin käynnistyy välittömästi tiedostonkirjoittajan alustamisen yhteydessä. Ajanotto päättyy, kun tiedosto on kirjoitettu.
+
+Millisekunneissa ilmoitettavat suoritusajat ilmoitetaan Dungeonetten antaman tulosteen lopussa.
 
