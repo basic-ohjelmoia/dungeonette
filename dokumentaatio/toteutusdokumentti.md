@@ -31,10 +31,16 @@ Kartan eheyden kannalta Dungeonette lähtee olettamuksesta, että PassageCarver 
 
 Aika- ja tilavaatimukset
 ------------------------
+Kuten tekemäni mittaukset näyttäisivät osoittavan, Dungeonetten aika- ja tilavaativuuden pitäisi olla O(n) eli täysin linjassa Specification-luokalle annettujen syötteiden suuruusluokkaan. Teoreettisen suurilla syötteillä aikavaativuudessa aikavaativuus saattaa painua jopa selvästi O(n):n alle, riippuen siitä sisällytetäänkö generoitavien huoneiden lukumäärä osaksi syötettä vai ei. Huoneluku ei nimittäin kaikilla parametrisoinneilla skaalaudu ylöspäin syötteen mukana. Huonemäärää toisaalta rajoittaa sekin, ettei huoneita voi generoida enempää kuin mitä kerroksen lattiapinta-alaan mahtuu.
+
 ![alt text](https://github.com/basic-ohjelmoia/dungeonette/blob/master/dokumentaatio/kuvat/luolagenerointi.png)
 > Luolan generointiin kuluva aika kasvaa suunnilleen lineaarisesti syötteen (luolan koon) kasvaessa. Mittatulokset ovat millisekuntteja. 10M ruudun luola on 1000 x 1000 koordinaattia x 10 kerrosta.
 
-Kuten tekemäni mittaukset näyttäisivät osoittavan, Dungeonetten aika- ja tilavaativuuden pitäisi olla O(n) eli täysin linjassa Specification-luokalle annettujen syötteiden suuruusluokkaan. Teoreettisen suurilla syötteillä aikavaativuudessa aikavaativuus saattaa painua jopa selvästi O(n):n alle, riippuen siitä sisällytetäänkö generoitavien huoneiden lukumäärä osaksi syötettä vai ei. Huoneluku ei nimittäin kaikilla parametrisoinneilla skaalaudu ylöspäin syötteen mukana. Huonemäärää toisaalta rajoittaa sekin, ettei huoneita voi generoida enempää kuin mitä kerroksen lattiapinta-alaan mahtuu.
+Kuvan tulokset saatiin seuraavilla komentorivisyötteillä:
+> java -jar Dungeonette.jar -x 100 -y 50 -z 10 -density 15 -speedtest
+> java -jar Dungeonette.jar -x 100 -y 100 -z 10 -density 15 -speedtest
+> java -jar Dungeonette.jar -x 200 -y 100 -z 10 -density 15 -speedtest
+> java -jar Dungeonette.jar -x 200 -y 200 -z 10 -density 15 -speedtest
 
 Suorituskykyanalyysi
 --------------------
@@ -48,3 +54,7 @@ Dungeonette tallentaa luolansa tekstitiedostoksi lähinnä demonstratiivisessa m
 
 ![alt text](https://github.com/basic-ohjelmoia/dungeonette/blob/master/dokumentaatio/kuvat/kirjoitusnopeus.png)
 > Luolatiedoston kirjoitusnopeus parani huikaisevan paljon, kun luolaa esittävät merkkijonot rakennetaan StringBuilderilla.
+
+Kuvan tulokset saatiin seuraavilla komentorivisyötteillä:
+> java -jar Dungeonette.jar -x 100 -y 100 -z 10 -density 15
+> java -jar Dungeonette.jar -x 200 -y 200 -z 10 -density 15 
