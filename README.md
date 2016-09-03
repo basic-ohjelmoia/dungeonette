@@ -8,4 +8,4 @@ Tietorakenteiden harjoitustyö loppukesä 2016
 
 ### Lyhyesti.
 
-Dungeonette on Javalla ohjelmoitava algoritmi, joka tuottaa pseudosatunnaisia luolastoja roolipeliin, jota olen koodannut vapaa-ajallani.
+Dungeonette on Javalla ohjelmoitu algoritmi, joka tuottaa pseudosatunnaisia (siemenestä generoitavia) luolastoja roolipeliin, jota olen koodannut vapaa-ajallani.
