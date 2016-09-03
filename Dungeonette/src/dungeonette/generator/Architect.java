@@ -9,13 +9,16 @@ import dungeonette.domain.Environment;
 import dungeonette.domain.Floor;
 import dungeonette.domain.Room;
 import dungeonette.domain.Specification;
+import dungeonette.generator.util.GetDirection;
+import dungeonette.generator.util.PickTheNextRoomSize;
+import dungeonette.generator.util.WeightedSeekDirection;
 import java.awt.Dimension;
 import java.awt.Point;
 import java.util.Random;
 
 /**
  *
- *  Architect contains the main loop used for generating the dungeon floors.
+ * Architect contains the main loop used for generating the dungeon floors.
  */
 public class Architect {
 
@@ -30,16 +33,23 @@ public class Architect {
         EAST('e', 3, 1, 0);
 
         public final char name;
+        /**
+         * id = directional Integer, north = 0, south = 1, west = 2, east = 3
+         */
         public final int id;
         public final int x;
         public final int y;
 
         /**
          * Constructor for directions.
+         *
          * @param name char representation of the direction
-         * @param id id number of the direction (these are referred to elsewhere in the code)
-         * @param x this direction represents this much change in the x coordinate
-         * @param y this direction represents this much change in the y coordinate
+         * @param id id number of the direction (these are referred to elsewhere
+         * in the code)
+         * @param x this direction represents this much change in the x
+         * coordinate
+         * @param y this direction represents this much change in the y
+         * coordinate
          */
         private Dir(char name, int id, int x, int y) {
             this.name = name;
@@ -50,6 +60,7 @@ public class Architect {
 
         /**
          * Returns a direction based on the id number
+         *
          * @param id id number of the direction
          * @return a direction is returned
          */
@@ -74,22 +85,21 @@ public class Architect {
 
     /**
      * Initiates floors (all levels) for the entire dungeon
+     *
      * @param env environment object where the floors are stored
      * @param spec specification of the dungeon
      */
     public static void initiateFloors(Environment env, Specification spec) {
-        
-            
-        for (int i = 0; i< spec.maxZ; i++ ) {
-            env.getFloors()[i]= new Floor(spec);
-            env.getFloors()[i].level=i;
+
+        for (int i = 0; i < spec.maxZ; i++) {
+            env.getFloors()[i] = new Floor(spec);
+            env.getFloors()[i].level = i;
         }
 
     }
-    
-    
+
     /**
-     * A much refactored  method that basically runs the entirety of the dungeon
+     * A much refactored method that basically runs the entirety of the dungeon
      * generation process.
      *
      * The code here needs some serious refactoring and general cleaning up.
@@ -111,21 +121,24 @@ public class Architect {
      * connecting passage (the passage itself is not yet generated). 3) if a new
      * room was created, then that will become the NEW active room. If no
      * neighbour was created, then the new active room gets dequeued from the
-     * room queue. 4) This process goes on and on until enough rooms have been
-     * generated OR there are no active rooms with pivots left. 5) After all the
-     * rooms have been generated, the passages betweem them will get carved out.
+     * room queue. 4) This process goes on and on until enough currentRoomID
+     * have been generated OR there are no active currentRoomID with pivots
+     * left. 5) After all the currentRoomID have been generated, the passages
+     * betweem them will get carved out.
      *
      *
-     * NOTE FOR FURTHER DEVELOPMENT: Directional placement of new rooms is currently
-     * 100 % random and therefore blind to the outer boundaries of the floor.
-     * The randomization should be changed to give a (slight) preference to directions
-     * that try to place rooms away from the outer edges.
-     * 
+     * NOTE FOR FURTHER DEVELOPMENT: Directional placement of new currentRoomID
+     * is currently 100 % random and therefore blind to the outer boundaries of
+     * the floor. The randomization should be changed to give a (slight)
+     * preference to directions that try to place currentRoomID away from the
+     * outer edges.
+     *
      * NOTE FOR EVEN FURTHER DEVELOPMENT: The floors should probably be divided
-     * to two or more segments, with no overlap (interconnecting passageways) from
-     * one segment to next. The single passageway from segment A to segment B should
-     * be divided by a locked door, a pre-made puzzle, a boss or some other obstacle.
-     * 
+     * to two or more segments, with no overlap (interconnecting passageways)
+     * from one segment to next. The single passageway from segment A to segment
+     * B should be divided by a locked door, a pre-made puzzle, a boss or some
+     * other obstacle.
+     *
      * @param env Container of the Environment where the dungeon is stored
      * @param spec Specification of the dungeon
      * @param floorLevel floorlevel (number) being generated
@@ -135,49 +148,44 @@ public class Architect {
 
         Floor floor = env.getFloors()[floorLevel]; // The point object here refers the point of entry (first room location) of the floor.
         floor.setPointOfEntry(pointOfEntry);
-        
-        int rooms = 1;        // this is basically the serial number of the room currently being generated. Must start from one NOT zero!
+
+        int currentRoomID = 1;        // this is basically the serial number of the room currently being generated. Must start from one NOT zero!
 
         Random randomi = spec.randomi;
 
         int cx = pointOfEntry.x;       // cx and cy refer to the "current x coordinate" and "current y coordinate" of the dungeon generation process.
         int cy = pointOfEntry.y;       // cx and cy are based on the coarse grid 10x10 format
-        
+
         // as the algorithm actually handles the dungeon in a coarse grid of 10 x 10 tiles
         // the point of origin coordinates need to be divided by 10
-
-       
-        int maxRooms = randomi.nextInt(Math.max(5, (spec.volatility-(spec.funnelEffect*floorLevel))))
-                + Math.max(3, (spec.density - (spec.funnelEffect*floorLevel))) + randomi.nextInt(1+(floorLevel*2));          
-        // maximum number of rooms being generated for the dungeon
+        int absoluteMaximumNumberOfRoomsForTheFloor = randomi.nextInt(Math.max(5, (spec.volatility - (spec.funnelEffect * floorLevel))))
+                + Math.max(3, (spec.density - (spec.funnelEffect * floorLevel))) + randomi.nextInt(1 + (floorLevel * 2));
         // the actualy reaching of "the max" is NOT guaranteed currently
 
-        System.out.println("%%%% floorlevel " + floorLevel + " start: " + cx + "," + cy+", max rooms:  "+maxRooms);
-        
+        System.out.println("%%%% floorlevel " + floorLevel + " start: " + cx + "," + cy + ", max rooms:  " + absoluteMaximumNumberOfRoomsForTheFloor);
+
         int failuresSinceLastRoomGeneration = 0;          // a safety which ensures that the algorithm eventually fails in case it reaches a logical dead-end
 
         // HERE WE START BY INSERTING THE ENTRY POINT ROOM INTO THE FLOOR AS THE ROOM #1
-        RoomInserter.seeIfItFits(floor, spec, cx, cy, new Dimension(10, 10), 'n', new Point(cx, cy), rooms);
-        rooms++;
+        RoomInserter.seeIfItFits(floor, spec, cx, cy, new Dimension(10, 10), 'n', new Point(cx, cy), currentRoomID);
+        currentRoomID++;
 
+        
         // ================
         // IMPORTANT!!!!!!!
         // ================
         // below lies the main loop used for the dungeon generation
-        while (rooms < maxRooms) {// && failuresSinceLastRoomGeneration < 100) {
+        while (currentRoomID < absoluteMaximumNumberOfRoomsForTheFloor) {// && failuresSinceLastRoomGeneration < 100) {
             Room parentOfTheNextRoom = null;
 
-         
-            
             // parentOfTheNextRoom will be fetched from the RoomQueue.
             if (!floor.getRoomQueue().isEmpty()) {
                 if (failuresSinceLastRoomGeneration > 20) {
                     parentOfTheNextRoom = floor.getRoomQueue().dequeue();
                     if (parentOfTheNextRoom == null) {
-                       // System.out.println("BREAK! on while-loop's first deque ");
                         break;
                     }
-                    
+
                     failuresSinceLastRoomGeneration = 0;
                 } else {
                     parentOfTheNextRoom = floor.getRoomQueue().front();
@@ -195,91 +203,71 @@ public class Architect {
                 cy = parentOfTheNextRoom.location.y;
             }
 
-            int arpa = randomi.nextInt(4);
+            int directionalInteger = WeightedSeekDirection.optimalRandom(cx, cy, spec);//randomi.nextInt(4);
 
             char from = ' ';
 
             boolean roomGenerated = false;
             boolean obstacleMet = false;
-            boolean insideFloorBounds=true;
-            
+            boolean insideFloorBounds = true;
+
             // after picking a general direction (north, west, east, south) the algorithm
             // makes three tries into that direction trying to generate the next room
             // 
-            for (int tries = 0; tries < spec.pivotSeekPersistence && !roomGenerated; tries++) {
+            int seekDistance = spec.randomi.nextInt(spec.pivotSeekPersistence) + spec.pivotSeekPersistence;
 
-                if (tries < spec.pivotSeekPersistence) {
-                    Dir direction = Dir.getDir(arpa);
-                    if (direction==Dir.NORTH && cy==0) {direction=Dir.SOUTH;}
-                    if (direction==Dir.SOUTH && cy==spec.gridY-1) {direction=Dir.NORTH;}
-                    if (direction==Dir.WEST && cx==0) {direction=Dir.EAST;}
-                    if (direction==Dir.EAST && cx==spec.gridX-1) {direction=Dir.WEST;}
+            for (int tries = 0; tries < seekDistance && !roomGenerated && parentOfTheNextRoom != null; tries++) {
+
+               
                     
+                    Dir direction = GetDirection.whileBeindMindfulOfTheBoundary(cx,cy,directionalInteger, spec);
+                    directionalInteger = direction.id;
                     from = direction.name;
                     cx += direction.x;
                     cy += direction.y;
-                    insideFloorBounds = !(from == 'n' && cy == 0) && !(from == 's' && cy == spec.gridY-1) && !(from == 'w' && cx == 0) && !(from == 'e' && cx == spec.gridX-1);
-                }
+                    
+                    insideFloorBounds = !(from == 'n' && cy == 0) && !(from == 's' && cy == spec.gridY - 1) && !(from == 'w' && cx == 0) && !(from == 'e' && cx == spec.gridX - 1);
+                
 
-                // if the room generation process goes out of bounds or meets and obstace,
+                // if the room generation process goes out of bounds or meets an obstace,
                 // the algorithm randomly picks a new point of origin (room) and restarts the
                 // room generation process from there
-                if (cx < 0 || cx > spec.gridX-1 || cy < 0 || cy > spec.gridY-1 || obstacleMet) {
+                if (cx < 0 || cx > spec.gridX - 1 || cy < 0 || cy > spec.gridY - 1 || obstacleMet) {
                     failuresSinceLastRoomGeneration++;
-
                     parentOfTheNextRoom = null;
 
-                    
-
-                } else if (cx >= 0 && cx < spec.gridX && cy >= 0 && cy < spec.gridY && parentOfTheNextRoom!=null) {  // seeking must stay within the  outer bounds of the floor
+                } else if (cx >= 0 && cx < spec.gridX && cy >= 0 && cy < spec.gridY && parentOfTheNextRoom != null) {  // seeking must stay within the  outer bounds of the floor
 
                     // Here we pick the dimensions (size) for the room being generated
                     Dimension dimension = new Dimension(10, 10);
-
-                    int roomHash = (parentOfTheNextRoom.location.x * parentOfTheNextRoom.location.y) + arpa + (rooms % 3) + cx + cy - (floor.getRoomQueue().getSize()/2);
-
-                    if ((roomHash) % spec.twoByOnes == 1 && tries <= spec.midsizeRoomPersistence) {
-                        dimension = new Dimension(20, 10);
-                    }
-                    if ((roomHash) % spec.twoByOnes == 2 && tries <= spec.midsizeRoomPersistence) {
-                        dimension = new Dimension(10, 20);
-                    }
-                    if ((roomHash) % spec.twoByTwos == 3 && tries <= spec.largeRoomPersistence) {
-                        dimension = new Dimension(20, 20);
-                    }
-                    if ((roomHash) % spec.threeByThrees == 4 && tries <= spec.largeRoomPersistence) {
-                        dimension = new Dimension(30, 30);
-                    }
-
-                    if (rooms == 1) {
-                        dimension = new Dimension(10, 10);
+                    if (currentRoomID > 1) {
+                        dimension = PickTheNextRoomSize.fromTheseParameters(spec, tries);
                     }
 
                     // if the insert room method call returns TRUE then the new room was successfully placed into the map!
-                    if (RoomInserter.seeIfItFits(floor, spec, cx, cy, dimension, from, parentOfTheNextRoom.location, rooms)) {
+                    if (RoomInserter.seeIfItFits(floor, spec, cx, cy, dimension, from, parentOfTheNextRoom.location, currentRoomID)) {
                         roomGenerated = true;
 
-                        
                         failuresSinceLastRoomGeneration = 0;
-                        rooms++;
-
+                        currentRoomID++;
                         parentOfTheNextRoom = null;
 
-                      
                     } // if the room was too large to generate in THIS location, the algorithm generates a passage instead
                     // however, passageway must be placed in a proper direction when the seek has reached the outer bounds of the floor
                     else if (floor.roomLayout[cx][cy] == null && tries <= spec.passagePersistence && insideFloorBounds) {
 
-                        floor.noRoom[cx][cy] = true;  // this basically marks a grid coordinate where no future rooms can be placed.
+                        floor.noRoom[cx][cy] = true;  // this basically marks a grid coordinate where no future currentRoomID can be placed.
                         // however, this grid coordiate is still valid realestate for passageways
 
-                    } else if (floor.roomLayout[cx][cy] != null) {
+                    } else if (floor.roomLayout[cx][cy] != null && parentOfTheNextRoom!=null) {
+                        if (floor.roomLayout[cx][cy].id!=parentOfTheNextRoom.id) {
                         obstacleMet = true;
+                        }
                     }
                 }
             }
             failuresSinceLastRoomGeneration++;
-          
+
         }
 // ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 // THE MAIN DUNGEON GENERATION WHILE-LOOP TERMINATES ABOVE!        
@@ -290,7 +278,10 @@ public class Architect {
     }
 
     /**
-     * Finalizes the dungeon floor by storing the room tiles into the char matrix, adding connecting passages, adding random passages and placing doorways.
+     * Finalizes the dungeon floor by storing the room tiles into the char
+     * matrix, adding connecting passages, adding random passages and placing
+     * doorways.
+     *
      * @param floor floor being processed
      * @param spec specification of the dungeon containg the floor
      */
@@ -309,12 +300,9 @@ public class Architect {
             floor.addRandomRoute(true);
         }
 
-        
-        
         PassageCarver.processAllRoutes(floor, spec);
         DoorInserter.processAllDoors(floor, spec);
 
-        
     }
 
 }

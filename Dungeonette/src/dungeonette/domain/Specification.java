@@ -118,6 +118,7 @@ public class Specification {
     public static final int NEVER = 99999;
     
     public boolean fileWritingOnly;
+    public boolean speedTest;
            
     public Specification(int x, int y, int z) {
         this.maxX=x;
@@ -148,6 +149,8 @@ public class Specification {
         this.deadEndiness = 5;
         this.roomConnectivity = 1;
         
+        this.speedTest=false;
+        
         randomi = new Random();
     }
     
@@ -175,7 +178,7 @@ public class Specification {
             actual-=(seed.charAt(i)+(seed.length()/3));
         }
   
-        System.out.println(seed+" is the new seed : "+actual);
+        System.out.println("The Dungeon is generated out of seed: "+actual);
         this.randomi = new Random(actual);
     }
 }

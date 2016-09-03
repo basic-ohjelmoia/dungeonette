@@ -11,17 +11,18 @@ import java.util.Random;
 
 /**
  *
- * This class gives an alternative shape for a room.
- * The larger the room, the "stranger" the new shape should end up being.
+ * This class gives an alternative shape for a room. The larger the room, the
+ * "stranger" the new shape should end up being.
  */
 public class RoomStrangifier {
 
- /**
-  * Reshapes a room.
-  * @param room room being reshaped
-  */
+    /**
+     * Reshapes a room.
+     *
+     * @param room room being reshaped
+     */
     public static void reshape(Room room) {
-    
+
         int xMax = room.dimension.width;
         int yMax = room.dimension.height;
         room.resetArea();
@@ -86,6 +87,10 @@ public class RoomStrangifier {
 
                 }
             }
+        }
+        
+        if (randomi.nextBoolean()) {
+            RoomDecorator.decorate(room);
         }
 
     }

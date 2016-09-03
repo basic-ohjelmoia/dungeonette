@@ -95,7 +95,7 @@ public class Floor {
         for (int y = 0; y < spec.gridY; y++) {
             for (int x = 0; x < spec.gridX; x++) {
 
-                if (x >= pointOfEntry.x - 2 && x <= pointOfEntry.x + 2 && y >= pointOfEntry.y - 2 && y <= pointOfEntry.y + 2) {
+                if (x >= pointOfEntry.x - (spec.gridX/6) && x <= pointOfEntry.x + (spec.gridX/6) && y >= pointOfEntry.y - (spec.gridY/6) && y <= pointOfEntry.y + (spec.gridY/6)) {
                     // nothing --- secures the space around the floor entrance 
                 } else if (randomi.nextInt(100)>spec.roomDensity) {
                     this.noRoom[x][y] = true;
@@ -239,10 +239,10 @@ public class Floor {
         int other = randomi.nextInt(6);
 
         if (dir == 'n' || dir == 's') {
-            targetX = Math.max(1, targetX - oneWay);
+            targetX = Math.max(2, targetX - oneWay);
             targetX2 = Math.min(spec.maxX - 3, targetX2 + other);
         } else {
-            targetY = Math.max(1, targetY - oneWay);
+            targetY = Math.max(2, targetY - oneWay);
             targetY2 = Math.min(spec.maxY - 3, targetY2 + other);
         }
         routeFrom[routes] = new Point(start);

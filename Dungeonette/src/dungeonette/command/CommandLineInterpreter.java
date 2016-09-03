@@ -34,6 +34,7 @@ public class CommandLineInterpreter {
         System.out.println("-long | try to create a sprawling dungeon with long winding tunnels.");
         System.out.println("-random | use a RANDOM seed");
         System.out.println("-seed <seed_word> | type in a seed for the dungeon");
+        System.out.println("-speedtest | run as performance test only, no dungeon.txt written!");
         System.out.println("\n\nNOTE: Unless -random or -seed commands are used, the dungeon will be generated using the default (hardcoded) seed.");
         System.out.println("\nIf not parameters are specified by the user, default parameters will be used.");
     
@@ -54,6 +55,8 @@ public class CommandLineInterpreter {
         boolean longCorridors = false;
         boolean interConnected = false;
         boolean useRandomSeed=false;
+        boolean speedTest=false;
+        
         String seed = "Tähän kirjoitetusta lauseesta muodostettu siemenluku määrää minkälainen dungeon generoidaan kunhan muut parametrit säilyvät samoina.";
         
         for (int i = 0; i<args.length; i++) {
@@ -99,18 +102,25 @@ public class CommandLineInterpreter {
             if (args[i].contains("-long")) {
                     longCorridors=true;
             }
+            if (args[i].contains("-speedtest")) {
+                    speedTest=true;
+            }
         }
         System.out.println("Spec: "+x+","+y+", "+z);
         Specification spec = new Specification(x,y,z);
-        spec.density=(int)((x+y)/7);//*((density+1)/10));
-        spec.volatility=(int)((x+y)/9);//*((density+1)/10));
+        spec.density=(int)(((x/10)*(y/10))/3);//*((density+1)/10));
+        spec.volatility=(int)((x/10)*(y/10)/4);//*((density+1)/10));
         spec.roomDensity=density;//Math.max(Math.min(2, (int)((double)(density/50))*24),20);
         System.out.println("density: "+spec.density+", volatility: "+spec.volatility+", roomDensity: "+spec.roomDensity);
+        if (speedTest) {
+            spec.speedTest=true;
+        }
+        
         if (supersizeRooms) {
             spec.twoByTwos=Specification.SEMI_COMMON;
             spec.threeByThrees=Specification.VERY_COMMON;
             spec.twoByOnes=Specification.RARE;
-            spec.largeRoomPersistence=3;
+            spec.largeRoomPersistence=5;
         }
         if (longCorridors) {
             spec.pivotSeekPersistence=(x+y)/4;

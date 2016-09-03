@@ -72,6 +72,7 @@ public class Room {
             debugForceCornerRemoval=true;
         }
         initialize();
+        if (id%10==0) {System.out.print("|");}
     }
     
     /**
@@ -250,7 +251,12 @@ public class Room {
         if (this.id%10==0) {
             this.pivots++;
         }
-        
+        if (this.id>750) {
+            this.pivots--;
+        }
+        if (this.id>1000) {
+            this.pivots=Math.min(this.pivots, 2);
+        }
        
 
     }

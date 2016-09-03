@@ -83,7 +83,7 @@ public class RoomShaper {
         }
         // 50 % of the rooms will be further deformed with a deCornerize() call.
         if (randomi.nextBoolean() || room.debugForceCornerRemoval) {
-          //  deCornerize(room);
+           deCornerize(room);
         } else {
             if (randomi.nextBoolean()) {
             doorways[9]=new Point(hMargin+2+(location.x*10), vMargin+2+(location.y*10));
@@ -257,6 +257,9 @@ public class RoomShaper {
                 }
                 
             }
+        }
+        if (randomi.nextBoolean()) {
+            RoomDecorator.decorate(room);
         }
     }
 

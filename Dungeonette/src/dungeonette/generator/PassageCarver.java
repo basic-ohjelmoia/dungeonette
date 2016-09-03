@@ -8,6 +8,7 @@ package dungeonette.generator;
 import dungeonette.domain.Floor;
 import dungeonette.domain.Room;
 import dungeonette.domain.Specification;
+import dungeonette.generator.util.GetDirection;
 import java.awt.Point;
 
 /**
@@ -57,24 +58,24 @@ public class PassageCarver {
 
             }
 
-            startX = (Math.max(startX, 1));
-            startX = (Math.min(startX, spec.maxX - 2));
-            startY = (Math.max(startY, 1));
-            startY = (Math.min(startY, spec.maxY - 2));
+            startX = (Math.max(startX, 2));
+            startX = (Math.min(startX, spec.maxX - 3));
+            startY = (Math.max(startY, 2));
+            startY = (Math.min(startY, spec.maxY - 3));
 
-            endX = (Math.max(endX, 1));
-            endX = (Math.min(endX, spec.maxX - 2));
-            endY = (Math.max(endY, 1));
-            endY = (Math.min(endY, spec.maxY - 2));
+            endX = (Math.max(endX, 2));
+            endX = (Math.min(endX, spec.maxX - 3));
+            endY = (Math.max(endY, 2));
+            endY = (Math.min(endY, spec.maxY - 3));
 
             int cx = startX;
             int cy = startY;
 
-            int chaos = 0;
+            
 
             // the while loop keeps on going until the route has been carved all the way to the destination
             // coordinates
-            int chaosStepCounter = 0;
+            
             int previousTileID = idTrueFrom;
 
             boolean passageIsNowDetouring = false;
@@ -83,34 +84,39 @@ public class PassageCarver {
             int detoursConducted = 0;
 
             int stepCounter = 0;
+            
             int passageCounter = 0;
             int wallPasses = 0;
 
             boolean crossyGenerated = false;
           //  boolean neverDetour = false;
             
-            boolean forceN = false;
-            boolean forceS = false;
-            boolean forceW = false;
-            boolean forceE = false;
+
+            
+            Point originOfLastDetour = new Point (startX, startY);
+            
 
             while (true) {
-
+                stepCounter++;
                 Architect.Dir direction = Architect.Dir.NORTH;
                 boolean notNearFloorBoundary = cx > 1 && cx < spec.maxX - 2 && cy > 1 && cy < spec.maxY - 2;
-                if (notNearFloorBoundary) {
-                    forceN=false;forceS=false;forceW=false;forceE=false;
+                
+                 if (!notNearFloorBoundary && passageIsNowDetouring) {
+                    passageIsNowDetouring=false;
+                    cx=originOfLastDetour.x;
+                    cy=originOfLastDetour.y;
+                    detoursConducted++;
                 }
                 
-                boolean forceDirection = (forceN || forceS || forceW || forceE);
-                
-                if ((cx < endX && !forceDirection) || forceE) {
+            
+            
+                if (cx < endX) {
                     direction = Architect.Dir.EAST;
-                } else if ((cx > endX && !forceDirection) || forceW) {
+                } else if (cx > endX) {
                     direction = Architect.Dir.WEST;
-                } else if ((cy < endY && !forceDirection) || forceS) {
+                } else if (cy < endY) {
                     direction = Architect.Dir.SOUTH;
-                } else if ((cy > endY && !forceDirection) || forceN) {
+                } else if (cy > endY) {
                     direction = Architect.Dir.NORTH;
                 }
                 
@@ -128,30 +134,19 @@ public class PassageCarver {
                     passageIsNowDetouring = true;
                     detoursConducted++;
                     detourLength = spec.randomi.nextInt(7) + 1 + spec.randomi.nextInt(1);
-                    boolean headsOrTails = spec.randomi.nextBoolean();
-
-                    if (direction == Architect.Dir.EAST || direction == Architect.Dir.WEST) {
-                        if (headsOrTails) {
-                            detourDirection = Architect.Dir.NORTH;
-                        } else {
-                            detourDirection = Architect.Dir.SOUTH;
-                        }
-                    }
-                    if (direction == Architect.Dir.NORTH || direction == Architect.Dir.SOUTH) {
-                        if (headsOrTails) {
-                            detourDirection = Architect.Dir.WEST;
-                        } else {
-                            detourDirection = Architect.Dir.EAST;
-                        }
-                    }
+                    originOfLastDetour = new Point (cx,cy);
+                    
+                    detourDirection = GetDirection.forADetour(direction, spec);
+                   
                 }
 
-                if (detourLength > 0 && notNearFloorBoundary && passageIsNowDetouring && !forceDirection) {
+                if (detourLength > 0 && notNearFloorBoundary && passageIsNowDetouring) {
                     direction = detourDirection;
                     detourLength--;
                 } else {
                     passageIsNowDetouring = false;
                     detourLength = 0;
+
                 }
 
                 char dir = direction.name;
@@ -167,6 +162,7 @@ public class PassageCarver {
                 cx += direction.x;
                 cy += direction.y;
 
+                
                 if (floor.roomLayout[cx / 10][cy / 10] != null) {
                     floor.getItems()[cx][cy] = 0;     // passages supercede items
                 }
@@ -211,27 +207,14 @@ public class PassageCarver {
                         || passageHasReachedTheDestinationRoom || passageIsBreachingNeighbouringRoomID)) {
 
                     tiles[cx][cy] = '+';
-                    if (isItACrossyPassage) {
-                        floor.debugTiles[cx][cy] = '¤';
-
-                    }
-
+         
                     wallPasses = checkForAWallPass(cx, cy, wallPasses, dir, tiles);
-                } else if (!notNearFloorBoundary && cx != endX && cy != endY && !isItACrossyPassage) {
-                   // Point newDoorways = floor.
-                    //cx=startX; cy=startY; neverDetour=true;
-                    if (cx<5) {forceE=true;}
-                    else if (cx>spec.maxX-5) {forceW=true;}
-                    else if (cy<5) {forceS=true;}
-                    else if (cy>spec.maxY-5) {forceN=true;}
-                  //  System.out.println("Floor "+floor.level+" room #"+idTrueTo+" connection FAIL to room #"+idTrueFromMemory+", "+startX+","+startY+"->{"+cx+","+cy+"}->"+endX+","+endY);
-                } else if (deadEndPassageHasToppedTheWallPassLimit) {
+                }  else if (deadEndPassageHasToppedTheWallPassLimit) {
                     break;
                 }
 
                 if (cx == endX && cy == endY) {
                     if (atleastOneOfTheRoomsHasAccessToFirstRoomOfTheFloor) {
-                    //    System.out.println("Floor "+floor.level+" room #"+idTrueTo+" was connected by room #"+idTrueFromMemory+", "+startX+","+startY+"->"+endX+","+endY);
                         floor.connected[idTrueFromMemory] = true;
                         floor.connected[idTrueTo] = true;
                     }

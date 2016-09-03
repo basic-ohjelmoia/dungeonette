@@ -42,7 +42,7 @@ public class RoomInserter {
             // room cannot be inserted outside the floor boundaries.
             return false;
         }
-        if (floor.noRoom[rlx][rly]) {
+        if (floor.noRoom[rlx][rly] && currentRoomID>1) {
             // room cannot be inserted into a coarse grid that's been pre-flagged as illegal.
             return false;
         }

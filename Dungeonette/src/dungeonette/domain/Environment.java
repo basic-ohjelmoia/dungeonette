@@ -30,14 +30,15 @@ import java.util.Scanner;
  */
 public class Environment {
 
-    private char[][][] tiles;
-    private int[][][] tileID;
+   private char[][][] tiles;
+   private int[][][] tileID;
     private int xMax;
     private int yMax;
     private int zMax;
     private Floor[] floors;
     private Specification spec;
     private long timer;
+    private long writeTimer;
 
     /**
      * Constructor for an environment object. The constructor is basically given
@@ -48,68 +49,70 @@ public class Environment {
      * passages, lots of doors/no doors etc.) that should be generated.
      *
      * @param spec specification of the dungeon
-    */
+     */
     public Environment(Specification spec) {
-        this.timer=System.currentTimeMillis();
+        this.timer = System.currentTimeMillis();
         int floorWidth = spec.maxX;
         int floorHeigth = spec.maxY;
         int numberOfFloors = spec.maxZ;
 
-        this.tiles = new char[floorWidth][floorHeigth][numberOfFloors];
-        this.tileID = new int[floorWidth][floorHeigth][numberOfFloors];
+        this.tiles = new char[1][1][1];//floorWidth][floorHeigth][numberOfFloors];
+        this.tileID = new int[1][1][1];//[floorWidth][floorHeigth][numberOfFloors];
         this.xMax = floorWidth;
         this.yMax = floorHeigth;
         this.zMax = numberOfFloors;
         this.floors = new Floor[zMax];
         this.spec = spec;
     }
-    
-    public void generateFloors() {
-        Point pointOfEntry = new Point(spec.gridX/2,spec.gridY/2);
-        
-    
-            Architect.initiateFloors(this, spec);
-    
-        
-        for (int i = 0; i< spec.maxZ; i++ ) {
-            Architect.generateFloor(this, spec, i, new Point(pointOfEntry.x, pointOfEntry.y));
-            pointOfEntry=floors[i].pointOfExit;
-        }
-        long result = System.currentTimeMillis()-timer;
-       // result/=1000;
-        
-        try {
-            BufferedWriter writer = new BufferedWriter(new FileWriter("dungeon.txt", false));
-            for (int i = 0; i< spec.maxZ; i++ ) {
-                
-                
-                Floor next = null;
-                    if (i<spec.maxZ-1 && spec.maxZ>1) {
-                        next=floors[i+1];
-                    }
-                  for (String line: DungeonPrinter.printFloor(floors[i], next, spec)) {
-                          writer.write(line);
-                }
-            
-            
-            }
-            writer.write("\n\n\n__________________________________________________________");
-            String quickTake = "Generated "+spec.maxZ+" levels of "+(spec.maxX*spec.maxY)+" coordinates each ("+spec.maxX+" x "+spec.maxY+" x "+spec.maxZ+") in "+result+" ms";
-            writer.close();
-            System.out.println(quickTake);
-            
-        } catch (Exception e) {
-            System.out.println("Oops!");
-        }
-        
 
+    public void generateFloors() {
+        Point pointOfEntry = new Point(spec.gridX / 2, spec.gridY / 2);
+
+        Architect.initiateFloors(this, spec);
+
+        for (int i = 0; i < spec.maxZ; i++) {
+            Architect.generateFloor(this, spec, i, new Point(pointOfEntry.x, pointOfEntry.y));
+            pointOfEntry = floors[i].pointOfExit;
+            System.out.println("\n");
+        }
+        long result = System.currentTimeMillis() - timer;
+       
         
+        // no file is going to be written if Dungeonette is run in speedtest mode.
+        if (!spec.speedTest) {
+            writeTimer = System.currentTimeMillis();
+            try {
+                BufferedWriter writer = new BufferedWriter(new FileWriter("dungeon.txt", false));
+                for (int i = 0; i < spec.maxZ; i++) {
+
+                    Floor next = null;
+                    if (i < spec.maxZ - 1 && spec.maxZ > 1) {
+                        next = floors[i + 1];
+                    }
+                    for (StringBuilder line : DungeonPrinter.printFloor(floors[i], next, spec)) {
+                        writer.write(line.toString());
+                    }
+                }
+                writer.write("\n\n\n__________________________________________________________");
+                
+                writer.close();
+                
+
+            } catch (Exception e) {
+                System.out.println("Oops!");
+            }
+            writeTimer = System.currentTimeMillis()-writeTimer;
+        }
+        String quickTake = "Generated " + spec.maxZ + " levels of " + (spec.maxX * spec.maxY) + " coordinates each (" + spec.maxX + " x " + spec.maxY + " x " + spec.maxZ + ") in " + result + " ms";
+        System.out.println(quickTake);
+        if (writeTimer>0L) {
+            System.out.println("Filewrite time: "+writeTimer+" ms");
+        }
     }
 
-
     /**
-     * Returns the array of floors
-     * NOT IN USE CURRENTLY!
+     * Returns the array of floors NOT IN USE CURRENTLY!
+     *
      * @return array of floors
      */
     public Floor[] getFloors() {
@@ -117,8 +120,9 @@ public class Environment {
     }
 
     /**
-     * Method for calling out room id numbers tied to specific tiles (id 0 = tile is not related to any specific room)
-     * NOT IN USE CURRENTLY!
+     * Method for calling out room id numbers tied to specific tiles (id 0 =
+     * tile is not related to any specific room) NOT IN USE CURRENTLY!
+     *
      * @return 3D-array of id numbers
      */
     public int[][][] getTileIDs() {
