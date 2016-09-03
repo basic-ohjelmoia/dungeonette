@@ -27,4 +27,4 @@ Annan projektille viimeisen silauksen ennen palautusta. Hion toteutusta sieltä 
 Työskentelyä: n. 8 h.
 
 ### Yhteenveto viikolle 6
-Viikkotyötunteja: 25 h.
+Viikkotyötunteja: 25 h. Olen erittäin tyytyväinen, että käteni telomisesta huolimatta kykenin viemään projektin maaliin!
