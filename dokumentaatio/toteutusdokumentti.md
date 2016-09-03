@@ -37,9 +37,13 @@ Kuten tekemäni mittaukset näyttäisivät osoittavan, Dungeonetten aika- ja til
 > Luolan generointiin kuluva aika kasvaa suunnilleen lineaarisesti syötteen (luolan koon) kasvaessa. Mittatulokset ovat millisekuntteja. 10M ruudun luola on 1000 x 1000 koordinaattia x 10 kerrosta.
 
 Kuvan tulokset saatiin seuraavilla komentorivisyötteillä:
+
 > java -jar Dungeonette.jar -x 100 -y 50 -z 10 -density 15 -speedtest
+
 > java -jar Dungeonette.jar -x 100 -y 100 -z 10 -density 15 -speedtest
+
 > java -jar Dungeonette.jar -x 200 -y 100 -z 10 -density 15 -speedtest
+
 > java -jar Dungeonette.jar -x 200 -y 200 -z 10 -density 15 -speedtest
 
 Suorituskykyanalyysi
@@ -56,5 +60,7 @@ Dungeonette tallentaa luolansa tekstitiedostoksi lähinnä demonstratiivisessa m
 > Luolatiedoston kirjoitusnopeus parani huikaisevan paljon, kun luolaa esittävät merkkijonot rakennetaan StringBuilderilla.
 
 Kuvan tulokset saatiin seuraavilla komentorivisyötteillä:
+
 > java -jar Dungeonette.jar -x 100 -y 100 -z 10 -density 15
+
 > java -jar Dungeonette.jar -x 200 -y 200 -z 10 -density 15 
