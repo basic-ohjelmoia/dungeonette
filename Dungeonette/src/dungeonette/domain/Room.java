@@ -248,7 +248,7 @@ public class Room {
         if (this.id<5) {
             this.pivots++;
         }
-        if (this.id%10==0) {
+        if (this.id%10==0 && this.id<81) {
             this.pivots++;
         }
         if (this.id>750) {

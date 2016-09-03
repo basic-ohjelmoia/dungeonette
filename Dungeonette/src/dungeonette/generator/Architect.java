@@ -163,6 +163,7 @@ public class Architect {
         
         if (spec.volatileRooms && spec.randomi.nextBoolean()) {
             absoluteMaximumNumberOfRoomsForTheFloor/=spec.randomi.nextInt(10)+5;
+            absoluteMaximumNumberOfRoomsForTheFloor=Math.max(5, absoluteMaximumNumberOfRoomsForTheFloor);
         }
         
         System.out.println("%%%% floorlevel " + floorLevel + " start: " + cx + "," + cy + ", max rooms:  " + absoluteMaximumNumberOfRoomsForTheFloor);
@@ -293,15 +294,18 @@ public class Architect {
         floor.storeRoomsIntoTiles();
 
         // adds some random passage ways to the floor
-        for (int i = 0; i < spec.deadEndiness; i++) {
-            floor.addRandomRoute(false);
-
-        }
-
+        
         for (int i = 0; i < spec.roomConnectivity; i++) {
 
             floor.addRandomRoute(true);
         }
+        
+        
+        for (int i = 0; i < (1+((spec.deadEndiness*floor.getRoomCount())/50)); i++) {
+            floor.addRandomRoute(false);
+        }
+        
+
 
         PassageCarver.processAllRoutes(floor, spec);
         DoorInserter.processAllDoors(floor, spec);

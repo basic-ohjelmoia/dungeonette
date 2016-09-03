@@ -23,10 +23,10 @@ public class CommandLineInterpreter {
         System.out.println("        \\/           \\/     \\/           \\/     \\/                  \\/ ");
         System.out.println("by Tuomas Honkala\n\n");
         System.out.println("Available command line commands:\n\n");
-        System.out.println("-x <10...1000> | width (units of 10) of each floor ");
-        System.out.println("-y <10...1000> | height (units of 10) of each floor ");
+        System.out.println("-x <10...1000> | width (in units of 10) of each floor ");
+        System.out.println("-y <10...1000> | height (in units of 10) of each floor ");
         System.out.println("-z <1...10000> | number of floors");
-        System.out.println("-density <10...100> | room density (100 = very closely packed rooms)");
+        System.out.println("-density <5...100> | room density (100 = very closely packed rooms)");
         System.out.println("-interconnectivity <1...100> | room interconnectivity (100 = as interconnected as possible)");
         System.out.println("-straightness <50...100> | higher the value, the straighter the passageways");
         System.out.println("-deadendiness <1...100> | higher the value the more dead-ends are added)");
@@ -51,7 +51,7 @@ public class CommandLineInterpreter {
         int roomDensity = 88;
         int passageStraightness = 80;
         int interconnectivity = 10;
-        int deadendiness = 50;
+        int deadendiness = 10;
         boolean supersizeRooms = false;
         boolean longCorridors = false;
         boolean interConnected = false;
@@ -71,11 +71,11 @@ public class CommandLineInterpreter {
             }
             if (args[i].contains("-x") && hasNext) {
                     x = Integer.parseInt(args[i+1])*10;
-                    x = Math.max(50, Math.min(20000, x));
+                    x = Math.max(50, Math.min(10000, x));
             }
             if (args[i].contains("-y") && hasNext) {
                     y = Integer.parseInt(args[i+1])*10;
-                    y = Math.max(50, Math.min(20000, y));
+                    y = Math.max(50, Math.min(10000, y));
             }
             if (args[i].contains("-z") && hasNext) {
                     z = Integer.parseInt(args[i+1]);
@@ -83,7 +83,7 @@ public class CommandLineInterpreter {
             }
             if (args[i].contains("-density") && hasNext) {
                     roomDensity = Integer.parseInt(args[i+1]);
-                    roomDensity = Math.max(10, Math.min(100, roomDensity));
+                    roomDensity = Math.max(5, Math.min(100, roomDensity));
             }
              if (args[i].contains("-straight") && hasNext) {
                     passageStraightness = Integer.parseInt(args[i+1]);
@@ -113,7 +113,7 @@ public class CommandLineInterpreter {
         }
         System.out.println("Dungeon Spec: "+x+" x "+y+" coordinates times "+z+" floors");
         Specification spec = new Specification(x,y,z);
-        spec.density=(int)(((x/10)*(y/10))/2);//*((density+1)/10));
+        spec.density=(int)(((x/10)*(y/10))/3);//*((density+1)/10));
         spec.roomDensity=roomDensity;//Math.max(Math.min(2, (int)((double)(density/50))*24),20);
         System.out.println("maxRooms per floor: "+spec.density+", roomDensity: "+spec.roomDensity);
         if (speedTest) {
@@ -135,7 +135,8 @@ public class CommandLineInterpreter {
             spec.midsizeRoomPersistence=-1+(x+y)/4;
         }
         spec.roomConnectivity=interconnectivity/10;
-        spec.deadEndiness=(int)(x+y/25)*(deadendiness/100);
+        spec.deadEndiness=deadendiness;//(int)((x*y)*(deadendiness/(double)(1000)));
+        System.out.println("Deadends per floor: "+spec.deadEndiness);
         spec.passageStraightnessPercentile=passageStraightness;
         
         spec.setSeed(seed);

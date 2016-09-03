@@ -19,7 +19,7 @@ import java.util.Random;
 public class Specification {
 
     /**
-     * If this classicPringing is false, then extended char set is used for printing
+     * If this classicPringing is false, then extended char set is used for printing. This functionality has been taken out due to unreliable handling of extended char sets.
      */
     public boolean classicPrinting;
     /**
@@ -147,7 +147,7 @@ public class Specification {
         this.midsizeRoomPersistence=1;
         this.largeRoomPersistence=2;
         
-        this.deadEndiness = 5;
+        this.deadEndiness = 25;
         this.roomConnectivity = 1;
         
         this.speedTest=false;

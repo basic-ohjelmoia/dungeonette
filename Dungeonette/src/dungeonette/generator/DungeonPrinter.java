@@ -29,7 +29,11 @@ public class DungeonPrinter {
         String floorHeader = "\n\n======================= DUNGEON LEVEL " + floor.level + " ==============================\n\n"
                 + "::: map key ::: ## wall ::: ++ floor ::: ||   == doors ::: ½ $ € % £ § generic items ::: Æ boss ::: <> room reachable ::: >< room unreachable :::  : shape of the room below\n\n";
         output[0] = new StringBuilder(floorHeader);
+        if (!spec.fileWritingOnly) {
         System.out.println(floorHeader);
+        } else {
+            System.out.print("lvl+");
+        }
         if (next == null) {
             next = floor;
         }

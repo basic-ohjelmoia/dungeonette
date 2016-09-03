@@ -52,7 +52,7 @@ public class Main {
             spec = CommandLineInterpreter.createSpecification(args);
         }
          
-        spec.randomi=new Random(System.currentTimeMillis());
+    //    spec.randomi=new Random(System.currentTimeMillis());
         Environment env = new Environment(spec);    // the environment for the dungeon generation
         env.generateFloors(); 
 
