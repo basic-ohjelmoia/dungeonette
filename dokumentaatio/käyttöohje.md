@@ -50,9 +50,12 @@ Tämän parametrin kanssa luola generoidaan satunnaisella siemenluvulla.
 ### -seed <siemensana>
 Tämän parametrin avulla luolagenerointiprosessille voidaan määrittää vapaavalintainen siemen. Käyttö: _-seed tähänsiemen_. Huomaa, että jos -random ja -seed -parametrit jätetään käyttämättä, luola generoidaan oletussiemenellä, joka on aina sama.
 
-
 Ääriarvojen käytöstä
 --------------------
 Riippuen käytössä olevasta laitteistosta Dungeonetten toiminta ei kestä kaikkia ääriarvoja. Luolaston generointi suuruusluokassa _-x 1000, -y 1000_ lienee aika teoreettista. Omalla koneellani suurin generoimani luola oli -x 500, y 500. 
 
 Osa käynnistysparametreista on luonteeltaan ristiriidassa keskenään ja tietyt parametri- ja arvoyhdistelmät saattavat aiheuttaa ristiriitoja ohjelman toiminnassa. _-density_ -parametrin kanssa kannattaa olla erityisen varovainen: arvo 5 tarkoittaa, että vain reilu 5 % kaikesta lattiapinta-alasta on luolageneroinnin kannalta laillista!
+
+Dungeonetten käyttö Netbeansissa
+--------------------------------
+Luolagenerointia pääsee parametrisoimaan komentorivikäskyjä hienojakoisemmin peukaloimalla Specification-luokasta löytyviä muuttujia.
