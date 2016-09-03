@@ -35,7 +35,13 @@ public class Specification {
     public int maxY;
     public int maxZ;
     
+    /**
+     * Number of x coodinates on the coarse grid. Each floor can be divided into coarse grid where each square represents an area of 10x10 coordinates.
+     */
     public int gridX;
+    /**
+     * Number of y coodinates on the coarse grid. Each floor can be divided into coarse grid where each square represents an area of 10x10 coordinates.
+     */
     public int gridY;
     
     /**
@@ -49,17 +55,10 @@ public class Specification {
     public int roomConnectivity;
     
     /**
-     * minimum number of rooms being generated
+     * maximum number of rooms being generated per floor
      */
     public int density; 
-    
-    
-    /**
-     * maximum additional number of rooms being generated
-     *  NOTE: density+volatility  should be less than (gridX*gridY)/2
-     */
-    public int volatility;  
-        
+      
     /**
      * Each depts dungeon floor substracts the density/volatility by multiple of funnelEffect.
      * 1 = no funnelEffect.
@@ -80,7 +79,10 @@ public class Specification {
      */
     public int roomDensity;         
     
-    
+    /**
+     * With this boolean set TRUE the scope of the floors will fluctuate wildly.
+     */
+    public boolean volatileRooms;
     
     /**
      *  how often mid sized rooms get (theoretically) generated
@@ -128,8 +130,7 @@ public class Specification {
         this.gridX=(x+9)/10;
         this.gridY=(y+9)/10;
         
-        this.density=25;
-        this.volatility=30;
+        this.density=(gridX*gridY)/2;
         this.funnelEffect =1;
         
         this.twoByOnes=VERY_COMMON;

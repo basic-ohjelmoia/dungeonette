@@ -158,10 +158,13 @@ public class Architect {
 
         // as the algorithm actually handles the dungeon in a coarse grid of 10 x 10 tiles
         // the point of origin coordinates need to be divided by 10
-        int absoluteMaximumNumberOfRoomsForTheFloor = randomi.nextInt(Math.max(5, (spec.volatility - (spec.funnelEffect * floorLevel))))
-                + Math.max(3, (spec.density - (spec.funnelEffect * floorLevel))) + randomi.nextInt(1 + (floorLevel * 2));
+        int absoluteMaximumNumberOfRoomsForTheFloor = randomi.nextInt(Math.max(3, (spec.density - (spec.funnelEffect * floorLevel)))) + randomi.nextInt(1 + (floorLevel * 2));
         // the actualy reaching of "the max" is NOT guaranteed currently
-
+        
+        if (spec.volatileRooms && spec.randomi.nextBoolean()) {
+            absoluteMaximumNumberOfRoomsForTheFloor/=spec.randomi.nextInt(10)+5;
+        }
+        
         System.out.println("%%%% floorlevel " + floorLevel + " start: " + cx + "," + cy + ", max rooms:  " + absoluteMaximumNumberOfRoomsForTheFloor);
 
         int failuresSinceLastRoomGeneration = 0;          // a safety which ensures that the algorithm eventually fails in case it reaches a logical dead-end

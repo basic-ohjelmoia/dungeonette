@@ -62,7 +62,7 @@ public class Floor {
     public Floor(Specification spec) {
         this.spec = spec;
         
-        this.plusThese = spec.volatility + spec.density;
+        this.plusThese = spec.density;
         xMax = spec.maxX;
         yMax = spec.maxY;
         this.maxNumberOfPassages = xMax + yMax;
@@ -372,7 +372,7 @@ public class Floor {
      */
     public void setPointOfEntry(Point pt) {
         this.pointOfEntry = pt;
-        if (spec.roomDensity < 20) {  // density 20 = no salt added!
+        if (spec.roomDensity < 100) {  // density 20 = no salt added!
             addSaltToGrid();
         }
     }

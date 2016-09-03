@@ -21,6 +21,7 @@ import java.util.Scanner;
 public class Main {
 
     /**
+     * There are many different command line arguments which can be used to control the Dungeon generation process.
      * @param args the command line arguments
      */
     public static void main(String[] args) {
@@ -35,10 +36,10 @@ public class Main {
         
         Scanner scanner = new Scanner(System.in);
        
-        int x = 240;
-        int y = 140;
-        int z = 5;
-        x=100;y=100;z=10;
+        int x = 160;
+        int y = 120;
+        int z = 3;
+        
         
 
         String seed = "Tähän kirjoitetusta lauseesta muodostettu siemenluku määrää minkälainen dungeon generoidaan kunhan muut parametrit säilyvät samoina.";
@@ -53,7 +54,7 @@ public class Main {
          
         spec.randomi=new Random(System.currentTimeMillis());
         Environment env = new Environment(spec);    // the environment for the dungeon generation
-        env.generateFloors(); // go-code
+        env.generateFloors(); 
 
     }
 

@@ -23,8 +23,8 @@ public class CommandLineInterpreter {
         System.out.println("        \\/           \\/     \\/           \\/     \\/                  \\/ ");
         System.out.println("by Tuomas Honkala\n\n");
         System.out.println("Available command line commands:\n\n");
-        System.out.println("-x <10...2000> | width (units of 10) of each floor ");
-        System.out.println("-y <10...2000> | height (units of 10) of each floor ");
+        System.out.println("-x <10...1000> | width (units of 10) of each floor ");
+        System.out.println("-y <10...1000> | height (units of 10) of each floor ");
         System.out.println("-z <1...10000> | number of floors");
         System.out.println("-density <10...100> | room density (100 = very closely packed rooms)");
         System.out.println("-interconnectivity <1...100> | room interconnectivity (100 = as interconnected as possible)");
@@ -32,6 +32,7 @@ public class CommandLineInterpreter {
         System.out.println("-deadendiness <1...100> | higher the value the more dead-ends are added)");
         System.out.println("-supersize | try to create as many large rooms as possible");
         System.out.println("-long | try to create a sprawling dungeon with long winding tunnels.");
+        System.out.println("-volatile | with this setting the scope of the floors will fluctuate wildly.");
         System.out.println("-random | use a RANDOM seed");
         System.out.println("-seed <seed_word> | type in a seed for the dungeon");
         System.out.println("-speedtest | run as performance test only, no dungeon.txt written!");
@@ -41,13 +42,13 @@ public class CommandLineInterpreter {
     }
     
     public static Specification createSpecification(String[] args) {
-           int x = 140;
+           int x = 100;
         int y = 100;
-        int z = 5;
+        int z = 3;
         int deadEndiness=5;
         int roomConnectivity=1;
         int pivotSeekPersistence=4;
-        int density = 88;
+        int roomDensity = 88;
         int passageStraightness = 80;
         int interconnectivity = 10;
         int deadendiness = 50;
@@ -56,6 +57,7 @@ public class CommandLineInterpreter {
         boolean interConnected = false;
         boolean useRandomSeed=false;
         boolean speedTest=false;
+        boolean volatileFloors=false;
         
         String seed = "Tähän kirjoitetusta lauseesta muodostettu siemenluku määrää minkälainen dungeon generoidaan kunhan muut parametrit säilyvät samoina.";
         
@@ -80,8 +82,8 @@ public class CommandLineInterpreter {
                     z = Math.max(1, Math.min(10000, z));
             }
             if (args[i].contains("-density") && hasNext) {
-                    density = Integer.parseInt(args[i+1]);
-                    density = Math.max(10, Math.min(100, density));
+                    roomDensity = Integer.parseInt(args[i+1]);
+                    roomDensity = Math.max(10, Math.min(100, roomDensity));
             }
              if (args[i].contains("-straight") && hasNext) {
                     passageStraightness = Integer.parseInt(args[i+1]);
@@ -105,17 +107,21 @@ public class CommandLineInterpreter {
             if (args[i].contains("-speedtest")) {
                     speedTest=true;
             }
+            if (args[i].contains("-volatile")) {
+                    volatileFloors=true;
+            }
         }
-        System.out.println("Spec: "+x+","+y+", "+z);
+        System.out.println("Dungeon Spec: "+x+" x "+y+" coordinates times "+z+" floors");
         Specification spec = new Specification(x,y,z);
-        spec.density=(int)(((x/10)*(y/10))/3);//*((density+1)/10));
-        spec.volatility=(int)((x/10)*(y/10)/4);//*((density+1)/10));
-        spec.roomDensity=density;//Math.max(Math.min(2, (int)((double)(density/50))*24),20);
-        System.out.println("density: "+spec.density+", volatility: "+spec.volatility+", roomDensity: "+spec.roomDensity);
+        spec.density=(int)(((x/10)*(y/10))/2);//*((density+1)/10));
+        spec.roomDensity=roomDensity;//Math.max(Math.min(2, (int)((double)(density/50))*24),20);
+        System.out.println("maxRooms per floor: "+spec.density+", roomDensity: "+spec.roomDensity);
         if (speedTest) {
             spec.speedTest=true;
         }
-        
+        if (volatileFloors) {
+            spec.volatileRooms=true;
+        }
         if (supersizeRooms) {
             spec.twoByTwos=Specification.SEMI_COMMON;
             spec.threeByThrees=Specification.VERY_COMMON;
