@@ -63,4 +63,4 @@ Kuvan tulokset saatiin seuraavilla komentorivisyötteillä:
 
 > java -jar Dungeonette.jar -x 100 -y 100 -z 10 -density 15
 
-> java -jar Dungeonette.jar -x 200 -y 200 -z 10 -density 15 
+> java -jar Dungeonette.jar -x 200 -y 200 -z 10 -density 15
