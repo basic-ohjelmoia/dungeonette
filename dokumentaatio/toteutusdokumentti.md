@@ -68,4 +68,10 @@ Kuvan tulokset saatiin seuraavilla komentorivisyötteillä:
 
 Miten ohjelmaa voisi parantaa?
 ------------------------------
-Dungeonettea voisi jatkokehitellä vielä monin tavoin. Projektin ydinongelmana voisi pitää sitä, että ohjelma toimi jo ensimmäisellä yrittämällä liian hyvin, mikä johti siihen, että koodin 
+Dungeonettea voisi jatkokehitellä vielä monin tavoin. Ensinnäkään ohjelma ei vielä tuota luolakarttojaan sellaisessa tietomuodossa, jota voisi hyödyntää pelissäni. Teknisesti ottaen pelini ei tunne seinäruutujen käsitettä lainkaan, vaan seinät sijaitsevat "raja-aitana" koordinaattien välissä. Käytännössä seinät ('#'), joilla Dungeonette rajaa käytäviä ja huoneita, ovat siis pelkkä visualisointi asialle, jota ei voisi merkkitulosteena mielekkäästi esittää.
+
+Hieman yksityiskohtaisemmalla tasolla Dungeonettea voisi avittaa älykkäämmällä huoneiden asettelulla (nythän seuraavan eli child-huoneen on sijaittava aina pääilmansuunnassa parent-huoneeseen nähden) sekä A*star-reitinhakua hyödyntävällä käytävien kaivertajalla, jonka tehtävänä olisi välttää tarpeetonta väliin jäävien huoneiden puhkomista.
+
+Dungeonetten koodin laadussa olisi paljon parantamista. Projektin ydinongelma tavallaan oli, että ohjelma toimi jo ensimmäisellä yrittämällä liian hyvin. Se johti siihen, että ohjelman perusta (ydintoiminnallisuuden sisältävät luokat) on rakennettu pitkälti luonnosmaisen koodin päälle. Olin kenties haluton koodaamaan karuimpia osia uusiksi senkin takia, että ensimmäisen viikkojen koodailu oli rannemurtuman takia niin hidasta ja tuskallista.
+
+Mitä Dungeonetten suorituskykyyn tulee, niin se tuntuu käyttötarkoitusta ajatellen täysin riittävältä. Suhteellisen suurikin luolasto generoituu algoritmini puitteissa alle sekunnissa, mikä on vuoropohjaisessa tietokonepelissä pelkkä silmänräpäys. Toki, suorituskyky tuskin pysyy aivan tällä tasolla, jos generointia syvennetään puzzle-logiikan, huoneiden sisustamisen ja hirviöiden asettelun viljelylllä luoliin. 
