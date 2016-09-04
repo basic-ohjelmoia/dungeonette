@@ -85,6 +85,19 @@ Koska kyse on algoritmista, jota ajetaan tosiaikaisesti pelin ollessa käynniss�
 Alustavan arvioni mukaan algoritmin aika- ja tilavaativuus lienee vähintään O(k*(n^2)) missä k viittaa kerrosten lukumäärään ja n viittaa luolatasojen suuruusluokkaan.
 
 
-### Lähteet
+Lähteet (päivitetty 4.9.2016)
+-----------------------------
+### Tietorakenteet ja algoritmit -kurssin luentomoniste (syksy 2015)
+Erityisesti jonoja, linkitettyjä listoja, puita ja verkkoja koskevat kohdat.
 
-Harjoitustyö perustunee pääosin syksyn 2015 Tietorakenteet ja algoritmit -kurssin kurssimateriaaleihin.
+### Gamasutra: A. Adonaac: Procedural Generation Algorithm 
+http://www.gamasutra.com/blogs/AAdonaac/20150903/252889/Procedural_Dungeon_Generation_Algorithm.php
+Koska minulla ei etukäteen ollut mitään muodollista käsitystä siitä miten satunnaisluolageneraattori voisi toimia, tämä Gamasutrassa julkaistu blogikirjoitus tarjosi minulle tärkeää inspiraatiota. Konsepti, jossa huoneet ovat suuntaamattoman verkon solmuja ja käytävät niitä yhdistäviä säikeitä, oli Dungeonetten toteutuksen kannalta kullanarvoinen.
+
+### Procedural Content Generation Wiki: Dungeon Generation
+http://pcg.wikidot.com/pcg-algorithm:dungeon-generation
+Tähän wikikirjoitukseen linkatut toteutus- ja koodiesimerkit olivat erittäin valaisevia, kun kartoitin mahdollisia toteutustapoja.
+
+### Wikiedpai: Maze Generation Algorithm
+https://en.wikipedia.org/wiki/Maze_generation_algorithm
+Wikipedia-artikkelissa mainittu Recursive Division Method - tai muunnelma siitä - oli vahvin vaihtoehtoinnen toteutustapa jota harkitsin. RDM olisi luultavasti johtanut koodihajujen kannalta paljon puhtaampaan toteutukseen, mutta loppujen lopuksi totesin, etten halua generoida näin sokkeloisia labyrinttejä.  
