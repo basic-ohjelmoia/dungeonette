@@ -25,5 +25,11 @@ Työskentelyä: n. 4 h.
 
 Annan projektille viimeisen silauksen ennen palautusta. Hion toteutusta sieltä täältä (mm. Architect-luokka selkiytyi mukavasti), teen suorituskykymittauksia ja kirjoitan dokumentaation valmiiksi.
 Työskentelyä: n. 8 h.
+
+### 4.9.2016
+
+Viime hetken lisäyksiän dokumentaatioon.
+Työskentelyä: n. 1,5 h.
+
 ### Yhteenveto viikolle 6
-Viikkotyötunteja: 25 h. 
+Viikkotyötunteja: n. 26,5 h. 
