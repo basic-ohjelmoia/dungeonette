@@ -64,3 +64,8 @@ Kuvan tulokset saatiin seuraavilla komentorivisyötteillä:
 > java -jar Dungeonette.jar -x 100 -y 100 -z 10 -density 15
 
 > java -jar Dungeonette.jar -x 200 -y 200 -z 10 -density 15
+
+
+Miten ohjelmaa voisi parantaa?
+------------------------------
+Dungeonettea voisi jatkokehitellä vielä monin tavoin. Projektin ydinongelmana voisi pitää sitä, että ohjelma toimi jo ensimmäisellä yrittämällä liian hyvin, mikä johti siihen, että koodin 
